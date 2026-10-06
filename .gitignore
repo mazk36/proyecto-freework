@@ -1,0 +1,41 @@
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+
+# Operating system
+.DS_Store
+Thumbs.db
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*~
+
+# Common build and cache output
+node_modules/
+dist/
+build/
+out/
+coverage/
+.cache/
+.next/
+.turbo/
+__pycache__/
+.pytest_cache/
+.venv/
+venv/
+target/
