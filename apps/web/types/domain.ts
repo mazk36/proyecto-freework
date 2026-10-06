@@ -12,6 +12,7 @@ export type ProblemUrgency =
   | "no-rush";
 
 export type Company = {
+  id: string;
   name: string;
   industry: string;
 };
@@ -34,6 +35,7 @@ export type Problem = {
 };
 
 export type Freelancer = {
+  id: string;
   name: string;
   initials: string;
   description: string;
@@ -41,6 +43,8 @@ export type Freelancer = {
 
 export type SolutionProposal = {
   id: string;
+  problemId: string;
+  companyId: string;
   title: string;
   approach: string;
   deliverables: string;
@@ -50,3 +54,35 @@ export type SolutionProposal = {
   conditions: string;
   freelancer: Freelancer;
 };
+
+export type DemoRole = "freelancer" | "company";
+
+export type FreelancerProblemInteraction =
+  | "unseen"
+  | "saved"
+  | "dismissed"
+  | "proposal_submitted";
+
+export type CompanyProposalInteraction = "unseen" | "saved" | "dismissed" | "interested";
+
+export type FreelancerProposalStatus = "sent" | "saved" | "matched" | "dismissed";
+
+export type Match = {
+  id: string;
+  problemId: string;
+  proposalId: string;
+  companyId: string;
+  freelancerId: string;
+  createdAt: string;
+  status: "matched";
+};
+
+export type FreelancerPreferences = {
+  preferredHashtags: string[];
+  maxBudget: number | null;
+};
+
+export type ProposalDraft = Omit<
+  SolutionProposal,
+  "id" | "problemId" | "companyId" | "freelancer"
+>;

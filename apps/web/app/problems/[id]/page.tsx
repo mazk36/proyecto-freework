@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProblemDetail } from "@/components/problems/problem-detail";
-import { PROBLEMS, PROPOSALS_BY_PROBLEM } from "@/data/problems";
+import { PROBLEMS } from "@/data/problems";
 
 type ProblemPageProps = {
   params: Promise<{ id: string }>;
@@ -30,10 +30,5 @@ export default async function ProblemPage({ params }: ProblemPageProps) {
   const problem = PROBLEMS.find((item) => item.id === id);
   if (!problem) notFound();
 
-  return (
-    <ProblemDetail
-      problem={problem}
-      proposals={PROPOSALS_BY_PROBLEM[problem.id] ?? []}
-    />
-  );
+  return <ProblemDetail problem={problem} />;
 }

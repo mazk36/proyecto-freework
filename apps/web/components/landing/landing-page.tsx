@@ -192,12 +192,12 @@ export function LandingPage({ recentProblems }: { recentProblems: Problem[] }) {
 
             <Link
               className="mt-7 inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-white px-4 text-sm font-semibold text-foreground transition-colors hover:border-accent/30 hover:bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-              href="/problems"
+              href="/discover"
             >
               <span className="grid size-7 place-items-center rounded-lg bg-surface text-accent">
                 <Compass aria-hidden="true" className="size-4" />
               </span>
-              Encuentra un problema que puedas resolver
+              Descubre problemas que puedes resolver
               <ArrowRight aria-hidden="true" className="ml-1 size-4 text-muted-foreground" />
             </Link>
           </div>
@@ -292,8 +292,8 @@ export function LandingPage({ recentProblems }: { recentProblems: Problem[] }) {
               Publicar un problema
               <ArrowRight aria-hidden="true" className="size-4" />
             </ButtonLink>
-            <ButtonLink href="/problems" size="lg" variant="outline">
-              Explorar problemas
+            <ButtonLink href="/discover" size="lg" variant="outline">
+              Descubrir problemas
               <ArrowUpRight aria-hidden="true" className="size-4" />
             </ButtonLink>
           </div>

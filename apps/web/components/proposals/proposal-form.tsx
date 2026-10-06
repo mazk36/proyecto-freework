@@ -3,11 +3,11 @@
 import { Send, X } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
-import type { SolutionProposal } from "@/types/domain";
+import type { ProposalDraft } from "@/types/domain";
 
 type ProposalFormProps = {
   onCancel: () => void;
-  onSubmit: (proposal: SolutionProposal) => void;
+  onSubmit: (proposal: ProposalDraft) => void;
 };
 
 const inputClass =
@@ -37,7 +37,6 @@ export function ProposalForm({ onCancel, onSubmit }: ProposalFormProps) {
     }
 
     onSubmit({
-      id: `proposal-${Date.now()}`,
       title,
       approach,
       deliverables,
@@ -45,11 +44,6 @@ export function ProposalForm({ onCancel, onSubmit }: ProposalFormProps) {
       price,
       currency: "USD",
       conditions,
-      freelancer: {
-        name: "Tu propuesta",
-        initials: "TP",
-        description: "Freelancer de demostración",
-      },
     });
   }
 
@@ -76,7 +70,7 @@ export function ProposalForm({ onCancel, onSubmit }: ProposalFormProps) {
       </div>
 
       <p className="mb-5 rounded-xl border border-accent/15 bg-accent-soft/60 px-4 py-3 text-xs leading-5 text-foreground/75">
-        Demostración: la propuesta solo se añade a esta página mientras permanezca abierta. No se guarda ni se envía.
+        En esta demostración, solo tú y la empresa responsable podrán ver esta propuesta.
       </p>
 
       <div className="grid gap-5">
@@ -112,7 +106,7 @@ export function ProposalForm({ onCancel, onSubmit }: ProposalFormProps) {
       <div className="mt-6 flex flex-col-reverse gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
         <Button onClick={onCancel} variant="outline">Cancelar</Button>
         <Button type="submit">
-          Añadir propuesta de demostración
+          Enviar propuesta
           <Send aria-hidden="true" className="size-4" />
         </Button>
       </div>

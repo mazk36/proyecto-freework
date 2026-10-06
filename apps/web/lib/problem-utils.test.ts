@@ -21,7 +21,7 @@ function makeProblem(overrides: Partial<Problem> = {}): Problem {
     hashtags: ["operaciones", "logistica"],
     budget: { type: "fixed", amount: 750, currency: "USD" },
     urgency: "this-month",
-    company: { name: "Empresa de ejemplo", industry: "Servicios" },
+    company: { id: "empresa-ejemplo", name: "Empresa de ejemplo", industry: "Servicios" },
     proposalsCount: 3,
     publishedAt: new Date(NOW - 60 * 60 * 1000).toISOString(),
     status: "open",

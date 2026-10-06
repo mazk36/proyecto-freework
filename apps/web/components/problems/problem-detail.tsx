@@ -3,17 +3,15 @@ import {
   ArrowUpRight,
   Building2,
   CalendarDays,
-  Check,
   Clock3,
   Info,
 } from "lucide-react";
 import Link from "next/link";
-import { ProposalBoard } from "@/components/proposals/proposal-board";
 import { BudgetDisplay } from "@/components/ui/budget-display";
 import { Hashtag, StatusBadge } from "@/components/ui/badges";
 import { ButtonLink } from "@/components/ui/button";
 import { formatRelativeDate } from "@/lib/problem-utils";
-import type { Problem, SolutionProposal } from "@/types/domain";
+import type { Problem } from "@/types/domain";
 
 function DetailSection({
   title,
@@ -41,13 +39,7 @@ function urgencyLabel(urgency: Problem["urgency"]): string {
   return labels[urgency];
 }
 
-export function ProblemDetail({
-  problem,
-  proposals,
-}: {
-  problem: Problem;
-  proposals: SolutionProposal[];
-}) {
+export function ProblemDetail({ problem }: { problem: Problem }) {
   const date = new Intl.DateTimeFormat("es", {
     day: "numeric",
     month: "long",
@@ -107,18 +99,6 @@ export function ProblemDetail({
             </div>
           </section>
 
-          <section className="mt-10 scroll-mt-28" id="propuestas">
-            <div className="mb-5 flex flex-col gap-2">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-accent">Distintas maneras de abordarlo</p>
-              <h2 className="text-2xl font-semibold tracking-[-0.04em] text-foreground sm:text-3xl">
-                Soluciones propuestas
-              </h2>
-              <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                Compara el enfoque, los entregables, el tiempo y el precio de cada propuesta. No hay una solución técnica predefinida.
-              </p>
-            </div>
-            <ProposalBoard initialProposals={proposals} />
-          </section>
         </article>
 
         <aside className="space-y-4 lg:sticky lg:top-[100px]">
@@ -138,13 +118,13 @@ export function ProblemDetail({
                 {urgencyLabel(problem.urgency)}
               </p>
             </div>
-            <a
+            <Link
               className="mt-5 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 text-sm font-semibold text-white transition-colors hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-              href="#propuestas"
+              href="/discover"
             >
-              Proponer una solución
+              Descubrir problemas
               <ArrowUpRight aria-hidden="true" className="size-4" />
-            </a>
+            </Link>
           </section>
 
           <section className="rounded-card border border-accent/15 bg-accent-soft/55 p-5">
@@ -155,14 +135,10 @@ export function ProblemDetail({
               <div>
                 <h2 className="text-sm font-semibold text-foreground">Datos de demostración</h2>
                 <p className="mt-1.5 text-xs leading-5 text-muted-foreground">
-                  Esta publicación y sus propuestas son ficticias. Los formularios no envían ni almacenan información.
+                  Esta publicación es ficticia. Las propuestas solo aparecen para la empresa responsable y el freelancer que las envió.
                 </p>
               </div>
             </div>
-            <p className="mt-4 flex items-center gap-2 border-t border-accent/10 pt-4 text-xs text-muted-foreground">
-              <Check aria-hidden="true" className="size-4 shrink-0 text-accent" />
-              Una vista pública para comparar enfoques
-            </p>
           </section>
 
           <ButtonLink href="/problems" variant="outline" className="w-full">

@@ -8,9 +8,12 @@ export function SiteFooter() {
           Freework
         </Link>
         <p className="max-w-xl text-xs leading-5 text-muted-foreground">
-          Experiencia de demostración. Los problemas y las propuestas son ficticios y los formularios no guardan información.
+          Experiencia de demostración con datos ficticios. Tus interacciones se guardan solo en este navegador y puedes reiniciarlas desde Profile.
         </p>
         <div className="flex gap-5 text-xs font-medium text-muted-foreground">
+          <Link className="hover:text-foreground" href="/discover">
+            Discover
+          </Link>
           <Link className="hover:text-foreground" href="/problems">
             Explorar problemas
           </Link>

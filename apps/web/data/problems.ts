@@ -17,7 +17,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["ventas", "operaciones", "productividad"],
     budget: { type: "range", min: 500, max: 1500, currency: "USD" },
     urgency: "this-month",
-    company: { name: "Nova Retail", industry: "Comercio" },
+    company: { id: "company-nova-retail", name: "Nova Retail", industry: "Comercio" },
     proposalsCount: 2,
     publishedAt: "2026-10-05T21:10:00-05:00",
     status: "open",
@@ -36,8 +36,8 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["inventario", "retail", "operaciones"],
     budget: { type: "fixed", amount: 900, currency: "USD" },
     urgency: "asap",
-    company: { name: "Mercado Norte", industry: "Comercio" },
-    proposalsCount: 1,
+    company: { id: "company-mercado-norte", name: "Mercado Norte", industry: "Comercio" },
+    proposalsCount: 2,
     publishedAt: "2026-10-05T23:10:00-05:00",
     status: "open",
   },
@@ -55,7 +55,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["marketing", "ecommerce", "atencionalcliente"],
     budget: { type: "range", min: 1200, max: 3000, currency: "USD" },
     urgency: "next-months",
-    company: { name: "Casa Marea", industry: "Hogar" },
+    company: { id: "company-casa-marea", name: "Casa Marea", industry: "Hogar" },
     proposalsCount: 2,
     publishedAt: "2026-10-05T12:15:00-05:00",
     status: "open",
@@ -76,8 +76,8 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["logistica", "operaciones", "atencionalcliente"],
     budget: { type: "range", min: 2500, max: 5000, currency: "USD" },
     urgency: "this-month",
-    company: { name: "Senda Logística", industry: "Logística" },
-    proposalsCount: 0,
+    company: { id: "company-senda-logistica", name: "Senda Logística", industry: "Logística" },
+    proposalsCount: 2,
     publishedAt: "2026-10-04T09:00:00-05:00",
     status: "open",
   },
@@ -95,8 +95,8 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["administracion", "finanzas", "automatizacion"],
     budget: { type: "fixed", amount: 4800, currency: "USD" },
     urgency: "next-months",
-    company: { name: "Taller Andino", industry: "Manufactura" },
-    proposalsCount: 0,
+    company: { id: "company-taller-andino", name: "Taller Andino", industry: "Manufactura" },
+    proposalsCount: 2,
     publishedAt: "2026-10-03T16:40:00-05:00",
     status: "open",
   },
@@ -114,7 +114,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["recursoshumanos", "administracion", "productividad"],
     budget: { type: "unknown" },
     urgency: "this-month",
-    company: { name: "Punto Claro", industry: "Servicios" },
+    company: { id: "company-punto-claro", name: "Punto Claro", industry: "Servicios" },
     proposalsCount: 0,
     publishedAt: "2026-10-02T11:20:00-05:00",
     status: "open",
@@ -131,7 +131,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["atencionalcliente", "productividad", "operaciones"],
     budget: { type: "range", min: 300, max: 900, currency: "USD" },
     urgency: "no-rush",
-    company: { name: "Buen Día Café", industry: "Alimentos" },
+    company: { id: "company-buen-dia-cafe", name: "Buen Día Café", industry: "Alimentos" },
     proposalsCount: 0,
     publishedAt: "2026-10-01T08:45:00-05:00",
     status: "open",
@@ -148,7 +148,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["marketing", "ventas", "productividad"],
     budget: { type: "range", min: 5000, max: 8500, currency: "USD" },
     urgency: "next-months",
-    company: { name: "Barrio Vivo", industry: "Comunidad" },
+    company: { id: "company-barrio-vivo", name: "Barrio Vivo", industry: "Comunidad" },
     proposalsCount: 0,
     publishedAt: "2026-09-29T13:10:00-05:00",
     status: "reviewing",
@@ -167,7 +167,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["educacion", "administracion", "atencionalcliente"],
     budget: { type: "fixed", amount: 650, currency: "USD" },
     urgency: "this-month",
-    company: { name: "Aula Abierta", industry: "Educación" },
+    company: { id: "company-aula-abierta", name: "Aula Abierta", industry: "Educación" },
     proposalsCount: 0,
     publishedAt: "2026-09-24T10:00:00-05:00",
     status: "open",
@@ -184,7 +184,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["administracion", "inventario", "finanzas"],
     budget: { type: "unknown" },
     urgency: "no-rush",
-    company: { name: "Línea Sur", industry: "Servicios profesionales" },
+    company: { id: "company-linea-sur", name: "Línea Sur", industry: "Servicios profesionales" },
     proposalsCount: 0,
     publishedAt: "2026-09-19T15:25:00-05:00",
     status: "open",
@@ -203,7 +203,7 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["logistica", "operaciones", "productividad"],
     budget: { type: "range", min: 750, max: 2200, currency: "USD" },
     urgency: "asap",
-    company: { name: "Ruta Fresca", industry: "Distribución" },
+    company: { id: "company-ruta-fresca", name: "Ruta Fresca", industry: "Distribución" },
     proposalsCount: 0,
     publishedAt: "2026-09-12T09:30:00-05:00",
     status: "open",
@@ -220,9 +220,83 @@ export const PROBLEMS: Problem[] = [
     hashtags: ["ventas", "administracion", "productividad"],
     budget: { type: "fixed", amount: 6200, currency: "USD" },
     urgency: "next-months",
-    company: { name: "Estudio Roble", industry: "Servicios profesionales" },
+    company: { id: "company-estudio-roble", name: "Estudio Roble", industry: "Servicios profesionales" },
     proposalsCount: 0,
     publishedAt: "2026-09-09T14:50:00-05:00",
+    status: "open",
+  },
+  {
+    id: "devoluciones-tienda",
+    title: "Las devoluciones tardan en llegar al equipo que repone productos",
+    summary:
+      "Los cambios de estado se comunican por mensajes y el inventario no siempre refleja lo que volvió a tienda.",
+    currentSituation:
+      "El equipo recibe devoluciones durante el día, pero la revisión y el registro se hacen en momentos distintos.",
+    desiredOutcome:
+      "Queremos que cada devolución quede clara para atención al cliente y para quienes actualizan existencias.",
+    impact: "Afecta al equipo de tienda, al almacén y a las personas que esperan una respuesta sobre su devolución.",
+    constraints: "El proceso debe funcionar sin frenar la atención presencial.",
+    hashtags: ["retail", "inventario", "atencionalcliente"],
+    budget: { type: "range", min: 800, max: 1800, currency: "USD" },
+    urgency: "this-month",
+    company: { id: "company-nova-retail", name: "Nova Retail", industry: "Comercio" },
+    proposalsCount: 2,
+    publishedAt: "2026-10-04T18:00:00-05:00",
+    status: "open",
+  },
+  {
+    id: "reportes-produccion",
+    title: "Consolidar los reportes de producción nos toma parte de cada turno",
+    summary:
+      "La información llega en formatos distintos y el equipo la ordena manualmente antes de revisarla.",
+    currentSituation:
+      "Cada estación registra avances con sus propias hojas y supervisión combina los datos al final del turno.",
+    desiredOutcome:
+      "Buscamos tener un resumen consistente para identificar atrasos y necesidades de apoyo durante la jornada.",
+    impact: "Afecta a supervisión y a los equipos que coordinan materiales y entregas.",
+    constraints: "La captura debe seguir siendo rápida para quienes están en planta.",
+    hashtags: ["manufactura", "operaciones", "productividad"],
+    budget: { type: "fixed", amount: 2800, currency: "USD" },
+    urgency: "next-months",
+    company: { id: "company-taller-andino", name: "Taller Andino", industry: "Manufactura" },
+    proposalsCount: 0,
+    publishedAt: "2026-10-03T10:15:00-05:00",
+    status: "open",
+  },
+  {
+    id: "agenda-consultas",
+    title: "Coordinar las citas de atención requiere demasiados mensajes",
+    summary:
+      "Las personas consultan horarios por varios canales y el equipo vuelve a confirmar disponibilidad manualmente.",
+    currentSituation:
+      "La agenda se actualiza durante el día, pero no todas las personas ven los cambios a tiempo.",
+    desiredOutcome:
+      "Queremos reducir las idas y vueltas y que cada persona sepa cuándo tiene una cita confirmada.",
+    impact: "Afecta a recepción, especialistas y personas que buscan una atención oportuna.",
+    hashtags: ["servicios", "atencionalcliente", "operaciones"],
+    budget: { type: "range", min: 1200, max: 2600, currency: "USD" },
+    urgency: "this-month",
+    company: { id: "company-punto-claro", name: "Punto Claro", industry: "Servicios" },
+    proposalsCount: 0,
+    publishedAt: "2026-10-02T08:45:00-05:00",
+    status: "open",
+  },
+  {
+    id: "pedidos-proveedores",
+    title: "Nos cuesta anticipar qué insumos pedir a cada proveedor",
+    summary:
+      "Los pedidos se arman cuando alguien nota que falta algo y no siempre se aprovechan las condiciones acordadas.",
+    currentSituation:
+      "El consumo cambia según la semana y los registros no muestran con claridad cuánto tarda cada reposición.",
+    desiredOutcome:
+      "Buscamos planificar las compras con tiempo y mantener una relación más predecible con nuestros proveedores.",
+    impact: "Afecta a cocina, administración y a la continuidad del servicio en horas de mayor demanda.",
+    hashtags: ["alimentos", "inventario", "finanzas"],
+    budget: { type: "unknown" },
+    urgency: "no-rush",
+    company: { id: "company-buen-dia-cafe", name: "Buen Día Café", industry: "Alimentos" },
+    proposalsCount: 0,
+    publishedAt: "2026-09-30T15:20:00-05:00",
     status: "open",
   },
 ];
@@ -231,6 +305,8 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
   "registro-visitas-comerciales": [
     {
       id: "visitas-propuesta-1",
+      problemId: "registro-visitas-comerciales",
+      companyId: "company-nova-retail",
       title: "Un registro breve al terminar cada visita",
       approach:
         "Primero mapearía el recorrido actual con dos personas del equipo y luego probaría un registro corto que capture solo lo necesario en el momento.",
@@ -241,6 +317,7 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
       currency: "USD",
       conditions: "Incluye una ronda de ajustes después de la prueba piloto.",
       freelancer: {
+        id: "freelancer-valeria",
         name: "Valeria Rojas",
         initials: "VR",
         description: "Diseñadora de servicios para equipos comerciales.",
@@ -248,6 +325,8 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
     },
     {
       id: "visitas-propuesta-2",
+      problemId: "registro-visitas-comerciales",
+      companyId: "company-nova-retail",
       title: "Aclarar qué información vale la pena conservar",
       approach:
         "Revisaría una muestra de los informes recientes, identificaría los datos que se usan para dar seguimiento y probaría una rutina sencilla de captura.",
@@ -258,6 +337,7 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
       currency: "USD",
       conditions: "El acompañamiento incluye dos sesiones remotas con el equipo.",
       freelancer: {
+        id: "freelancer-mateo",
         name: "Mateo Salas",
         initials: "MS",
         description: "Consultor de operaciones y mejora de procesos.",
@@ -267,6 +347,8 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
   "errores-inventario-tienda": [
     {
       id: "inventario-propuesta-1",
+      problemId: "errores-inventario-tienda",
+      companyId: "company-mercado-norte",
       title: "Encontrar en qué momentos se descuadran los conteos",
       approach:
         "Acompañaría un ciclo de reposición y cierre para entender dónde se pierde continuidad entre el movimiento y el registro.",
@@ -277,15 +359,38 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
       currency: "USD",
       conditions: "La visita presencial, si se necesita, se cotiza por separado.",
       freelancer: {
+        id: "freelancer-lucia",
         name: "Lucía Herrera",
         initials: "LH",
         description: "Especialista independiente en operación de tiendas.",
+      },
+    },
+    {
+      id: "inventario-propuesta-2",
+      problemId: "errores-inventario-tienda",
+      companyId: "company-mercado-norte",
+      title: "Hacer visible cada movimiento de productos",
+      approach:
+        "Revisaría cómo se reciben, trasladan y reponen los productos para acordar puntos de registro sencillos durante el turno.",
+      deliverables:
+        "Flujo de registro actualizado, prueba en una sección y recomendaciones para extenderlo a las otras tiendas.",
+      estimatedTimeline: "3 semanas",
+      price: 1100,
+      currency: "USD",
+      conditions: "La prueba se limita inicialmente a una categoría de productos.",
+      freelancer: {
+        id: "freelancer-diego",
+        name: "Diego Paredes",
+        initials: "DP",
+        description: "Consultor de procesos para comercios y almacenes.",
       },
     },
   ],
   "visitas-sin-contactos": [
     {
       id: "conversion-propuesta-1",
+      problemId: "visitas-sin-contactos",
+      companyId: "company-casa-marea",
       title: "Escuchar a las personas antes de rediseñar el recorrido",
       approach:
         "Analizaría las consultas existentes y conversaría con algunos visitantes para identificar las dudas que no están quedando resueltas.",
@@ -296,6 +401,7 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
       currency: "USD",
       conditions: "La empresa coordina el acceso a las personas participantes.",
       freelancer: {
+        id: "freelancer-andres",
         name: "Andrés Vidal",
         initials: "AV",
         description: "Investigador de experiencia y comportamiento de clientes.",
@@ -303,6 +409,8 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
     },
     {
       id: "conversion-propuesta-2",
+      problemId: "visitas-sin-contactos",
+      companyId: "company-casa-marea",
       title: "Aclarar la información que precede a una consulta",
       approach:
         "Revisaría las páginas más visitadas, contrastaría su contenido con las preguntas recibidas y propondría ajustes de claridad.",
@@ -313,10 +421,133 @@ export const PROPOSALS_BY_PROBLEM: Record<string, SolutionProposal[]> = {
       currency: "USD",
       conditions: "No incluye producción de fotografías ni redacción de todo el catálogo.",
       freelancer: {
+        id: "freelancer-paola",
         name: "Paola Medina",
         initials: "PM",
         description: "Estratega de contenido para comercio digital.",
       },
     },
   ],
+  "retrasos-pedidos": [
+    {
+      id: "pedidos-propuesta-1",
+      problemId: "retrasos-pedidos",
+      companyId: "company-senda-logistica",
+      title: "Detectar las demoras antes de que el pedido salga tarde",
+      approach:
+        "Mapearía las etapas de preparación y despacho con el equipo para distinguir esperas, cambios de prioridad y falta de información.",
+      deliverables: "Mapa del recorrido, tablero de señales de atraso y prueba de seguimiento para una ruta.",
+      estimatedTimeline: "4 semanas",
+      price: 3400,
+      currency: "USD",
+      conditions: "La prueba usa una ruta de despacho acordada con el equipo.",
+      freelancer: {
+        id: "freelancer-sofia",
+        name: "Sofía Núñez",
+        initials: "SN",
+        description: "Especialista en operación y distribución.",
+      },
+    },
+    {
+      id: "pedidos-propuesta-2",
+      problemId: "retrasos-pedidos",
+      companyId: "company-senda-logistica",
+      title: "Acordar un traspaso claro entre almacén y despacho",
+      approach:
+        "Observaría los cambios de responsabilidad durante un turno y propondría una rutina breve para confirmar los datos de cada pedido.",
+      deliverables: "Protocolo de traspaso, checklist de salida y sesión de revisión con ambos equipos.",
+      estimatedTimeline: "2 semanas",
+      price: 2600,
+      currency: "USD",
+      conditions: "No requiere cambiar el sistema actual de pedidos.",
+      freelancer: {
+        id: "freelancer-mateo",
+        name: "Mateo Salas",
+        initials: "MS",
+        description: "Consultor de operaciones y mejora de procesos.",
+      },
+    },
+  ],
+  "procesamiento-facturas": [
+    {
+      id: "facturas-propuesta-1",
+      problemId: "procesamiento-facturas",
+      companyId: "company-taller-andino",
+      title: "Clasificar las facturas según lo que necesita revisión",
+      approach:
+        "Identificaría qué datos se repiten y qué excepciones requieren criterio humano para ordenar el trabajo diario.",
+      deliverables: "Criterios de clasificación, flujo de revisión y una prueba con una muestra de documentos.",
+      estimatedTimeline: "3 semanas",
+      price: 3900,
+      currency: "USD",
+      conditions: "La empresa facilita ejemplos anonimizados de facturas recientes.",
+      freelancer: {
+        id: "freelancer-paola",
+        name: "Paola Medina",
+        initials: "PM",
+        description: "Diseñadora de operaciones administrativas.",
+      },
+    },
+    {
+      id: "facturas-propuesta-2",
+      problemId: "procesamiento-facturas",
+      companyId: "company-taller-andino",
+      title: "Reducir la transcripción antes de automatizar tareas",
+      approach:
+        "Revisaría cada paso de la captura actual y priorizaría los campos necesarios para decidir qué facturas requieren seguimiento.",
+      deliverables: "Mapa del proceso, formato unificado y plan de mejora gradual.",
+      estimatedTimeline: "2 semanas",
+      price: 2100,
+      currency: "USD",
+      conditions: "Incluye recomendaciones; la carga de documentos sigue a cargo del equipo.",
+      freelancer: {
+        id: "freelancer-andres",
+        name: "Andrés Vidal",
+        initials: "AV",
+        description: "Consultor en procesos financieros para pequeñas empresas.",
+      },
+    },
+  ],
+  "devoluciones-tienda": [
+    {
+      id: "devoluciones-propuesta-1",
+      problemId: "devoluciones-tienda",
+      companyId: "company-nova-retail",
+      title: "Dar seguimiento a la devolución desde que llega a tienda",
+      approach:
+        "Acompañaría al personal para definir estados simples y una forma compartida de avisar cuándo el producto puede volver al inventario.",
+      deliverables: "Flujo de seguimiento, guía de actualización y prueba con devoluciones reales de una tienda.",
+      estimatedTimeline: "3 semanas",
+      price: 1450,
+      currency: "USD",
+      conditions: "La prueba se realiza en una sola tienda antes de extender el proceso.",
+      freelancer: {
+        id: "freelancer-lucia",
+        name: "Lucía Herrera",
+        initials: "LH",
+        description: "Especialista independiente en operación de tiendas.",
+      },
+    },
+    {
+      id: "devoluciones-propuesta-2",
+      problemId: "devoluciones-tienda",
+      companyId: "company-nova-retail",
+      title: "Alinear atención al cliente con el registro de inventario",
+      approach:
+        "Revisaría qué información necesita cada equipo y propondría un traspaso único que evite volver a preguntar por el estado del producto.",
+      deliverables: "Acuerdo de información, plantilla de seguimiento y sesión de puesta en marcha.",
+      estimatedTimeline: "10 días",
+      price: 980,
+      currency: "USD",
+      conditions: "No requiere integrar nuevas herramientas para iniciar la prueba.",
+      freelancer: {
+        id: "freelancer-valeria",
+        name: "Valeria Rojas",
+        initials: "VR",
+        description: "Diseñadora de servicios para equipos comerciales.",
+      },
+    },
+  ],
 };
+
+export const ALL_DEMO_PROPOSALS = Object.values(PROPOSALS_BY_PROBLEM).flat();
