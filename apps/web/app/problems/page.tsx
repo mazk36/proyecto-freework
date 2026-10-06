@@ -1,19 +1,12 @@
 import type { Metadata } from "next";
-import { ProblemExplorer } from "@/components/problems/problem-explorer";
+import { ProblemExplorerRoute } from "@/components/problems/problem-explorer-route";
 
 export const metadata: Metadata = {
   title: "Explorar problemas | Freework",
   description: "Explora problemas y descubre distintas formas de resolverlos.",
 };
 
-type ProblemsPageProps = {
-  searchParams: Promise<{ search?: string | string[] }>;
-};
-
-export default async function ProblemsPage({ searchParams }: ProblemsPageProps) {
-  const params = await searchParams;
-  const search = Array.isArray(params.search) ? params.search[0] : params.search;
-
+export default function ProblemsPage() {
   return (
     <div className="mx-auto w-full max-w-[1320px] px-5 pb-16 pt-10 sm:px-7 sm:pb-20 sm:pt-14 lg:px-10">
       <header className="mb-8 max-w-3xl sm:mb-10">
@@ -30,7 +23,7 @@ export default async function ProblemsPage({ searchParams }: ProblemsPageProps) 
           Datos ficticios para esta demostración. No hay empresas ni propuestas reales.
         </p>
       </header>
-      <ProblemExplorer initialQuery={search ?? ""} now={Date.now()} />
+      <ProblemExplorerRoute now={Date.now()} />
     </div>
   );
 }

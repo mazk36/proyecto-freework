@@ -7,6 +7,12 @@ type ProblemPageProps = {
   params: Promise<{ id: string }>;
 };
 
+export const dynamicParams = false;
+
+export function generateStaticParams() {
+  return PROBLEMS.map((problem) => ({ id: problem.id }));
+}
+
 export async function generateMetadata({ params }: ProblemPageProps): Promise<Metadata> {
   const { id } = await params;
   const problem = PROBLEMS.find((item) => item.id === id);
