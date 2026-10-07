@@ -1,6 +1,5 @@
 import type {
   CompanyProposalInteraction,
-  Freelancer,
   FreelancerPreferences,
   FreelancerProblemInteraction,
   FreelancerProposalStatus,
@@ -8,20 +7,6 @@ import type {
   Problem,
   SolutionProposal,
 } from "@/types/domain";
-
-export const DEMO_COMPANY_ID = "company-nova-retail";
-
-export const DEMO_FREELANCER: Freelancer = {
-  id: "freelancer-valeria",
-  name: "Valeria Rojas",
-  initials: "VR",
-  description: "Diseñadora de servicios para equipos comerciales.",
-};
-
-export const DEFAULT_FREELANCER_PREFERENCES: FreelancerPreferences = {
-  preferredHashtags: ["ventas", "operaciones", "automatizacion"],
-  maxBudget: 5000,
-};
 
 export function rankProblemsForFreelancer(
   problems: Problem[],

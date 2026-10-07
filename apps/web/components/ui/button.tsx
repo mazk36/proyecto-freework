@@ -8,9 +8,9 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-accent text-accent-foreground hover:bg-accent-hover focus-visible:ring-accent",
   secondary:
-    "bg-foreground text-white hover:bg-foreground/88 focus-visible:ring-foreground",
+    "bg-foreground text-background hover:bg-foreground/90 focus-visible:ring-foreground",
   outline:
-    "border border-border bg-white text-foreground hover:border-foreground/30 hover:bg-surface focus-visible:ring-accent",
+    "border border-border bg-transparent text-foreground hover:border-foreground/30 hover:bg-surface focus-visible:ring-accent",
   quiet:
     "bg-transparent text-muted-foreground hover:bg-surface hover:text-foreground focus-visible:ring-accent",
 };
@@ -22,7 +22,7 @@ const sizeClasses: Record<ButtonSize, string> = {
 };
 
 const baseClasses =
-  "inline-flex shrink-0 items-center justify-center gap-2 rounded-xl font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50";
+  "inline-flex shrink-0 items-center justify-center gap-2 rounded-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50";
 
 function buttonClasses(
   variant: ButtonVariant,

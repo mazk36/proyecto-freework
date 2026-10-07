@@ -55,8 +55,6 @@ export type SolutionProposal = {
   freelancer: Freelancer;
 };
 
-export type DemoRole = "freelancer" | "company";
-
 export type FreelancerProblemInteraction =
   | "unseen"
   | "saved"

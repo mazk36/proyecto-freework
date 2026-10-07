@@ -1,12 +1,14 @@
 # Freework
 
-Freework conecta empresas con freelancers mediante un enfoque centrado en problemas. Las empresas describen una necesidad y los freelancers pueden proponer distintas soluciones.
+Freework conecta empresas con profesionales independientes mediante un enfoque centrado en problemas: primero se describe la necesidad y después se exploran posibles soluciones.
 
-## Estado
+## Estado actual
 
-La demo frontend incluye un flujo **Discovery-first** para descubrir problemas, enviar soluciones y hacer Match cuando ambas partes quieren continuar. El modo `Explore` (`/problems`) conserva la búsqueda, los filtros y el mosaico para investigar oportunidades manualmente. La experiencia de empresa revisa propuestas privadas asociadas a sus problemas.
+La interfaz está en español y usa un tema oscuro con acento morado. La landing pública está separada de la aplicación privada. La app vive bajo `/app` y muestra estados vacíos; no se incluyen problemas, propuestas, empresas, perfiles ni Matches de ejemplo.
 
-No hay autenticación ni backend. El selector de rol simula `Freelancer` y `Empresa`; las interacciones de demo se guardan en `localStorage` en el navegador actual y se pueden reiniciar desde `Profile`.
+El registro y el inicio de sesión son una simulación frontend para desarrollo. Se guardan en `localStorage` únicamente el nombre, correo, rol y la sesión temporal. Las contraseñas no se verifican ni se guardan. La protección funciona en el navegador y no proporciona autenticación ni autorización real. No uses esta versión para proteger datos.
+
+La publicación de problemas todavía no está conectada a un servicio de datos. La pantalla explica ese límite y no conserva ni envía información.
 
 ## Desarrollo local
 
@@ -19,28 +21,21 @@ pnpm dev
 
 La aplicación estará disponible en `http://localhost:3000`. También puedes ejecutar `pnpm lint`, `pnpm typecheck`, `pnpm test` y `pnpm build` desde la raíz.
 
-La experiencia utiliza datos de demostración. No se envían datos a un servidor. La privacidad de propuestas se aplica mediante selectores y vistas de la interfaz; no es autorización real. Antes de incorporar datos de usuarios, se deberá aplicar autorización en el servidor.
+## Rutas
 
-## Rutas principales
+Públicas:
 
-- `/discover`: feed secuencial para freelancers o selector de problemas para empresas, según el rol de demo.
-- `/discover/dismissed`, `/discover/preferences`: problemas o propuestas descartados y preferencias de ranking.
-- `/problems`: exploración manual con mosaico, búsqueda, filtros y ordenamiento.
-- `/problems/[id]`: contexto público del problema, sin listar propuestas.
-- `/company/problems`: problemas de la empresa demo y acceso a sus soluciones.
-- `/company/problems/[id]/solutions/discover`: feed privado de propuestas para un problema de la empresa demo.
-- `/saved`, `/proposals`, `/matches`, `/matches/detail?match=...`: guardados, propuestas propias y Matches.
-- `/profile`: perfil placeholder y reinicio del estado de demo.
+- `/`: landing.
+- `/iniciar-sesion`: inicio de sesión temporal.
+- `/registro`: registro temporal.
 
-Un Match representa interés mutuo entre la empresa responsable y quien envió una solución. No representa contratación, pago ni contrato. La negociación y el chat están pendientes.
+Privadas:
 
-## Estructura
+- `/app`: inicio según el tipo de cuenta.
+- `/app/descubrir` y `/app/explorar`: oportunidades, actualmente sin problemas disponibles.
+- `/app/problemas` y `/app/problemas/nuevo`: problemas de empresa y estado de publicación pendiente.
+- `/app/propuestas`, `/app/guardados`, `/app/matches` y `/app/perfil`: secciones vacías o datos de la cuenta temporal.
 
-- `apps/`: aplicaciones web y API (la API continúa pendiente).
-- `packages/`: espacio previsto para componentes y código compartido.
-- `docs/`: visión de producto, arquitectura, decisiones y proceso de desarrollo.
-- `infra/`: espacio previsto para infraestructura futura.
-- `scripts/`: espacio previsto para herramientas internas.
-- `tests/`: espacio previsto para pruebas.
+Las antiguas rutas privadas redirigen al inicio de sesión o a su ruta canónica bajo `/app`. La ruta 404 sigue disponible públicamente.
 
-Consulta [la visión del producto](docs/product/vision.md) y las instrucciones en `AGENTS.md` antes de proponer cambios.
+Consulta [la visión del producto](docs/product/vision.md), la [arquitectura](docs/architecture/README.md) y las decisiones en `docs/decisions/`.

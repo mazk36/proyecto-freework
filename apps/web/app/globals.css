@@ -1,17 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f8f7;
-  --foreground: #17171b;
-  --muted: #72727d;
-  --border: #e8e7eb;
-  --accent: #6848d8;
-  --accent-hover: #5739c3;
+  color-scheme: dark;
+  --background: #050506;
+  --foreground: #f4f4f5;
+  --muted: #a1a1aa;
+  --border: #2a2a31;
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
   --accent-foreground: #ffffff;
-  --accent-soft: #f1edff;
-  --surface: #f3f3f5;
-  --surface-raised: #ffffff;
-  --radius-card: 1.1rem;
+  --accent-soft: #241b36;
+  --surface: #111114;
+  --surface-raised: #19191e;
+  --radius-card: 0.9rem;
 }
 
 @theme inline {
@@ -50,50 +51,8 @@ body {
 }
 
 ::selection {
-  background: #ddd5ff;
-  color: #24154e;
-}
-
-dialog::backdrop {
-  background: rgb(23 23 27 / 42%);
-  backdrop-filter: blur(2px);
-}
-
-.filter-dialog[open] {
-  position: fixed;
-  inset: auto 0 0;
-  display: block;
-  animation: sheet-in 180ms ease-out;
-}
-
-@media (min-width: 640px) {
-  .filter-dialog[open] {
-    inset: 50% auto auto 50%;
-    transform: translate(-50%, -50%);
-    animation: dialog-in 160ms ease-out;
-  }
-}
-
-@keyframes sheet-in {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes dialog-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, calc(-50% + 8px));
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, -50%);
-  }
+  background: #6d28d9;
+  color: #ffffff;
 }
 
 @media (prefers-reduced-motion: reduce) {

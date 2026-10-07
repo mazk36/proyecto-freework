@@ -1,27 +1,18 @@
-import { ArrowLeft, SearchX } from "lucide-react";
 import Link from "next/link";
-import { ButtonLink } from "@/components/ui/button";
 
 export default function NotFound() {
   return (
-    <section className="mx-auto grid min-h-[60vh] w-full max-w-xl place-items-center px-5 py-16 text-center">
-      <div>
-        <span className="mx-auto grid size-14 place-items-center rounded-2xl bg-accent-soft text-accent">
-          <SearchX aria-hidden="true" className="size-6" />
-        </span>
-        <p className="mt-5 text-xs font-bold uppercase tracking-[0.14em] text-accent">No disponible</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-[-0.04em] text-foreground">
-          No encontramos ese problema
-        </h1>
+    <main className="grid min-h-screen place-items-center px-5 py-16 text-center">
+      <div className="max-w-md">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Error 404</p>
+        <h1 className="mt-3 text-3xl font-semibold tracking-tight">No encontramos esta página.</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">
-          Puede que la dirección no sea correcta o que este ejemplo no esté disponible.
+          Comprueba la dirección o vuelve al inicio de Freework.
         </p>
-        <ButtonLink className="mt-6" href="/problems" variant="outline">
-          <ArrowLeft aria-hidden="true" className="size-4" />
-          Explorar problemas
-        </ButtonLink>
-        <Link className="sr-only" href="/">Ir al inicio</Link>
+        <Link className="mt-6 inline-flex min-h-11 items-center rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground hover:bg-accent-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
+          Volver al inicio
+        </Link>
       </div>
-    </section>
+    </main>
   );
 }
