@@ -3,14 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldAlert } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import reversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
 
 const inputClassName =
-  "min-h-12 w-full rounded-xl border border-white/10 bg-[#161B22] py-3 pl-11 pr-4 text-base text-[#F8FAFC] outline-none placeholder:text-[#9BA7B6] focus:border-[#8A4DFF] focus:ring-2 focus:ring-[#8A4DFF]/35";
+  "min-h-11 w-full rounded-xl border border-white/10 bg-[#161B22] py-2.5 pl-11 pr-4 text-base text-[#F8FAFC] outline-none placeholder:text-[#9BA7B6] focus:border-[#8A4DFF] focus:ring-2 focus:ring-[#8A4DFF]/35";
 
 export function LoginExperience() {
   const router = useRouter();
@@ -41,10 +41,10 @@ export function LoginExperience() {
   }
 
   return (
-    <main className="min-h-dvh overflow-x-hidden bg-[#080D17] px-3 py-3 text-[#F8FAFC] sm:px-5 sm:py-5">
-      <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] w-full max-w-[92rem] overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#0D1117] shadow-[0_32px_100px_rgba(0,0,0,0.48)] min-[900px]:min-h-[calc(100dvh-2.5rem)] min-[900px]:grid-cols-[minmax(0,48fr)_minmax(0,52fr)]">
-        <section aria-labelledby="login-title" className="flex flex-col justify-center px-4 py-7 sm:px-8 sm:py-10 min-[900px]:px-8 xl:px-14">
-          <div className="mx-auto flex w-full max-w-[27rem] flex-col gap-7 py-2">
+    <main className="min-h-dvh overflow-x-hidden bg-[#080D17] p-2 text-[#F8FAFC] sm:p-3">
+      <div className="mx-auto grid min-h-[calc(100dvh-1rem)] w-full max-w-[92rem] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0D1117] shadow-[0_32px_100px_rgba(0,0,0,0.48)] min-[900px]:min-h-[calc(100dvh-1.5rem)] min-[900px]:grid-cols-[minmax(0,48fr)_minmax(0,52fr)]">
+        <section aria-labelledby="login-title" className="flex flex-col justify-center px-4 py-[clamp(0.625rem,1.5dvh,1rem)] sm:px-8 min-[900px]:px-8 xl:px-14">
+          <div className="mx-auto flex w-full max-w-[27rem] flex-col gap-[clamp(0.625rem,1.75dvh,1.125rem)]">
             <Link
               aria-label="MatchWork, ir al inicio"
               className="w-fit rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0D1117]"
@@ -54,23 +54,20 @@ export function LoginExperience() {
             </Link>
 
             <div>
-              <p className="mb-3 w-fit rounded-full border border-[#8A4DFF]/35 bg-[#8A4DFF]/10 px-3 py-1 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-[#D8C4FF]">
-                Acceso temporal de desarrollo
-              </p>
               <h1 className="text-3xl font-semibold leading-tight tracking-[-0.04em] text-[#F8FAFC] sm:text-[2.15rem]" id="login-title">
                 ¡Bienvenido de nuevo!
               </h1>
-              <p className="mt-2 max-w-md text-sm leading-6 text-[#B6C1D0] sm:text-base">
+              <p className="mt-1.5 max-w-md text-sm leading-5 text-[#B6C1D0] sm:text-base sm:leading-6">
                 Inicia sesión para seguir conectando talento con oportunidades.
               </p>
             </div>
 
-            <form className="space-y-4" onSubmit={handleSubmit}>
+            <form className="space-y-3" onSubmit={handleSubmit}>
               <div>
                 <label className="block text-sm font-medium text-[#F8FAFC]" htmlFor="login-email">
                   Correo electrónico
                 </label>
-                <div className="relative mt-2">
+                <div className="relative mt-1.5">
                   <Mail aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[1.125rem] -translate-y-1/2 text-[#9BA7B6]" />
                   <input
                     autoComplete="email"
@@ -88,7 +85,7 @@ export function LoginExperience() {
                 <label className="block text-sm font-medium text-[#F8FAFC]" htmlFor="login-password">
                   Contraseña
                 </label>
-                <div className="relative mt-2">
+                <div className="relative mt-1.5">
                   <LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[1.125rem] -translate-y-1/2 text-[#9BA7B6]" />
                   <input
                     autoComplete="current-password"
@@ -116,14 +113,13 @@ export function LoginExperience() {
               </div>
 
               <div className="flex justify-end">
-                <p aria-disabled="true" className="text-right text-xs text-[#D8C4FF] sm:text-sm">
-                  ¿Olvidaste tu contraseña? <span className="text-[#B6C1D0]">Próximamente</span>
-                </p>
+                <Link
+                  className="text-right text-xs font-medium text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] sm:text-sm"
+                  href="/recuperar-contrasena"
+                >
+                  ¿Olvidaste tu contraseña?
+                </Link>
               </div>
-
-              <p className="text-xs leading-5 text-[#AAB6C6]">
-                La contraseña solo se solicita para probar el formulario. No se guarda ni se verifica.
-              </p>
 
               {error ? (
                 <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" role="alert">
@@ -137,7 +133,7 @@ export function LoginExperience() {
               ) : null}
 
               <button
-                className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#8A4DFF] px-5 py-3 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#8A4DFF] px-5 py-2.5 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
                 disabled={!isReady}
                 type="submit"
               >
@@ -145,21 +141,21 @@ export function LoginExperience() {
               </button>
             </form>
 
-            <div className="flex items-center gap-4 text-xs text-[#9BA7B6]">
+            <div className="flex items-center gap-3 text-xs text-[#9BA7B6]">
               <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
               <span>O continúa con</span>
               <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
             </div>
 
             <button
-              aria-label="Continuar con Google, próximamente"
-              className="flex min-h-12 w-full cursor-not-allowed items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#161B22] px-4 text-sm font-medium text-[#B6C1D0] opacity-75"
+              aria-label="Continuar con Google, sin proveedor configurado"
+              className="flex min-h-11 w-full cursor-not-allowed items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#161B22] px-4 text-sm font-medium text-[#B6C1D0] opacity-75"
               disabled
               type="button"
             >
               <span aria-hidden="true" className="font-sans text-lg font-bold text-[#8AB4F8]">G</span>
               <span>Continuar con Google</span>
-              <span className="text-xs text-[#D8C4FF]">Próximamente</span>
+              <span className="text-xs text-[#D8C4FF]">No configurado</span>
             </button>
 
             <p className="text-center text-sm text-[#B6C1D0]">
@@ -172,9 +168,10 @@ export function LoginExperience() {
               </Link>
             </p>
 
-            <p className="border-t border-white/10 pt-4 text-xs leading-5 text-[#9BA7B6]">
-              La autenticación es una simulación frontend. No protege información ni reemplaza una sesión validada en servidor.
-            </p>
+            <div className="flex items-start gap-2 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2 text-xs leading-4 text-amber-100/90" role="note">
+              <ShieldAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-amber-200" />
+              <p>Modo de desarrollo: el acceso es simulado; la contraseña no se valida ni se guarda, y esta sesión no protege datos reales.</p>
+            </div>
           </div>
         </section>
 
@@ -230,10 +227,10 @@ export function LoginExperience() {
                 width={reversedWordmark.width}
               />
             </div>
-            <h2 className="mt-9 text-balance font-display text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#F8FAFC] sm:text-3xl xl:text-[2.1rem]">
+            <h2 className="mt-7 text-balance font-display text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#F8FAFC] sm:text-3xl xl:text-[2.1rem]">
               El talento correcto. La oportunidad correcta.
             </h2>
-            <p className="mt-4 max-w-[29rem] text-sm leading-7 text-[#D8C4FF]/90 sm:text-base">
+            <p className="mt-3 max-w-[29rem] text-sm leading-6 text-[#D8C4FF]/90 sm:text-base sm:leading-7">
               Donde los desafíos de las empresas encuentran soluciones creadas por el talento adecuado.
             </p>
           </div>

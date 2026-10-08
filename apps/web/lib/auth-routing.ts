@@ -24,7 +24,12 @@ export function isAppPath(pathname: string): boolean {
 
 export function isPublicAuthPath(pathname: string): boolean {
   const path = normalizePathname(pathname);
-  return path === "/" || path === "/iniciar-sesion" || path === "/registro";
+  return (
+    path === "/" ||
+    path === "/iniciar-sesion" ||
+    path === "/registro" ||
+    path === "/recuperar-contrasena"
+  );
 }
 
 function normalizePathname(pathname: string): string {

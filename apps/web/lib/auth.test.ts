@@ -52,6 +52,7 @@ describe("public and private route boundaries", () => {
     expect(isPublicAuthPath("/")).toBe(true);
     expect(isPublicAuthPath("/iniciar-sesion/")).toBe(true);
     expect(isPublicAuthPath("/registro")).toBe(true);
+    expect(isPublicAuthPath("/recuperar-contrasena/")).toBe(true);
     expect(isPublicAuthPath("/discover")).toBe(false);
   });
 
