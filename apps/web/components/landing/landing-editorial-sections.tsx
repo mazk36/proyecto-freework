@@ -1,14 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowDownRight,
   ArrowUpRight,
   BriefcaseBusiness,
   CarFront,
-  ChartNoAxesCombined,
-  CircleDollarSign,
   Clapperboard,
-  Landmark,
-  Palette,
   Workflow,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -31,26 +28,44 @@ type FeatureTileItem = {
   Icon: LucideIcon;
 };
 
-const businessFeatures: FeatureTileItem[] = [
+type CategoryImageItem = {
+  title: string;
+  imageSrc: string;
+  imageAlt: string;
+  href: string;
+  objectPosition?: string;
+};
+
+const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
+
+const businessCategories: CategoryImageItem[] = [
   {
     title: "AUMENTAR VENTAS",
-    description: "Encuentra apoyo para vender más y mejorar tu proceso comercial.",
-    Icon: ChartNoAxesCombined,
+    imageSrc: `${publicBasePath}/images/categories/sales-cash-crystal.webp`,
+    imageAlt: "Fajos de billetes sobre una mesa de cristal con copas y luces nocturnas.",
+    href: "/registro",
+    objectPosition: "center 58%",
   },
   {
     title: "RESOLVER ASUNTOS LEGALES",
-    description: "Conecta con profesionales que te ayuden a enfrentar necesidades legales.",
-    Icon: Landmark,
+    imageSrc: `${publicBasePath}/images/categories/legal-executive.webp`,
+    imageAlt: "Profesional revisando documentos y hablando por teléfono en su despacho nocturno.",
+    href: "/registro",
+    objectPosition: "48% center",
   },
   {
     title: "MEJORAR TU IMAGEN DE MARCA",
-    description: "Transforma cómo se ve y se percibe tu negocio.",
-    Icon: Palette,
+    imageSrc: `${publicBasePath}/images/categories/brand-moodboard.webp`,
+    imageAlt: "Lata de bebida energética frente a un moodboard de diseños y referencias de marca.",
+    href: "/registro",
+    objectPosition: "center",
   },
   {
     title: "REDUCIR COSTOS",
-    description: "Descubre nuevas formas de operar con mayor eficiencia.",
-    Icon: CircleDollarSign,
+    imageSrc: `${publicBasePath}/images/categories/costs-accounting.webp`,
+    imageAlt: "Manos usando una calculadora entre recibos y documentos en un escritorio nocturno.",
+    href: "/registro",
+    objectPosition: "center 58%",
   },
 ];
 
@@ -200,6 +215,43 @@ function FeatureTile({ title, description, Icon }: FeatureTileItem) {
   );
 }
 
+function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition }: CategoryImageItem) {
+  return (
+    <Link
+      aria-label={`${title}. ${imageAlt}`}
+      className="category-image-card group relative isolate block aspect-[4/3] overflow-hidden rounded-[1.25rem] border border-white/15 bg-surface-raised shadow-[0_12px_32px_rgba(2,10,30,0.2)] transition-shadow duration-300 hover:shadow-[0_18px_42px_rgba(2,10,30,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lavender focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none lg:aspect-[17/20]"
+      href={href}
+    >
+      <Image
+        alt={imageAlt}
+        className="category-image-card__image object-cover"
+        fill
+        sizes="(min-width: 1280px) 180px, (min-width: 1024px) 160px, (min-width: 640px) 290px, 45vw"
+        src={imageSrc}
+        style={objectPosition ? { objectPosition } : undefined}
+        unoptimized
+      />
+      <span aria-hidden="true" className="category-image-card__overlay absolute inset-0" />
+      <span
+        aria-hidden="true"
+        className="category-image-card__title absolute inset-x-4 bottom-4 font-display text-xl font-bold leading-tight tracking-tight text-brand-white sm:text-2xl"
+      >
+        {title}
+      </span>
+    </Link>
+  );
+}
+
+function CategoryImageGrid({ categories }: { categories: CategoryImageItem[] }) {
+  return (
+    <div className="mx-auto grid w-full max-w-[37rem] grid-cols-2 items-start gap-3 sm:gap-4 lg:mx-0 lg:max-w-none lg:self-center">
+      {categories.map((category) => (
+        <CategoryImageCard key={category.title} {...category} />
+      ))}
+    </div>
+  );
+}
+
 function FeatureGrid({ features }: { features: FeatureTileItem[] }) {
   return (
     <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
@@ -219,7 +271,7 @@ export function LandingEditorialSections() {
               Encuentra soluciones para los retos de tu negocio
             </h2>
           </div>
-          <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] lg:gap-10">
+          <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-8">
             <FeatureMediaPanel
               align="left"
               description="Cuando el reto y la propuesta encajan, hacen Match y pueden avanzar juntos."
@@ -227,7 +279,7 @@ export function LandingEditorialSections() {
               themeVariant="night"
               title="Del problema a una solución que hace Match"
             />
-            <FeatureGrid features={businessFeatures} />
+            <CategoryImageGrid categories={businessCategories} />
           </div>
         </div>
       </section>
