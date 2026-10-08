@@ -64,7 +64,6 @@
 }
 
 html {
-  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
@@ -82,6 +81,11 @@ body:has(.public-landing) {
   color-scheme: dark;
   background: var(--night-background);
   color: var(--brand-white);
+}
+
+html:has(.public-landing),
+body:has(.public-landing) {
+  overflow-x: hidden;
 }
 
 h1,
