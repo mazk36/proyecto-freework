@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { AuthForm } from "@/components/auth/auth-form";
+import { LoginExperience } from "@/components/auth/login-experience";
 
 export const metadata: Metadata = {
   title: "Iniciar sesión | MatchWork",
@@ -7,5 +7,5 @@ export const metadata: Metadata = {
 };
 
 export default function LoginPage() {
-  return <AuthForm mode="login" />;
+  return <LoginExperience />;
 }

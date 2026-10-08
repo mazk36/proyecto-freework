@@ -23,7 +23,7 @@ export function PublicHeader() {
           </ButtonLink>
           <ButtonLink
             className="!px-1.5 !text-xs sm:!px-3 sm:!text-sm"
-            href="/registro"
+            href="/iniciar-sesion"
             size="sm"
             variant="outline"
           >
