@@ -11,7 +11,7 @@ export function PublicHeader() {
           className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           href="/"
         >
-          <MatchWorkLogoLockup compact preload variant="reversed" />
+          <MatchWorkLogoLockup size="large" preload variant="reversed" />
         </Link>
         <nav aria-label="Acciones principales" className="flex items-center gap-1 sm:gap-3">
           <ButtonLink
