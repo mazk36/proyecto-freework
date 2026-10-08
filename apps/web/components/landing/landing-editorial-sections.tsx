@@ -1,14 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowDownRight,
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CarFront,
-  Clapperboard,
-  Workflow,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { MatchWorkLogo } from "@/components/brand/matchwork-logo";
 
 type FeatureMediaPanelProps = {
@@ -24,22 +16,18 @@ type FeatureMediaPanelProps = {
   mediaOnly?: boolean;
 };
 
-type FeatureTileItem = {
-  title: string;
-  description: string;
-  Icon: LucideIcon;
-  tone: "purple" | "lavender";
-};
-
 type CategoryImageItem = {
   title: string;
   imageSrc: string;
   imageAlt: string;
   href: string;
   objectPosition?: string;
+  showTitle?: boolean;
+  sizes?: string;
 };
 
 const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
+const specializedImageSizes = "(min-width: 1280px) 280px, (min-width: 1024px) 230px, (min-width: 640px) 290px, 45vw";
 
 const businessCategories: CategoryImageItem[] = [
   {
@@ -72,30 +60,39 @@ const businessCategories: CategoryImageItem[] = [
   },
 ];
 
-const specializedFeatures: FeatureTileItem[] = [
+const specializedCategories: CategoryImageItem[] = [
   {
     title: "AUTOMATIZAR PROCESOS",
-    description: "Reduce tareas manuales y conecta mejor tus operaciones.",
-    Icon: Workflow,
-    tone: "purple",
+    imageSrc: `${publicBasePath}/images/categories/automatizar-procesos.webp`,
+    imageAlt: "Operario con exotraje robótico levantando maquinaria pesada en una fábrica.",
+    href: "/registro",
+    showTitle: true,
+    sizes: specializedImageSizes,
   },
   {
     title: "SOFTWARE A MEDIDA",
-    description: "Construye herramientas adaptadas a las necesidades de tu negocio.",
-    Icon: BriefcaseBusiness,
-    tone: "lavender",
+    imageSrc: `${publicBasePath}/images/categories/software-a-medida.webp`,
+    imageAlt: "Dos teléfonos muestran pantallas de una aplicación y un panel de software a medida.",
+    href: "/registro",
+    showTitle: true,
+    sizes: specializedImageSizes,
   },
   {
     title: "PRODUCCIÓN Y EDICIÓN DE VIDEO",
-    description: "Crea piezas audiovisuales para comunicar mejor tu propuesta.",
-    Icon: Clapperboard,
-    tone: "lavender",
+    imageSrc: `${publicBasePath}/images/categories/produccion-edicion-video.webp`,
+    imageAlt: "Escena cinematográfica de una protagonista sosteniendo una espada.",
+    href: "/registro",
+    showTitle: true,
+    sizes: specializedImageSizes,
   },
   {
     title: "DISEÑO AUTOMOTRIZ",
-    description: "Encuentra talento especializado para proyectos de diseño automotriz.",
-    Icon: CarFront,
-    tone: "purple",
+    imageSrc: `${publicBasePath}/images/categories/diseno-automotriz.webp`,
+    imageAlt: "Auto de Fórmula 1 rojo compitiendo en un circuito urbano.",
+    href: "/registro",
+    objectPosition: "center 70%",
+    showTitle: true,
+    sizes: specializedImageSizes,
   },
 ];
 
@@ -221,47 +218,30 @@ function FeatureMediaPanel({
   );
 }
 
-function FeatureTile({ title, description, Icon, tone }: FeatureTileItem) {
-  const isPurple = tone === "purple";
-
-  return (
-    <Link
-      className="group flex min-h-[14rem] flex-col rounded-[1.4rem] border border-border bg-surface p-5 shadow-[0_12px_36px_rgba(2,10,30,0.12)] transition duration-200 hover:-translate-y-1 hover:border-brand-lavender/60 hover:bg-surface-raised hover:shadow-[0_18px_42px_rgba(2,10,30,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:p-6"
-      href="/registro"
-    >
-      <div className="flex items-center justify-between gap-3">
-        <span className={`flex size-11 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-accent/20 group-hover:text-brand-white ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>
-          <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
-        </span>
-        <span className={`font-mono text-[0.65rem] font-medium tracking-[0.12em] ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>MATCH</span>
-      </div>
-      <h3 className={`mt-6 max-w-xs font-display text-base font-semibold leading-snug tracking-[-0.025em] sm:text-lg ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>
-        {title}
-      </h3>
-      <div className="mt-auto flex items-end justify-between gap-3 pt-3">
-        <p className="max-w-xs text-sm leading-6 text-muted-foreground">{description}</p>
-        <ArrowDownRight aria-hidden="true" className="mb-1 size-5 shrink-0 text-accent transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5" />
-      </div>
-    </Link>
-  );
-}
-
-function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition }: CategoryImageItem) {
+function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition, showTitle = false, sizes }: CategoryImageItem) {
   return (
     <Link
       aria-label={`${title}. ${imageAlt}`}
-      className="category-image-card group relative isolate block aspect-[4/3] overflow-hidden rounded-[1.25rem] border border-white/15 bg-surface-raised shadow-[0_12px_32px_rgba(2,10,30,0.2)] transition-shadow duration-300 hover:shadow-[0_18px_42px_rgba(2,10,30,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lavender focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
+      className={`category-image-card group relative isolate block aspect-[4/3] overflow-hidden rounded-[1.25rem] border border-white/15 bg-surface-raised shadow-[0_12px_32px_rgba(2,10,30,0.2)] transition-shadow duration-300 hover:shadow-[0_18px_42px_rgba(2,10,30,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lavender focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none ${showTitle ? "category-image-card--titled" : ""}`}
       href={href}
     >
       <Image
         alt={imageAlt}
         className="category-image-card__image object-cover"
         fill
-        sizes="(min-width: 1280px) 180px, (min-width: 1024px) 160px, (min-width: 640px) 290px, 45vw"
+        sizes={sizes ?? "(min-width: 1280px) 180px, (min-width: 1024px) 160px, (min-width: 640px) 290px, 45vw"}
         src={imageSrc}
         style={objectPosition ? { objectPosition } : undefined}
         unoptimized
       />
+      {showTitle ? (
+        <>
+          <span aria-hidden="true" className="category-image-card__overlay absolute inset-0" />
+          <span className="category-image-card__title absolute inset-x-4 bottom-4 z-10 font-display text-lg font-bold leading-tight tracking-tight text-brand-white sm:text-xl">
+            {title}
+          </span>
+        </>
+      ) : null}
     </Link>
   );
 }
@@ -272,14 +252,6 @@ function CategoryImageGrid({ categories }: { categories: CategoryImageItem[] }) 
       {categories.map((category) => (
         <CategoryImageCard key={category.title} {...category} />
       ))}
-    </div>
-  );
-}
-
-function FeatureGrid({ features }: { features: FeatureTileItem[] }) {
-  return (
-    <div className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
-      {features.map((feature) => <FeatureTile key={feature.title} {...feature} />)}
     </div>
   );
 }
@@ -324,7 +296,7 @@ export function LandingEditorialSections() {
               titleHighlight="Match"
             />
             <div className="lg:col-start-1 lg:row-start-1">
-              <FeatureGrid features={specializedFeatures} />
+              <CategoryImageGrid categories={specializedCategories} />
             </div>
           </div>
         </div>

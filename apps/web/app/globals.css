@@ -118,14 +118,61 @@ h3 {
   transition: transform 300ms ease;
 }
 
+.category-image-card--titled .category-image-card__overlay {
+  background-image: linear-gradient(
+    to top,
+    rgb(13 17 23 / 88%),
+    rgb(13 17 23 / 12%) 55%,
+    transparent 82%
+  );
+  opacity: 1;
+  transition: opacity 300ms ease, background-color 300ms ease;
+}
+
+.category-image-card--titled .category-image-card__title {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
 @media (hover: hover) and (pointer: fine) {
   .category-image-card:is(:hover, :focus-visible) .category-image-card__image {
     transform: scale(1.035);
   }
 }
 
+.category-image-card--titled:focus-visible .category-image-card__overlay {
+  background-color: rgb(138 77 255 / 68%);
+  background-image: none;
+  opacity: 0.78;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+  .category-image-card--titled .category-image-card__overlay {
+    background-color: rgb(138 77 255 / 68%);
+    background-image: none;
+    opacity: 0;
+  }
+
+  .category-image-card--titled .category-image-card__title {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+
+  .category-image-card--titled:is(:hover, :focus-visible) .category-image-card__overlay {
+    opacity: 0.78;
+  }
+
+  .category-image-card--titled:is(:hover, :focus-visible) .category-image-card__title {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .category-image-card__image {
+  .category-image-card__image,
+  .category-image-card--titled .category-image-card__overlay,
+  .category-image-card--titled .category-image-card__title {
     transition: none;
   }
 
