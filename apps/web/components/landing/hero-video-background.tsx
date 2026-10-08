@@ -2,16 +2,12 @@
 
 import { useState } from "react";
 
-const heroVideos = [
-  "/videos/hero/hero-1.mp4",
-  "/videos/hero/hero-2.mp4",
-  "/videos/hero/hero-3.mp4",
-  "/videos/hero/hero-4.mp4",
-  "/videos/hero/hero-5.mp4",
-];
+const heroVideoFiles = ["hero-1.mp4", "hero-2.mp4", "hero-3.mp4", "hero-4.mp4", "hero-5.mp4"];
 
-export function HeroVideoBackground() {
+export function HeroVideoBackground({ basePath = "" }: { basePath?: string }) {
   const [videoIndex, setVideoIndex] = useState(0);
+  const normalizedBasePath = basePath.replace(/\/$/, "");
+  const heroVideos = heroVideoFiles.map((fileName) => `${normalizedBasePath}/videos/hero/${fileName}`);
   const videoSrc = heroVideos[videoIndex];
 
   return (

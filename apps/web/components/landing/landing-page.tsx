@@ -86,12 +86,14 @@ const expertBenefits = [
 ];
 
 export function LandingPage() {
+  const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
+
   return (
     <div className="public-landing flex min-h-screen flex-col bg-background text-foreground">
       <PublicHeader />
       <main className="flex-1">
         <section className="relative isolate overflow-hidden border-b border-border">
-          <HeroVideoBackground />
+          <HeroVideoBackground basePath={publicBasePath} />
           <div className="relative z-10 mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
             <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
               Contrata la <span className="text-brand-lavender">mejor solución</span> para tu{" "}
