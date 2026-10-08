@@ -1,7 +1,7 @@
 import Image from "next/image";
 import officialLogo from "@/public/brand/matchwork-logo.png";
 
-type MatchWorkLogoProps = { className?: string; preload?: boolean };
+type MatchWorkLogoProps = { className?: string; compact?: boolean; preload?: boolean };
 
 export function MatchWorkLogo({ className = "", preload = false }: MatchWorkLogoProps) {
   return (
@@ -18,14 +18,21 @@ export function MatchWorkLogo({ className = "", preload = false }: MatchWorkLogo
   );
 }
 
-export function MatchWorkLogoLockup({ className = "", preload = false }: MatchWorkLogoProps) {
+export function MatchWorkLogoLockup({
+  className = "",
+  compact = false,
+  preload = false,
+}: MatchWorkLogoProps) {
   return (
     <span
       aria-label="MatchWork"
       className={`inline-flex items-center ${className}`.trim()}
       role="img"
     >
-      <MatchWorkLogo className="w-[4.5rem] sm:w-20" preload={preload} />
+      <MatchWorkLogo
+        className={compact ? "w-12 sm:w-20" : "w-[4.5rem] sm:w-20"}
+        preload={preload}
+      />
     </span>
   );
 }
