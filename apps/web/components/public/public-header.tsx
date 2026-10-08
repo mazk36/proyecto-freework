@@ -18,7 +18,6 @@ export function PublicHeader() {
             className="!px-1.5 !text-xs sm:!px-3 sm:!text-sm"
             href="/iniciar-sesion"
             size="sm"
-            variant="outline"
           >
             Publica tu problema
           </ButtonLink>
@@ -26,6 +25,7 @@ export function PublicHeader() {
             className="!px-1.5 !text-xs sm:!px-3 sm:!text-sm"
             href="/registro"
             size="sm"
+            variant="outline"
           >
             Resuelve un problema
           </ButtonLink>
