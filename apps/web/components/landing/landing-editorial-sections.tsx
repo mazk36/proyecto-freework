@@ -48,8 +48,8 @@ const businessCategories: CategoryImageItem[] = [
   },
   {
     title: "MEJORAR TU IMAGEN DE MARCA",
-    imageSrc: `${publicBasePath}/images/categories/brand-moodboard.webp`,
-    imageAlt: "Lata de bebida energética frente a un moodboard de diseños y referencias de marca.",
+    imageSrc: `${publicBasePath}/images/categories/game-development.webp`,
+    imageAlt: "Manos sosteniendo un teléfono con un videojuego de acción frente a pantallas de desarrollo.",
     href: "/registro",
     objectPosition: "center",
     showTitle: true,
