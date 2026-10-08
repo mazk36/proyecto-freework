@@ -2,6 +2,7 @@ import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { ButtonLink } from "@/components/ui/button";
 import { MatchWorkMark } from "@/components/brand/matchwork-logo";
+import { LandingEditorialSections } from "@/components/landing/landing-editorial-sections";
 
 const heroBenefits = [
   "No importa lo difícil del problema: encontrarás a un experto.",
@@ -128,6 +129,8 @@ export function LandingPage() {
             <ExpertBenefitsArtwork />
           </div>
         </section>
+
+        <LandingEditorialSections />
 
         <section className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-16 sm:px-8 sm:py-20 md:flex-row md:items-center md:justify-between">
           <div>
