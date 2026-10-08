@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ButtonLink } from "@/components/ui/button";
-import { MatchWorkWordmark } from "@/components/brand/matchwork-logo";
+import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 
 export function PublicHeader() {
   return (
@@ -11,7 +11,7 @@ export function PublicHeader() {
           className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           href="/"
         >
-          <MatchWorkWordmark />
+          <MatchWorkLogoLockup preload />
         </Link>
         <nav aria-label="Acceso" className="flex items-center gap-2 sm:gap-4">
           <Link

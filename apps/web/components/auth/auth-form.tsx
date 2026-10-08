@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
-import { MatchWorkWordmark } from "@/components/brand/matchwork-logo";
+import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { Button } from "@/components/ui/button";
 import type { UserRole } from "@/lib/auth";
 
@@ -64,7 +64,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
       <div className="w-full max-w-md">
         <Link aria-label="MatchWork, ir al inicio" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
-          <MatchWorkWordmark />
+          <MatchWorkLogoLockup preload />
         </Link>
         <section aria-labelledby="auth-title" className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">

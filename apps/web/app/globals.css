@@ -3,6 +3,8 @@
 :root {
   color-scheme: light;
   --brand-navy: #0b2a5b;
+  --brand-navy-surface: #103667;
+  --brand-navy-raised: #164071;
   --brand-purple: #8a4dff;
   --brand-lavender: #d8c4ff;
   --brand-slate: #6b7280;
@@ -14,11 +16,23 @@
   --border: color-mix(in srgb, var(--brand-slate) 20%, var(--brand-mist));
   --accent: var(--brand-purple);
   --accent-hover: color-mix(in srgb, var(--brand-purple) 86%, var(--brand-navy));
-  --accent-foreground: #ffffff;
+  --accent-foreground: var(--brand-white);
   --accent-soft: var(--brand-lavender);
   --surface: var(--brand-white);
-  --surface-raised: #ffffff;
+  --surface-raised: var(--brand-white);
   --radius-card: 1rem;
+}
+
+.public-landing {
+  color-scheme: dark;
+  --background: var(--brand-navy);
+  --foreground: var(--brand-white);
+  --muted: #c9d4e7;
+  --border: color-mix(in srgb, var(--brand-white) 18%, transparent);
+  --accent-hover: #9d69ff;
+  --accent-foreground: var(--brand-white);
+  --surface: var(--brand-navy-surface);
+  --surface-raised: var(--brand-navy-raised);
 }
 
 @theme inline {
@@ -61,6 +75,12 @@ body {
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+body:has(.public-landing) {
+  color-scheme: dark;
+  background: var(--brand-navy);
+  color: var(--brand-white);
 }
 
 h1,

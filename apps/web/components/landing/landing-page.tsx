@@ -1,7 +1,7 @@
 import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { ButtonLink } from "@/components/ui/button";
-import { MatchWorkMark } from "@/components/brand/matchwork-logo";
+import { MatchWorkLogo } from "@/components/brand/matchwork-logo";
 import { LandingEditorialSections } from "@/components/landing/landing-editorial-sections";
 
 const heroBenefits = [
@@ -37,17 +37,17 @@ function ExpertBenefitsArtwork() {
   return (
     <div
       aria-hidden="true"
-      className="relative isolate min-h-[20rem] overflow-hidden rounded-[1.75rem] border border-border bg-[radial-gradient(ellipse_at_55%_46%,rgba(216,196,255,0.6),transparent_62%)] sm:min-h-[26rem]"
+      className="relative isolate min-h-[20rem] overflow-hidden rounded-[1.75rem] border border-border bg-[radial-gradient(ellipse_at_55%_46%,rgba(138,77,255,0.18),transparent_62%),linear-gradient(145deg,#0B2A5B,#164071)] sm:min-h-[26rem]"
     >
-      <div className="absolute inset-4 rounded-[1.25rem] border border-brand-navy/10 sm:inset-6" />
+      <div className="absolute inset-4 rounded-[1.25rem] border border-white/15 sm:inset-6" />
       <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 480 400">
-        <path d="M112 130C178 130 185 200 240 200s63 70 128 70" stroke="#0B2A5B" strokeOpacity=".18" strokeWidth="2" />
-        <circle cx="112" cy="130" fill="#0B2A5B" r="5" />
+        <path d="M112 130C178 130 185 200 240 200s63 70 128 70" stroke="#D8C4FF" strokeOpacity=".3" strokeWidth="2" />
+        <circle cx="112" cy="130" fill="#D8C4FF" r="5" />
         <circle cx="240" cy="200" fill="#8A4DFF" r="7" />
         <circle cx="368" cy="270" fill="#8A4DFF" r="5" />
       </svg>
 
-      <div className="absolute left-[7%] top-[15%] w-[38%] max-w-44 rounded-2xl border border-border bg-surface-raised p-4 shadow-[0_20px_50px_rgba(11,42,91,0.12)] sm:left-[10%] sm:top-[18%] sm:p-5">
+      <div className="absolute left-[7%] top-[15%] w-[38%] max-w-44 rounded-2xl border border-brand-lavender/50 bg-brand-white p-4 shadow-[0_20px_50px_rgba(2,10,30,0.2)] sm:left-[10%] sm:top-[18%] sm:p-5">
         <p className="font-mono text-[0.65rem] font-medium tracking-[0.12em] text-brand-slate">PROBLEMA</p>
         <div className="mt-4 space-y-2">
           <div className="h-2 w-4/5 rounded-full bg-brand-navy/15" />
@@ -56,14 +56,14 @@ function ExpertBenefitsArtwork() {
         </div>
       </div>
 
-      <div className="absolute left-1/2 top-1/2 flex size-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-[1.5rem] border border-brand-lavender bg-surface-raised shadow-[0_20px_50px_rgba(11,42,91,0.14)] sm:size-32 sm:rounded-[1.75rem]">
-        <MatchWorkMark className="w-14 sm:w-[4.5rem]" />
+      <div className="absolute left-1/2 top-1/2 flex size-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-[1.5rem] border border-brand-lavender bg-brand-white shadow-[0_20px_50px_rgba(2,10,30,0.25)] sm:size-32 sm:rounded-[1.75rem]">
+        <MatchWorkLogo className="w-14 sm:w-[4.5rem]" />
         <span className="mt-1 rounded-full bg-accent px-2.5 py-1 font-mono text-[0.55rem] font-medium tracking-[0.12em] text-white sm:mt-2 sm:text-[0.6rem]">
           MATCH
         </span>
       </div>
 
-      <div className="absolute bottom-[15%] right-[7%] w-[38%] max-w-44 rounded-2xl border border-brand-lavender bg-surface-raised p-4 shadow-[0_20px_50px_rgba(11,42,91,0.12)] sm:bottom-[18%] sm:right-[10%] sm:p-5">
+      <div className="absolute bottom-[15%] right-[7%] w-[38%] max-w-44 rounded-2xl border border-brand-lavender/50 bg-brand-white p-4 shadow-[0_20px_50px_rgba(2,10,30,0.2)] sm:bottom-[18%] sm:right-[10%] sm:p-5">
         <p className="font-mono text-[0.65rem] font-medium tracking-[0.12em] text-accent">PROPUESTA</p>
         <div className="mt-4 space-y-2">
           <div className="h-2 w-4/5 rounded-full bg-brand-purple/45" />
@@ -77,7 +77,7 @@ function ExpertBenefitsArtwork() {
 
 export function LandingPage() {
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="public-landing flex min-h-screen flex-col bg-background text-foreground">
       <PublicHeader />
       <main className="flex-1">
         <section className="mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
@@ -94,7 +94,7 @@ export function LandingPage() {
           </ul>
           <p className="mt-6 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
             Cuando una propuesta encaja con tu problema y ambas partes quieren avanzar, hacen{" "}
-            <span className="font-semibold text-accent">Match</span> para continuar la conversación.
+            <span className="font-semibold text-brand-lavender">Match</span> para continuar la conversación.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink className="min-h-12 px-6" href="/registro" size="lg">
@@ -115,7 +115,7 @@ export function LandingPage() {
               <div className="mt-9 grid gap-x-8 sm:grid-cols-2">
                 {expertBenefits.map((benefit, index) => (
                   <article className="border-t border-border py-5" key={benefit.title}>
-                    <p className="font-mono text-xs text-accent">0{index + 1}</p>
+                    <p className="font-mono text-xs text-brand-lavender">0{index + 1}</p>
                     <h3 className="mt-3 text-lg font-semibold tracking-tight sm:text-xl">
                       {benefit.title}
                     </h3>

@@ -6,10 +6,10 @@ The brand should feel reliable, technological, clean, connective, agile, human, 
 
 ## Wordmark and mark
 
-- Spell the brand `MatchWork`, with `Match` in MatchWork Night Blue and `Work` in MatchWork Purple.
-- Use the interlocking MW mark with the wordmark in primary website and app navigation.
-- Use the compact mark on small surfaces such as the browser icon.
-- Keep the mark's proportions and the Match/Work color relationship intact.
+- The user supplied `apps/web/public/brand/matchwork-logo.png` as the only source for the MatchWork logo. It is a square raster lockup containing the ribbon mark and wordmark on a white canvas.
+- Use the supplied image unchanged and without cropping, recoloring, tracing, or reconstruction in CSS or inline SVG. Keep its square aspect ratio and use the same image for the browser icon.
+- The logo already contains the wordmark. Do not add a second text-based recreation beside it.
+- The image's white canvas is part of the supplied asset and may appear as a compact light surface against Night Blue.
 
 ## Color system
 
@@ -19,14 +19,14 @@ The brand should feel reliable, technological, clean, connective, agile, human, 
 | MatchWork Purple | `#8A4DFF` | Primary actions and Match moments |
 | Soft Lavender | `#D8C4FF` | Supporting highlights and selected states |
 | Slate Gray | `#6B7280` | Muted text, borders, and secondary elements |
-| Mist | `#F5F7FB` | Main page background |
-| Soft White | `#F8FAFC` | Cards, fields, and quiet surfaces |
+| Mist | `#F5F7FB` | Light surfaces and pages outside the public landing |
+| Soft White | `#F8FAFC` | Primary text on dark, fields, and occasional light surfaces |
 
-Keep the visual balance mostly neutral, supported by brand blue and purple highlights. Purple should draw attention to meaningful Match states and primary actions, not decorate every surface.
+The public landing uses Night Blue as its dominant background, with dark tonal cards and Soft White text. Other routes may keep their light surfaces. Purple should draw attention to meaningful Match states and primary actions, not decorate every surface.
 
 ## Typography
 
-- Sora Semibold or Bold for display headings and the wordmark.
+- Sora Semibold or Bold for display headings.
 - Inter Regular or Medium for interface text.
 - JetBrains Mono for compact technical labels and data markers.
 

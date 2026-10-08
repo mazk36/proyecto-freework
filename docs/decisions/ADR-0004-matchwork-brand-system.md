@@ -2,7 +2,7 @@
 
 ## Estado
 
-Aceptado.
+Parcialmente reemplazado por ADR-0005 para el logo y la landing pública.
 
 ## Contexto
 

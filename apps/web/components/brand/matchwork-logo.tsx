@@ -1,38 +1,31 @@
-type MatchWorkMarkProps = { className?: string };
+import Image from "next/image";
+import officialLogo from "@/public/brand/matchwork-logo.png";
 
-export function MatchWorkMark({ className = "" }: MatchWorkMarkProps) {
+type MatchWorkLogoProps = { className?: string; preload?: boolean };
+
+export function MatchWorkLogo({ className = "", preload = false }: MatchWorkLogoProps) {
   return (
-    <svg
+    <Image
+      alt=""
       aria-hidden="true"
-      className={className}
-      fill="none"
-      viewBox="0 0 40 32"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        d="M2 10.5 10.4 3.8l9.1 7.1v8.4l-7.4 5.8-6.4-4.9v-7.1l6.4 4.9 2.1-1.7v-3.4l-3.8-2.9-4.2 3.3L2 10.5Z"
-        fill="#0B2A5B"
-      />
-      <path
-        d="m19.5 10.8 8.7-7 9.3 7.2v8.1l-9.2 7.2-8.8-6.8v-8l8.8 6.8 4.4-3.4v-3.6l-4.5-3.5-8.7 7v-7Z"
-        fill="#8A4DFF"
-      />
-    </svg>
+      className={`block h-auto shrink-0 ${className}`.trim()}
+      height={officialLogo.height}
+      preload={preload}
+      src={officialLogo}
+      unoptimized
+      width={officialLogo.width}
+    />
   );
 }
 
-export function MatchWorkWordmark({ className = "" }: MatchWorkMarkProps) {
+export function MatchWorkLogoLockup({ className = "", preload = false }: MatchWorkLogoProps) {
   return (
     <span
       aria-label="MatchWork"
-      className={`inline-flex items-center gap-2 ${className}`.trim()}
+      className={`inline-flex items-center ${className}`.trim()}
       role="img"
     >
-      <MatchWorkMark className="size-7 shrink-0 sm:size-8" />
-      <span className="font-display text-lg font-semibold tracking-[-0.065em] sm:text-xl">
-        <span className="text-brand-navy">Match</span>
-        <span className="text-accent">Work</span>
-      </span>
+      <MatchWorkLogo className="w-[4.5rem] sm:w-20" preload={preload} />
     </span>
   );
 }
