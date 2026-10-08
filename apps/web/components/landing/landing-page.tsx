@@ -145,9 +145,8 @@ export function LandingPage() {
                 <span className="text-brand-lavender">expertos</span>
               </h2>
               <div className="mt-4 grid gap-3 xl:grid-cols-2">
-                {expertBenefits.map((benefit, index) => (
+                {expertBenefits.map((benefit) => (
                   <article className="rounded-2xl border border-white/15 bg-[#0d1117]/80 p-5 shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop-blur-[2px]" key={benefit.title}>
-                    <p className="font-mono text-xs text-brand-purple">0{index + 1}</p>
                     <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-purple sm:text-xl">
                       {benefit.title}
                     </h3>

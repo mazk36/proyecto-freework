@@ -293,7 +293,7 @@ export function LandingEditorialSections() {
       <section aria-labelledby="retos-negocio-title" className="py-20 sm:py-28 lg:py-32">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="mb-8 max-w-2xl sm:mb-10">
-            <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">01 / RETOS DE NEGOCIO</p>
+            <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">RETOS DE NEGOCIO</p>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="retos-negocio-title">
               Encuentra <span className="text-brand-purple">soluciones</span> para los{" "}
               <span className="text-brand-lavender">retos de tu negocio</span>
@@ -316,7 +316,7 @@ export function LandingEditorialSections() {
       <section aria-labelledby="proyectos-especializados-title" className="border-y border-border bg-surface/70 py-20 sm:py-28 lg:py-32">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
           <div className="mb-8 max-w-2xl sm:mb-10">
-            <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">02 / TALENTO ESPECIALIZADO</p>
+            <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">TALENTO ESPECIALIZADO</p>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="proyectos-especializados-title">
               También para <span className="text-brand-lavender">proyectos especializados</span>
             </h2>
