@@ -20,8 +20,12 @@ const expertBenefits = [
   },
   {
     title: "Elige la propuesta ideal",
-    description:
-      "Recibe propuestas de soluciones y encuentra la que mejor se alinee con tu negocio. Cuando ambas partes quieran avanzar, hacen Match para continuar la conversación.",
+    description: (
+      <>
+        Recibe propuestas de soluciones y encuentra la que mejor se alinee con tu negocio. Cuando ambas partes quieran avanzar, hacen{" "}
+        <span className="font-semibold text-brand-lavender">Match</span> para continuar la conversación.
+      </>
+    ),
   },
   {
     title: "Supervisa cada avance",
@@ -73,7 +77,7 @@ export function LandingPage() {
           <div aria-hidden="true" className="absolute inset-0">
             <Image
               alt=""
-              className="object-cover object-left lg:object-center"
+              className="object-cover object-left"
               fill
               sizes="100vw"
               src={astronautPhoto}
@@ -81,19 +85,20 @@ export function LandingPage() {
             />
           </div>
 
-          <div className="relative z-10 mx-auto flex max-w-6xl items-center px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[43.75rem] lg:py-24">
-            <div className="w-full max-w-[35rem] xl:max-w-[40rem]">
-              <h2 className="max-w-2xl text-balance text-3xl font-semibold leading-tight tracking-tight text-brand-white [text-shadow:0_2px_12px_rgba(0,0,0,0.9)] sm:text-4xl lg:text-5xl" id="expertos-title">
-                Resuelve el problema que sea con nuestros expertos
+          <div className="relative z-10 mx-auto flex max-w-[78rem] items-center px-5 py-12 sm:px-8 sm:py-16 lg:min-h-[43.75rem] lg:py-16">
+            <div className="w-full max-w-[35rem]">
+              <h2 className="rounded-[1.5rem] border border-white/15 bg-[#0d1117]/80 px-5 py-6 text-balance text-3xl font-semibold leading-tight tracking-tight text-brand-white shadow-[0_16px_40px_rgba(0,0,0,0.28)] backdrop-blur-[2px] sm:px-7 sm:text-4xl lg:text-[2.5rem]" id="expertos-title">
+                Resuelve el <span className="text-brand-purple">problema</span> que sea con nuestros{" "}
+                <span className="text-brand-lavender">expertos</span>
               </h2>
-              <div className="mt-8 grid gap-x-8 xl:grid-cols-2 xl:mt-10">
+              <div className="mt-4 grid gap-3 xl:grid-cols-2">
                 {expertBenefits.map((benefit, index) => (
-                  <article className="border-t border-white/20 py-5 sm:py-6" key={benefit.title}>
-                    <p className="font-mono text-xs text-brand-lavender [text-shadow:0_1px_6px_rgba(0,0,0,0.9)]">0{index + 1}</p>
-                    <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-white [text-shadow:0_1px_6px_rgba(0,0,0,0.9)] sm:text-xl">
+                  <article className="rounded-2xl border border-white/15 bg-[#0d1117]/80 p-5 shadow-[0_12px_32px_rgba(0,0,0,0.25)] backdrop-blur-[2px]" key={benefit.title}>
+                    <p className="font-mono text-xs text-brand-lavender">0{index + 1}</p>
+                    <h3 className="mt-3 text-lg font-semibold tracking-tight text-brand-lavender sm:text-xl">
                       {benefit.title}
                     </h3>
-                    <p className="mt-2 text-sm leading-6 text-white/90 [text-shadow:0_1px_5px_rgba(0,0,0,0.95)] sm:text-base sm:leading-7">
+                    <p className="mt-2 text-sm leading-6 text-brand-mist/90 sm:text-[0.95rem] sm:leading-6">
                       {benefit.description}
                     </p>
                   </article>
