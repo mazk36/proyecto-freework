@@ -1,7 +1,9 @@
 import Image from "next/image";
-import officialLogo from "@/public/brand/matchwork-logo.png";
+import officialMark from "@/public/brand/matchwork-mark.png";
+import officialWordmark from "@/public/brand/matchwork-wordmark-horizontal.png";
 
-type MatchWorkLogoProps = { className?: string; compact?: boolean; preload?: boolean };
+type MatchWorkLogoProps = { className?: string; preload?: boolean };
+type MatchWorkLogoLockupProps = MatchWorkLogoProps & { compact?: boolean };
 
 export function MatchWorkLogo({ className = "", preload = false }: MatchWorkLogoProps) {
   return (
@@ -9,11 +11,11 @@ export function MatchWorkLogo({ className = "", preload = false }: MatchWorkLogo
       alt=""
       aria-hidden="true"
       className={`block h-auto shrink-0 ${className}`.trim()}
-      height={officialLogo.height}
+      height={officialMark.height}
       preload={preload}
-      src={officialLogo}
+      src={officialMark}
       unoptimized
-      width={officialLogo.width}
+      width={officialMark.width}
     />
   );
 }
@@ -22,16 +24,24 @@ export function MatchWorkLogoLockup({
   className = "",
   compact = false,
   preload = false,
-}: MatchWorkLogoProps) {
+}: MatchWorkLogoLockupProps) {
   return (
     <span
       aria-label="MatchWork"
-      className={`inline-flex items-center ${className}`.trim()}
+      className={`relative inline-flex shrink-0 overflow-hidden rounded-lg bg-brand-white ${
+        compact ? "h-8 w-24 sm:h-10 sm:w-32" : "h-10 w-32 sm:h-12 sm:w-40"
+      } ${className}`.trim()}
       role="img"
     >
-      <MatchWorkLogo
-        className={compact ? "w-12 sm:w-20" : "w-[4.5rem] sm:w-20"}
+      <Image
+        alt=""
+        aria-hidden="true"
+        className="absolute left-0 top-1/2 block h-auto w-full max-w-none -translate-y-1/2"
+        height={officialWordmark.height}
         preload={preload}
+        src={officialWordmark}
+        unoptimized
+        width={officialWordmark.width}
       />
     </span>
   );

@@ -3,11 +3,12 @@
 :root {
   color-scheme: light;
   --brand-navy: #0b2a5b;
-  --brand-navy-surface: #103667;
-  --brand-navy-raised: #164071;
+  --night-background: #0d1117;
+  --night-surface: #161b22;
+  --night-surface-raised: #21262d;
   --brand-purple: #8a4dff;
   --brand-lavender: #d8c4ff;
-  --brand-slate: #6b7280;
+  --brand-slate: #687280;
   --brand-mist: #f5f7fb;
   --brand-white: #f8fafc;
   --background: var(--brand-mist);
@@ -25,14 +26,14 @@
 
 .public-landing {
   color-scheme: dark;
-  --background: var(--brand-navy);
+  --background: var(--night-background);
   --foreground: var(--brand-white);
   --muted: #c9d4e7;
-  --border: color-mix(in srgb, var(--brand-white) 18%, transparent);
+  --border: color-mix(in srgb, var(--brand-slate) 42%, transparent);
   --accent-hover: #9d69ff;
   --accent-foreground: var(--brand-white);
-  --surface: var(--brand-navy-surface);
-  --surface-raised: var(--brand-navy-raised);
+  --surface: color-mix(in srgb, var(--brand-slate) 10%, var(--night-surface));
+  --surface-raised: color-mix(in srgb, var(--brand-slate) 14%, var(--night-surface-raised));
 }
 
 @theme inline {
@@ -79,7 +80,7 @@ body {
 
 body:has(.public-landing) {
   color-scheme: dark;
-  background: var(--brand-navy);
+  background: var(--night-background);
   color: var(--brand-white);
 }
 

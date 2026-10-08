@@ -6,23 +6,26 @@ The brand should feel reliable, technological, clean, connective, agile, human, 
 
 ## Wordmark and mark
 
-- The user supplied `apps/web/public/brand/matchwork-logo.png` as the only source for the MatchWork logo. It is a square raster lockup containing the ribbon mark and wordmark on a white canvas.
-- Use the supplied image unchanged and without cropping, recoloring, tracing, or reconstruction in CSS or inline SVG. Keep its square aspect ratio and use the same image for the browser icon.
-- The logo already contains the wordmark. Do not add a second text-based recreation beside it.
-- The image's white canvas is part of the supplied asset and may appear as a compact light surface against Night Blue.
+- Official logo variants supplied by the user are stored unchanged in `apps/web/public/brand/matchwork-wordmark-horizontal.png`, `apps/web/public/brand/matchwork-mark.png`, and `apps/web/public/brand/matchwork-lockup-stacked.png`.
+- Use the horizontal wordmark for navigation and the compact mark for small standalone placements and the browser icon. The stacked lockup remains available for layouts that need a vertical logo.
+- Do not recolor, trace, or reconstruct the supplied artwork in CSS or inline SVG. The horizontal wordmark image has transparent padding; its display may clip that empty padding to fit a horizontal logo area.
+- Do not add a second text-based recreation beside a logo image that already contains the wordmark.
 
 ## Color system
 
 | Token | Hex | Use |
 | --- | --- | --- |
-| MatchWork Night Blue | `#0B2A5B` | Primary text, brand mark, and trust-oriented elements |
+| MatchWork Night Blue | `#0B2A5B` | Brand mark and trust-oriented elements |
 | MatchWork Purple | `#8A4DFF` | Primary actions and Match moments |
 | Soft Lavender | `#D8C4FF` | Supporting highlights and selected states |
-| Slate Gray | `#6B7280` | Muted text, borders, and secondary elements |
+| Slate Gray | `#687280` | Muted text, borders, and secondary surfaces |
 | Mist | `#F5F7FB` | Light surfaces and pages outside the public landing |
 | Soft White | `#F8FAFC` | Primary text on dark, fields, and occasional light surfaces |
+| GitHub Night | `#0D1117` | Public landing background |
+| Night Surface | `#161B22` | Base for dark cards, subtly tinted with Slate Gray |
+| Night Surface Raised | `#21262D` | Base for prominent dark surfaces, subtly tinted with Slate Gray |
 
-The public landing uses Night Blue as its dominant background, with dark tonal cards and Soft White text. Other routes may keep their light surfaces. Purple should draw attention to meaningful Match states and primary actions, not decorate every surface.
+The public landing uses GitHub Night as its background, Slate Gray for borders and as an input to its dark surface colors, and Soft White text. Other routes may keep their light surfaces. Purple should draw attention to meaningful Match states and primary actions, not decorate every surface.
 
 ## Typography
 

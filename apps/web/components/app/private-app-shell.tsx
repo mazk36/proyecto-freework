@@ -45,7 +45,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:min-h-[72px] sm:px-8">
           <Link className="shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
-            <MatchWorkLogoLockup preload />
+            <MatchWorkLogoLockup compact preload />
           </Link>
           <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <div className="min-w-0 text-right">
