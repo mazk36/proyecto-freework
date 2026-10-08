@@ -237,7 +237,7 @@ function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition, sh
       {showTitle ? (
         <>
           <span aria-hidden="true" className="category-image-card__overlay absolute inset-0" />
-          <span className="category-image-card__title absolute inset-x-4 bottom-4 z-10 font-display text-lg font-bold leading-tight tracking-tight text-brand-white sm:text-xl">
+          <span className="category-image-card__title absolute inset-x-4 bottom-4 z-10 break-words font-display text-xs font-bold leading-tight tracking-tight text-brand-white min-[375px]:text-base sm:text-xl">
             {title}
           </span>
         </>
