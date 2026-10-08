@@ -107,6 +107,10 @@ h3 {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  .hero-video-background {
+    display: none;
+  }
 }
 
 .category-image-card__image {

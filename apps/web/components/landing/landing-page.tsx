@@ -4,6 +4,7 @@ import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { ButtonLink } from "@/components/ui/button";
 import { LandingEditorialSections } from "@/components/landing/landing-editorial-sections";
+import { HeroVideoBackground } from "@/components/landing/hero-video-background";
 
 const heroBenefits = [
   {
@@ -89,36 +90,39 @@ export function LandingPage() {
     <div className="public-landing flex min-h-screen flex-col bg-background text-foreground">
       <PublicHeader />
       <main className="flex-1">
-        <section className="mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
-          <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
-            Contrata la <span className="text-brand-lavender">mejor solución</span> para tu{" "}
-            <span className="text-brand-purple">problema</span> en línea.
-          </h1>
-          <ul className="mt-7 grid max-w-3xl gap-3 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
-            {heroBenefits.map((benefit, index) => (
-              <li className="flex items-start gap-3" key={benefit.text}>
-                <span aria-hidden="true" className="mt-[0.8rem] size-1.5 shrink-0 rounded-full bg-accent" />
-                <span>
-                  <HighlightedText
-                    highlight={benefit.highlight}
-                    text={benefit.text}
-                    tone={index % 2 === 0 ? "lavender" : "purple"}
-                  />
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-6 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-            Cuando una propuesta encaja con tu problema y ambas partes quieren avanzar, hacen{" "}
-            <span className="font-semibold text-brand-lavender">Match</span> para continuar la conversación.
-          </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg">
-              Publica tu problema
-            </ButtonLink>
-            <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg" variant="outline">
-              Resuelve un problema
-            </ButtonLink>
+        <section className="relative isolate overflow-hidden border-b border-border">
+          <HeroVideoBackground />
+          <div className="relative z-10 mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
+            <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
+              Contrata la <span className="text-brand-lavender">mejor solución</span> para tu{" "}
+              <span className="text-brand-purple">problema</span> en línea.
+            </h1>
+            <ul className="mt-7 grid max-w-3xl gap-3 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
+              {heroBenefits.map((benefit, index) => (
+                <li className="flex items-start gap-3" key={benefit.text}>
+                  <span aria-hidden="true" className="mt-[0.8rem] size-1.5 shrink-0 rounded-full bg-accent" />
+                  <span>
+                    <HighlightedText
+                      highlight={benefit.highlight}
+                      text={benefit.text}
+                      tone={index % 2 === 0 ? "lavender" : "purple"}
+                    />
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-6 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+              Cuando una propuesta encaja con tu problema y ambas partes quieren avanzar, hacen{" "}
+              <span className="font-semibold text-brand-lavender">Match</span> para continuar la conversación.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg">
+                Publica tu problema
+              </ButtonLink>
+              <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg" variant="outline">
+                Resuelve un problema
+              </ButtonLink>
+            </div>
           </div>
         </section>
 
