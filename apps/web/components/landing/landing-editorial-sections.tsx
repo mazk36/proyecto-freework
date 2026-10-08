@@ -21,6 +21,7 @@ type FeatureMediaPanelProps = {
   href?: string;
   themeVariant?: "night" | "violet";
   className?: string;
+  mediaOnly?: boolean;
 };
 
 type FeatureTileItem = {
@@ -124,12 +125,13 @@ function FeatureMediaPanel({
   href,
   themeVariant = "night",
   className = "",
+  mediaOnly = false,
 }: FeatureMediaPanelProps) {
   const isNight = themeVariant === "night";
 
   return (
-    <article className={`flex h-full min-h-[30rem] flex-col ${className}`.trim()}>
-      <div className="relative isolate flex min-h-[21rem] flex-1 overflow-hidden rounded-[1.75rem] border border-border bg-surface text-foreground">
+    <article className={`${mediaOnly ? "aspect-[4/3]" : "flex h-full min-h-[30rem] flex-col"} ${className}`.trim()}>
+      <div className={`relative isolate flex overflow-hidden rounded-[1.75rem] border border-border bg-surface text-foreground ${mediaOnly ? "size-full" : "min-h-[21rem] flex-1"}`}>
         {videoSrc ? (
           <video
             aria-label={title}
@@ -196,23 +198,25 @@ function FeatureMediaPanel({
         )}
       </div>
 
-      <div className={`flex items-start justify-between gap-4 px-1 pt-5 ${align === "right" ? "text-right" : "text-left"}`}>
-        <div>
-          <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
-            <AccentTitle highlight={titleHighlight} title={title} />
-          </h3>
-          {description ? <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">{description}</p> : null}
+      {!mediaOnly ? (
+        <div className={`flex items-start justify-between gap-4 px-1 pt-5 ${align === "right" ? "text-right" : "text-left"}`}>
+          <div>
+            <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+              <AccentTitle highlight={titleHighlight} title={title} />
+            </h3>
+            {description ? <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">{description}</p> : null}
+          </div>
+          {href ? (
+            <Link
+              aria-label={`Encuentra tu Match: ${title}`}
+              className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground transition-colors hover:border-brand-lavender hover:text-brand-lavender focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              href={href}
+            >
+              <ArrowUpRight aria-hidden="true" className="size-5" />
+            </Link>
+          ) : null}
         </div>
-        {href ? (
-          <Link
-            aria-label={`Encuentra tu Match: ${title}`}
-            className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground transition-colors hover:border-brand-lavender hover:text-brand-lavender focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-            href={href}
-          >
-            <ArrowUpRight aria-hidden="true" className="size-5" />
-          </Link>
-        ) : null}
-      </div>
+      ) : null}
     </article>
   );
 }
@@ -246,7 +250,7 @@ function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition }: 
   return (
     <Link
       aria-label={`${title}. ${imageAlt}`}
-      className="category-image-card group relative isolate block aspect-[4/3] overflow-hidden rounded-[1.25rem] border border-white/15 bg-surface-raised shadow-[0_12px_32px_rgba(2,10,30,0.2)] transition-shadow duration-300 hover:shadow-[0_18px_42px_rgba(2,10,30,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lavender focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none lg:aspect-[17/20]"
+      className="category-image-card group relative isolate block aspect-[4/3] overflow-hidden rounded-[1.25rem] border border-white/15 bg-surface-raised shadow-[0_12px_32px_rgba(2,10,30,0.2)] transition-shadow duration-300 hover:shadow-[0_18px_42px_rgba(2,10,30,0.35)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-lavender focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none"
       href={href}
     >
       <Image
@@ -258,20 +262,13 @@ function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition }: 
         style={objectPosition ? { objectPosition } : undefined}
         unoptimized
       />
-      <span aria-hidden="true" className="category-image-card__overlay absolute inset-0" />
-      <span
-        aria-hidden="true"
-        className="category-image-card__title absolute inset-x-4 bottom-4 font-display text-xl font-bold leading-tight tracking-tight text-brand-white sm:text-2xl"
-      >
-        {title}
-      </span>
     </Link>
   );
 }
 
 function CategoryImageGrid({ categories }: { categories: CategoryImageItem[] }) {
   return (
-    <div className="mx-auto grid w-full max-w-[37rem] grid-cols-2 items-start gap-3 sm:gap-4 lg:mx-0 lg:max-w-none lg:self-center">
+    <div className="mx-auto grid w-full max-w-[37rem] grid-cols-2 items-start gap-3 lg:mx-0 lg:max-w-none lg:self-center">
       {categories.map((category) => (
         <CategoryImageCard key={category.title} {...category} />
       ))}
@@ -298,14 +295,11 @@ export function LandingEditorialSections() {
               <span className="text-brand-lavender">retos de tu negocio</span>
             </h2>
           </div>
-          <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-8">
+          <div className="grid items-stretch gap-5 lg:grid-cols-2 lg:gap-3">
             <FeatureMediaPanel
-              align="left"
-              description="Cuando el reto y la propuesta encajan, hacen Match y pueden avanzar juntos."
-              href="/registro"
+              mediaOnly
               themeVariant="night"
               title="Del problema a una solución que hace Match"
-              titleHighlight="hace Match"
             />
             <CategoryImageGrid categories={businessCategories} />
           </div>
