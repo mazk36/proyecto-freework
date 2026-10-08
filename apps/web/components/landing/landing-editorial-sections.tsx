@@ -36,6 +36,7 @@ const businessCategories: CategoryImageItem[] = [
     imageAlt: "Fajos de billetes sobre una mesa de cristal con copas y luces nocturnas.",
     href: "/registro",
     objectPosition: "center 58%",
+    showTitle: true,
   },
   {
     title: "RESOLVER ASUNTOS LEGALES",
@@ -43,6 +44,7 @@ const businessCategories: CategoryImageItem[] = [
     imageAlt: "Profesional revisando documentos y hablando por teléfono en su despacho nocturno.",
     href: "/registro",
     objectPosition: "48% center",
+    showTitle: true,
   },
   {
     title: "MEJORAR TU IMAGEN DE MARCA",
@@ -50,6 +52,7 @@ const businessCategories: CategoryImageItem[] = [
     imageAlt: "Lata de bebida energética frente a un moodboard de diseños y referencias de marca.",
     href: "/registro",
     objectPosition: "center",
+    showTitle: true,
   },
   {
     title: "REDUCIR COSTOS",
@@ -57,6 +60,7 @@ const businessCategories: CategoryImageItem[] = [
     imageAlt: "Manos usando una calculadora entre recibos y documentos en un escritorio nocturno.",
     href: "/registro",
     objectPosition: "center 58%",
+    showTitle: true,
   },
 ];
 
