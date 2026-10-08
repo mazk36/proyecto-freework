@@ -4,6 +4,8 @@
 
 Aceptado.
 
+La regla visual sobre el tema oscuro fue sustituida por [ADR-0004](ADR-0004-matchwork-brand-system.md). El resto de esta decisión se mantiene vigente.
+
 ## Contexto
 
 La versión anterior combinaba la landing con navegación de aplicación, cuentas de rol simuladas y conjuntos de contenido ficticio. La dirección actual requiere una web pública mínima y una app vacía separada, sin incorporar todavía un servicio de autenticación.
@@ -12,7 +14,7 @@ La versión anterior combinaba la landing con navegación de aplicación, cuenta
 
 - Mantener como páginas públicas `/`, `/iniciar-sesion` y `/registro`; la página 404 también permanece accesible.
 - Agrupar las páginas de aplicación bajo `/app` y redirigir las rutas privadas antiguas hacia sus rutas canónicas o al inicio de sesión.
-- Escribir toda la interfaz visible en español, declarar `lang="es"` y usar tema oscuro negro con morado como acento.
+- Escribir toda la interfaz visible en español y declarar `lang="es"`.
 - Usar un `AuthProvider` temporal de frontend para registro, inicio y cierre de sesión. Solo se guardan nombre, correo, rol y sesión en `localStorage`; la contraseña no se almacena ni se comprueba.
 - No cargar datasets ficticios. Las páginas sin fuente de datos muestran estados vacíos.
 - Mantener la publicación de problemas como pendiente hasta que exista un servicio que guarde y comparta la información.

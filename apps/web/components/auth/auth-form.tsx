@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { MatchWorkWordmark } from "@/components/brand/matchwork-logo";
 import { Button } from "@/components/ui/button";
 import type { UserRole } from "@/lib/auth";
 
@@ -62,8 +63,8 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
       <div className="w-full max-w-md">
-        <Link className="text-lg font-semibold tracking-tight text-foreground" href="/">
-          Freework
+        <Link aria-label="MatchWork, ir al inicio" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
+          <MatchWorkWordmark />
         </Link>
         <section aria-labelledby="auth-title" className="mt-8">
           <p className="text-xs font-semibold uppercase tracking-[0.14em] text-accent">
@@ -74,7 +75,7 @@ export function AuthForm({ mode }: AuthFormProps) {
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
             {isRegistration
-              ? "Regístrate para entrar a Freework y elegir tu tipo de cuenta."
+              ? "Regístrate en MatchWork y elige tu tipo de cuenta."
               : "Ingresa con el correo que registraste en este navegador."}
           </p>
 
@@ -137,8 +138,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             <p className="text-xs leading-5 text-muted-foreground">
               La contraseña solo se solicita para probar el formulario. No se guarda ni se verifica.
             </p>
-            {error ? <p className="text-sm text-rose-300" role="alert">{error}</p> : null}
-            {storageNotice ? <p className="text-sm text-amber-200" role="status">{storageNotice}</p> : null}
+            {error ? <p className="text-sm text-rose-700" role="alert">{error}</p> : null}
+            {storageNotice ? <p className="text-sm text-amber-800" role="status">{storageNotice}</p> : null}
 
             <Button className="w-full" disabled={!isReady} size="lg" type="submit">
               {isRegistration ? "Crear cuenta" : "Iniciar sesión"}

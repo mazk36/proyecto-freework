@@ -11,14 +11,14 @@ export function AppHome() {
   return user.role === "company" ? (
     <AppEmptyState
       action={<ButtonLink href="/app/problemas/nuevo">Publicar un problema</ButtonLink>}
-      description="Publica tu primer problema para comenzar."
-      title={`Bienvenido a Freework, ${user.name}.`}
+      description="Publica tu primer problema para recibir propuestas. Cuando una solución encaje y ambas partes quieran avanzar, harán Match."
+      title={`Bienvenido a MatchWork, ${user.name}.`}
     />
   ) : (
     <AppEmptyState
       action={<ButtonLink href="/app/descubrir" variant="outline">Ir a Descubrir</ButtonLink>}
-      description="Cuando haya problemas disponibles podrás descubrir oportunidades aquí."
-      title={`Bienvenido a Freework, ${user.name}.`}
+      description="Cuando una oportunidad encaje con tu experiencia y la empresa también quiera avanzar, harán Match para continuar la conversación."
+      title={`Bienvenido a MatchWork, ${user.name}.`}
     />
   );
 }

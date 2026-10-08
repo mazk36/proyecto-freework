@@ -42,7 +42,7 @@ export function AuthBoundary({ children }: { children: ReactNode }) {
     return (
       <main className="grid min-h-screen place-items-center px-5 text-center">
         <p aria-live="polite" className="text-sm text-muted-foreground">
-          {isReady ? "Abriendo Freework…" : "Comprobando la sesión…"}
+          {isReady ? "Abriendo MatchWork…" : "Comprobando la sesión…"}
         </p>
       </main>
     );

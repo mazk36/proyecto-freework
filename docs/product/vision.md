@@ -6,7 +6,7 @@ Las empresas pueden reconocer una necesidad antes de conocer la mejor forma de r
 
 ## Propuesta
 
-Freework parte de los problemas que las empresas quieren resolver. Profesionales independientes pueden proponer distintos enfoques para una misma necesidad.
+MatchWork parte de los problemas que las empresas quieren resolver. Profesionales independientes pueden proponer distintos enfoques para una misma necesidad. Cuando una propuesta encaja y ambas partes quieren continuar, hacen Match para seguir conversando.
 
 ## Participantes
 
@@ -19,9 +19,11 @@ Freework parte de los problemas que las empresas quieren resolver. Profesionales
 
 ## Alcance actual
 
-La landing y las pantallas de acceso son públicas. La aplicación se agrupa bajo `/app` y solo se muestra después del acceso temporal de desarrollo. La interfaz es en español, con tema oscuro y acento morado. La aplicación arranca vacía: no usa problemas, soluciones, propuestas, empresas, freelancers ni Matches ficticios.
+La landing y las pantallas de acceso son públicas. La aplicación se agrupa bajo `/app` y solo se muestra después del acceso temporal de desarrollo. La interfaz es en español y utiliza la identidad aprobada de MatchWork: azul noche y morado sobre superficies claras, Sora para encabezados, Inter para la interfaz y JetBrains Mono para datos. La aplicación arranca vacía: no usa problemas, soluciones, propuestas, empresas, freelancers ni Matches ficticios.
 
 Discovery, Explore, propuestas y Matches describen el dominio y la dirección aprobada del producto. En esta versión, sus pantallas no muestran contenido hasta que exista una fuente real de datos. La publicación de problemas también espera la conexión de un servicio de datos.
+
+El significado de Match está limitado al interés mutuo en continuar la conversación. No representa por sí mismo una contratación, un pago ni un contrato.
 
 ## Límites y preguntas abiertas
 

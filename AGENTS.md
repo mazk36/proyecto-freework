@@ -1,6 +1,6 @@
 # Project Mission
 
-Freework es una plataforma web de marketplace centrada en problemas. Las empresas describen problemas que quieren resolver y los freelancers pueden analizar esos problemas y competir con propuestas de distintas soluciones. La dirección del producto es **problem first, solution second**. Los requisitos evolucionarán; nunca inventes requisitos de negocio ni presentes ideas pendientes como decisiones aprobadas.
+MatchWork es una plataforma web de marketplace centrada en problemas. Las empresas describen problemas que quieren resolver y los profesionales independientes pueden analizar esos problemas y competir con propuestas de distintas soluciones. La dirección del producto es **problem first, solution second**. Un Match representa interés mutuo para continuar una conversación; no implica contratación, pago ni contrato. Sigue el sistema visual aprobado en [la guía de identidad](docs/brand/matchwork-core-identity.md). Los requisitos evolucionarán; nunca inventes requisitos de negocio ni presentes ideas pendientes como decisiones aprobadas.
 
 # Source of Truth
 

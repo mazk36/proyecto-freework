@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { AppEmptyState } from "@/components/app/app-empty-state";
 import { ButtonLink } from "@/components/ui/button";
 
-export const metadata: Metadata = { title: "Mis problemas | Freework" };
+export const metadata: Metadata = { title: "Mis problemas | MatchWork" };
 
 export default function CompanyProblemsPage() {
   return (

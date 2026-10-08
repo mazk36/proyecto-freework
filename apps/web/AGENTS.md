@@ -1,6 +1,6 @@
 # Apps / Web
 
-Esta área contiene la aplicación web de Freework, construida con Next.js App Router, TypeScript y Tailwind CSS según `/docs/decisions/ADR-0001-frontend-stack.md`. Su responsabilidad principal es la presentación, interacción, experiencia de usuario, accesibilidad y estado específico de interfaz.
+Esta área contiene la aplicación web de MatchWork, construida con Next.js App Router, TypeScript y Tailwind CSS según `/docs/decisions/ADR-0001-frontend-stack.md`. Su responsabilidad principal es la presentación, interacción, experiencia de usuario, accesibilidad y estado específico de interfaz. Sigue el sistema visual aprobado en `/docs/brand/matchwork-core-identity.md`.
 
 - Mantén la lógica central de negocio fuera de los componentes visuales.
 - Prefiere componentes pequeños y reutilizables cuando haya una necesidad real.

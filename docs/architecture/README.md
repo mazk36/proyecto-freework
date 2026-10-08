@@ -1,8 +1,8 @@
 # Arquitectura
 
-La aplicación web usa Next.js App Router, TypeScript y Tailwind CSS, según [ADR-0001](../decisions/ADR-0001-frontend-stack.md). Freework se exporta como sitio estático para GitHub Pages.
+La aplicación web usa Next.js App Router, TypeScript y Tailwind CSS, según [ADR-0001](../decisions/ADR-0001-frontend-stack.md). MatchWork se exporta como sitio estático para GitHub Pages.
 
-La web pública contiene la landing, `/iniciar-sesion` y `/registro`. La aplicación se agrupa bajo `/app`; su navegación cambia según el rol de la cuenta temporal. La UI está en español y el tema oscuro se define mediante variables CSS compartidas.
+La web pública contiene la landing, `/iniciar-sesion` y `/registro`. La aplicación se agrupa bajo `/app`; su navegación cambia según el rol de la cuenta temporal. La UI está en español y la identidad visual (colores, tipografía y geometría) se define mediante variables CSS compartidas y está documentada en [MatchWork core identity](../brand/matchwork-core-identity.md).
 
 `AuthProvider` separa la sesión temporal de las pantallas. Conserva en `localStorage` metadatos de cuenta (nombre, correo y rol) y la sesión activa; no escribe contraseñas. `AuthBoundary` redirige las rutas de la app desde el navegador. Como el sitio es estático y no hay servidor de autenticación, esta frontera no es una medida de seguridad y cualquier usuario puede modificarla o evitarla.
 

@@ -8,7 +8,7 @@ export function ProblemPublishingPlaceholder() {
       </Link>
       <h1 className="mt-8 text-3xl font-semibold tracking-tight" id="publish-title">Publicar un problema</h1>
       <p className="mt-4 text-sm leading-6 text-muted-foreground sm:text-base">
-        La publicación de problemas estará disponible cuando Freework cuente con un servicio para guardar y compartir esa información. No se ha cargado ningún ejemplo.
+        La publicación de problemas estará disponible cuando MatchWork cuente con un servicio para guardar y compartir esa información. No se ha cargado ningún ejemplo.
       </p>
     </section>
   );

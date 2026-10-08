@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Freework necesita una primera experiencia web para explorar problemas, revisar propuestas y simular la publicación de un problema. Los requisitos piden rutas navegables, interacción en el cliente donde haga falta y tipos estrictos, sin elegir todavía el stack del backend.
+MatchWork necesita una primera experiencia web para explorar problemas, revisar propuestas y simular la publicación de un problema. Los requisitos piden rutas navegables, interacción en el cliente donde haga falta y tipos estrictos, sin elegir todavía el stack del backend.
 
 ## Decision
 

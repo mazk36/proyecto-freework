@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ProfileDetails } from "@/components/app/profile-details";
 
-export const metadata: Metadata = { title: "Perfil | Freework" };
+export const metadata: Metadata = { title: "Perfil | MatchWork" };
 
 export default function ProfilePage() {
   return <ProfileDetails />;

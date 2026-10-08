@@ -1,6 +1,7 @@
 import { PublicFooter } from "@/components/public/public-footer";
 import { PublicHeader } from "@/components/public/public-header";
 import { ButtonLink } from "@/components/ui/button";
+import { MatchWorkMark } from "@/components/brand/matchwork-logo";
 
 const heroBenefits = [
   "No importa lo difícil del problema: encontrarás a un experto.",
@@ -18,7 +19,7 @@ const expertBenefits = [
   {
     title: "Elige la propuesta ideal",
     description:
-      "Recibe propuestas de soluciones y encuentra la que mejor se alinee con tu negocio.",
+      "Recibe propuestas de soluciones y encuentra la que mejor se alinee con tu negocio. Cuando ambas partes quieran avanzar, hacen Match para continuar la conversación.",
   },
   {
     title: "Supervisa cada avance",
@@ -35,21 +36,40 @@ function ExpertBenefitsArtwork() {
   return (
     <div
       aria-hidden="true"
-      className="relative isolate min-h-[20rem] overflow-hidden rounded-[1.75rem] border border-border bg-[radial-gradient(ellipse_at_58%_44%,rgba(139,92,246,0.24),transparent_58%)] sm:min-h-[26rem]"
+      className="relative isolate min-h-[20rem] overflow-hidden rounded-[1.75rem] border border-border bg-[radial-gradient(ellipse_at_55%_46%,rgba(216,196,255,0.6),transparent_62%)] sm:min-h-[26rem]"
     >
-      <div className="absolute inset-4 rounded-[1.25rem] border border-white/[0.06] sm:inset-6" />
-      <div className="absolute left-1/2 top-1/2 size-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/20 sm:size-72" />
-      <div className="absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/30 sm:size-52" />
-      <div className="absolute left-1/2 top-1/2 size-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/15 shadow-[0_0_90px_rgba(139,92,246,0.3)] sm:size-32" />
-      <div className="absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_28px_rgba(167,139,250,0.9)]" />
+      <div className="absolute inset-4 rounded-[1.25rem] border border-brand-navy/10 sm:inset-6" />
+      <svg className="absolute inset-0 size-full" fill="none" viewBox="0 0 480 400">
+        <path d="M112 130C178 130 185 200 240 200s63 70 128 70" stroke="#0B2A5B" strokeOpacity=".18" strokeWidth="2" />
+        <circle cx="112" cy="130" fill="#0B2A5B" r="5" />
+        <circle cx="240" cy="200" fill="#8A4DFF" r="7" />
+        <circle cx="368" cy="270" fill="#8A4DFF" r="5" />
+      </svg>
 
-      <div className="absolute left-[12%] top-[24%] size-3 rounded-full border border-accent/70 bg-background shadow-[0_0_24px_rgba(139,92,246,0.55)]" />
-      <div className="absolute right-[17%] top-[31%] size-2.5 rounded-full bg-violet-300 shadow-[0_0_24px_rgba(196,181,253,0.8)]" />
-      <div className="absolute bottom-[24%] left-[26%] size-2 rounded-full bg-fuchsia-300 shadow-[0_0_24px_rgba(240,171,252,0.75)]" />
-      <div className="absolute bottom-[19%] right-[21%] size-3 rounded-full border border-violet-300/80 bg-background shadow-[0_0_24px_rgba(196,181,253,0.65)]" />
+      <div className="absolute left-[7%] top-[15%] w-[38%] max-w-44 rounded-2xl border border-border bg-surface-raised p-4 shadow-[0_20px_50px_rgba(11,42,91,0.12)] sm:left-[10%] sm:top-[18%] sm:p-5">
+        <p className="font-mono text-[0.65rem] font-medium tracking-[0.12em] text-brand-slate">PROBLEMA</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-2 w-4/5 rounded-full bg-brand-navy/15" />
+          <div className="h-2 w-3/5 rounded-full bg-brand-navy/10" />
+          <div className="h-2 w-2/5 rounded-full bg-brand-navy/10" />
+        </div>
+      </div>
 
-      <div className="absolute left-[8%] top-[11%] h-px w-16 rotate-[28deg] bg-gradient-to-r from-transparent via-accent/70 to-transparent sm:left-[15%] sm:top-[15%] sm:w-24" />
-      <div className="absolute bottom-[15%] right-[8%] h-px w-20 -rotate-[32deg] bg-gradient-to-r from-transparent via-violet-300/60 to-transparent sm:right-[14%] sm:bottom-[19%] sm:w-28" />
+      <div className="absolute left-1/2 top-1/2 flex size-24 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-center rounded-[1.5rem] border border-brand-lavender bg-surface-raised shadow-[0_20px_50px_rgba(11,42,91,0.14)] sm:size-32 sm:rounded-[1.75rem]">
+        <MatchWorkMark className="w-14 sm:w-[4.5rem]" />
+        <span className="mt-1 rounded-full bg-accent px-2.5 py-1 font-mono text-[0.55rem] font-medium tracking-[0.12em] text-white sm:mt-2 sm:text-[0.6rem]">
+          MATCH
+        </span>
+      </div>
+
+      <div className="absolute bottom-[15%] right-[7%] w-[38%] max-w-44 rounded-2xl border border-brand-lavender bg-surface-raised p-4 shadow-[0_20px_50px_rgba(11,42,91,0.12)] sm:bottom-[18%] sm:right-[10%] sm:p-5">
+        <p className="font-mono text-[0.65rem] font-medium tracking-[0.12em] text-accent">PROPUESTA</p>
+        <div className="mt-4 space-y-2">
+          <div className="h-2 w-4/5 rounded-full bg-brand-purple/45" />
+          <div className="h-2 w-3/5 rounded-full bg-brand-purple/20" />
+          <div className="h-2 w-2/5 rounded-full bg-brand-navy/10" />
+        </div>
+      </div>
     </div>
   );
 }
@@ -71,6 +91,10 @@ export function LandingPage() {
               </li>
             ))}
           </ul>
+          <p className="mt-6 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
+            Cuando una propuesta encaja con tu problema y ambas partes quieren avanzar, hacen{" "}
+            <span className="font-semibold text-accent">Match</span> para continuar la conversación.
+          </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <ButtonLink className="min-h-12 px-6" href="/registro" size="lg">
               Publica tu problema
@@ -107,9 +131,9 @@ export function LandingPage() {
 
         <section className="mx-auto flex max-w-6xl flex-col items-start gap-6 px-5 py-16 sm:px-8 sm:py-20 md:flex-row md:items-center md:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Empieza desde un problema.</h2>
+            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">Encuentra la solución y haz Match.</h2>
             <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Crea una cuenta para compartir una necesidad o descubrir nuevas oportunidades.
+              Publica un problema o explora oportunidades. Cuando ambas partes encuentran el encaje, hacen Match.
             </p>
           </div>
           <div className="flex flex-wrap gap-3">

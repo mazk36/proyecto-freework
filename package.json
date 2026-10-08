@@ -1,16 +1,16 @@
 {
-  "name": "freework",
+  "name": "matchwork",
   "private": true,
   "packageManager": "pnpm@11.19.0",
   "engines": {
     "node": ">=22.13.0"
   },
   "scripts": {
-    "dev": "pnpm --filter @freework/web dev",
-    "build": "pnpm --filter @freework/web build",
-    "start": "pnpm --filter @freework/web start",
-    "lint": "pnpm --filter @freework/web lint",
-    "typecheck": "pnpm --filter @freework/web typecheck",
-    "test": "pnpm --filter @freework/web test"
+    "dev": "pnpm --filter @matchwork/web dev",
+    "build": "pnpm --filter @matchwork/web build",
+    "start": "pnpm --filter @matchwork/web start",
+    "lint": "pnpm --filter @matchwork/web lint",
+    "typecheck": "pnpm --filter @matchwork/web typecheck",
+    "test": "pnpm --filter @matchwork/web test"
   }
 }

@@ -1,4 +1,4 @@
-name: Deploy Freework to GitHub Pages
+name: Deploy MatchWork to GitHub Pages
 
 on:
   push:

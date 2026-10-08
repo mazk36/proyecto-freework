@@ -42,7 +42,7 @@ describe("temporary account data", () => {
 
   it("finds and replaces accounts by normalized email", () => {
     expect(findAuthAccount([companyAccount], " EQUIPO@EJEMPLO.COM ")).toEqual(companyAccount);
-    const updated = { ...companyAccount, name: "Equipo Freework" };
+    const updated = { ...companyAccount, name: "Equipo MatchWork" };
     expect(upsertAuthAccount([companyAccount], updated)).toEqual([updated]);
   });
 });

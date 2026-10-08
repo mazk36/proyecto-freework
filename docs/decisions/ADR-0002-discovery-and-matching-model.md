@@ -6,7 +6,7 @@ Aceptado como modelo de producto.
 
 ## Contexto
 
-Freework parte de problemas que una empresa quiere resolver y permite que distintos freelancers propongan soluciones. Una vista de Discovery puede ayudar a revisar oportunidades o propuestas, pero cada propuesta debe permanecer privada para sus participantes.
+MatchWork parte de problemas que una empresa quiere resolver y permite que distintos freelancers propongan soluciones. Una vista de Discovery puede ayudar a revisar oportunidades o propuestas, pero cada propuesta debe permanecer privada para sus participantes.
 
 ## Decisión
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-provider";
+import { MatchWorkWordmark } from "@/components/brand/matchwork-logo";
 import type { UserRole } from "@/lib/auth";
 import type { ReactNode } from "react";
 
@@ -43,8 +44,8 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
     <div className="flex min-h-screen flex-col bg-background text-foreground">
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:min-h-[72px] sm:px-8">
-          <Link className="shrink-0 text-lg font-semibold tracking-tight" href="/app">
-            Freework
+          <Link className="shrink-0 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
+            <MatchWorkWordmark />
           </Link>
           <div className="flex min-w-0 items-center gap-3 sm:gap-5">
             <div className="min-w-0 text-right">
@@ -84,7 +85,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border px-5 py-4 text-center text-xs leading-5 text-muted-foreground">
         <p>La autenticación de desarrollo es temporal y no protege datos en un servidor.</p>
-        {storageNotice ? <p className="mt-1 text-amber-200" role="status">{storageNotice}</p> : null}
+        {storageNotice ? <p className="mt-1 text-amber-800" role="status">{storageNotice}</p> : null}
       </footer>
     </div>
   );
