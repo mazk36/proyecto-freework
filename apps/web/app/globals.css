@@ -64,7 +64,7 @@
 }
 
 html {
-  min-width: 320px;
+  overflow-x: clip;
   scroll-behavior: smooth;
 }
 
