@@ -6,9 +6,9 @@ The brand should feel reliable, technological, clean, connective, agile, human, 
 
 ## Wordmark and mark
 
-- Official logo variants supplied by the user are stored unchanged in `apps/web/public/brand/matchwork-wordmark-horizontal.png`, `apps/web/public/brand/matchwork-mark.png`, and `apps/web/public/brand/matchwork-lockup-stacked.png`.
-- Use the horizontal wordmark for navigation and the compact mark for small standalone placements and the browser icon. The stacked lockup remains available for layouts that need a vertical logo.
-- Do not recolor, trace, or reconstruct the supplied artwork in CSS or inline SVG. The horizontal wordmark image has transparent padding; its display may clip that empty padding to fit a horizontal logo area.
+- Official logo variants supplied by the user are stored unchanged in `apps/web/public/brand/`: horizontal wordmark, reversed wordmark for dark backgrounds, compact mark, and stacked lockup.
+- Use the reversed wordmark on dark backgrounds and the standard horizontal wordmark on light backgrounds. Use the compact mark for small standalone placements and the browser icon. The stacked lockup remains available for vertical compositions.
+- Do not recolor, trace, or reconstruct the supplied artwork in CSS or inline SVG. The wordmark images have transparent padding; their display may clip that empty padding to fit a horizontal logo area.
 - Do not add a second text-based recreation beside a logo image that already contains the wordmark.
 
 ## Color system
