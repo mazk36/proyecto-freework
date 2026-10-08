@@ -13,6 +13,7 @@ import { MatchWorkLogo } from "@/components/brand/matchwork-logo";
 
 type FeatureMediaPanelProps = {
   title: string;
+  titleHighlight?: string;
   description?: string;
   videoSrc?: string;
   posterSrc?: string;
@@ -26,6 +27,7 @@ type FeatureTileItem = {
   title: string;
   description: string;
   Icon: LucideIcon;
+  tone: "purple" | "lavender";
 };
 
 type CategoryImageItem = {
@@ -74,26 +76,47 @@ const specializedFeatures: FeatureTileItem[] = [
     title: "AUTOMATIZAR PROCESOS",
     description: "Reduce tareas manuales y conecta mejor tus operaciones.",
     Icon: Workflow,
+    tone: "purple",
   },
   {
     title: "SOFTWARE A MEDIDA",
     description: "Construye herramientas adaptadas a las necesidades de tu negocio.",
     Icon: BriefcaseBusiness,
+    tone: "lavender",
   },
   {
     title: "PRODUCCIÓN Y EDICIÓN DE VIDEO",
     description: "Crea piezas audiovisuales para comunicar mejor tu propuesta.",
     Icon: Clapperboard,
+    tone: "lavender",
   },
   {
     title: "DISEÑO AUTOMOTRIZ",
     description: "Encuentra talento especializado para proyectos de diseño automotriz.",
     Icon: CarFront,
+    tone: "purple",
   },
 ];
 
+function AccentTitle({ title, highlight }: { title: string; highlight?: string }) {
+  if (!highlight) {
+    return title;
+  }
+
+  const [before, after] = title.split(highlight);
+
+  return (
+    <>
+      {before}
+      <span className="text-brand-lavender">{highlight}</span>
+      {after}
+    </>
+  );
+}
+
 function FeatureMediaPanel({
   title,
+  titleHighlight,
   description,
   videoSrc,
   posterSrc,
@@ -175,7 +198,9 @@ function FeatureMediaPanel({
 
       <div className={`flex items-start justify-between gap-4 px-1 pt-5 ${align === "right" ? "text-right" : "text-left"}`}>
         <div>
-          <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">{title}</h3>
+          <h3 className="font-display text-lg font-semibold tracking-tight sm:text-xl">
+            <AccentTitle highlight={titleHighlight} title={title} />
+          </h3>
           {description ? <p className="mt-1 max-w-md text-sm leading-6 text-muted-foreground">{description}</p> : null}
         </div>
         {href ? (
@@ -192,19 +217,21 @@ function FeatureMediaPanel({
   );
 }
 
-function FeatureTile({ title, description, Icon }: FeatureTileItem) {
+function FeatureTile({ title, description, Icon, tone }: FeatureTileItem) {
+  const isPurple = tone === "purple";
+
   return (
     <Link
       className="group flex min-h-[14rem] flex-col rounded-[1.4rem] border border-border bg-surface p-5 shadow-[0_12px_36px_rgba(2,10,30,0.12)] transition duration-200 hover:-translate-y-1 hover:border-brand-lavender/60 hover:bg-surface-raised hover:shadow-[0_18px_42px_rgba(2,10,30,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 sm:p-6"
       href="/registro"
     >
       <div className="flex items-center justify-between gap-3">
-        <span className="flex size-11 items-center justify-center rounded-xl bg-white/10 text-brand-lavender transition-colors group-hover:bg-accent/20 group-hover:text-brand-white">
+        <span className={`flex size-11 items-center justify-center rounded-xl bg-white/10 transition-colors group-hover:bg-accent/20 group-hover:text-brand-white ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>
           <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
         </span>
-        <span className="font-mono text-[0.65rem] font-medium tracking-[0.12em] text-brand-lavender">MATCH</span>
+        <span className={`font-mono text-[0.65rem] font-medium tracking-[0.12em] ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>MATCH</span>
       </div>
-      <h3 className="mt-6 max-w-xs font-display text-base font-semibold leading-snug tracking-[-0.025em] text-foreground sm:text-lg">
+      <h3 className={`mt-6 max-w-xs font-display text-base font-semibold leading-snug tracking-[-0.025em] sm:text-lg ${isPurple ? "text-brand-purple" : "text-brand-lavender"}`}>
         {title}
       </h3>
       <div className="mt-auto flex items-end justify-between gap-3 pt-3">
@@ -268,7 +295,8 @@ export function LandingEditorialSections() {
           <div className="mb-8 max-w-2xl sm:mb-10">
             <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">01 / RETOS DE NEGOCIO</p>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="retos-negocio-title">
-              Encuentra soluciones para los retos de tu negocio
+              Encuentra <span className="text-brand-purple">soluciones</span> para los{" "}
+              <span className="text-brand-lavender">retos de tu negocio</span>
             </h2>
           </div>
           <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)] lg:gap-8">
@@ -278,6 +306,7 @@ export function LandingEditorialSections() {
               href="/registro"
               themeVariant="night"
               title="Del problema a una solución que hace Match"
+              titleHighlight="hace Match"
             />
             <CategoryImageGrid categories={businessCategories} />
           </div>
@@ -289,7 +318,7 @@ export function LandingEditorialSections() {
           <div className="mb-8 max-w-2xl sm:mb-10">
             <p className="font-mono text-xs font-medium tracking-[0.16em] text-brand-lavender">02 / TALENTO ESPECIALIZADO</p>
             <h2 className="mt-4 text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="proyectos-especializados-title">
-              También para proyectos especializados
+              También para <span className="text-brand-lavender">proyectos especializados</span>
             </h2>
           </div>
           <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-10">
@@ -300,6 +329,7 @@ export function LandingEditorialSections() {
               href="/registro"
               themeVariant="violet"
               title="Haz Match con talento especializado"
+              titleHighlight="Match"
             />
             <div className="lg:col-start-1 lg:row-start-1">
               <FeatureGrid features={specializedFeatures} />
