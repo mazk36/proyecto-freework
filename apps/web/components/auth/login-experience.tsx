@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, ShieldAlert } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
@@ -167,11 +167,6 @@ export function LoginExperience() {
                 Regístrate
               </Link>
             </p>
-
-            <div className="flex items-start gap-2 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2 text-xs leading-4 text-amber-100/90" role="note">
-              <ShieldAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-amber-200" />
-              <p>Modo de desarrollo: el acceso es simulado; la contraseña no se valida ni se guarda, y esta sesión no protege datos reales.</p>
-            </div>
           </div>
         </section>
 
