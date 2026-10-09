@@ -118,10 +118,10 @@ export function LandingPage() {
               <span className="font-semibold text-brand-lavender">Match</span> para continuar la conversación.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg">
+              <ButtonLink className="min-h-12 px-6" href="/app/problemas/nuevo" size="lg">
                 Publica tu problema
               </ButtonLink>
-              <ButtonLink className="min-h-12 px-6" href="/iniciar-sesion" size="lg" variant="outline">
+              <ButtonLink className="min-h-12 px-6" href="/app/explorar" size="lg" variant="outline">
                 Resuelve un problema
               </ButtonLink>
             </div>
@@ -180,8 +180,8 @@ export function LandingPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <ButtonLink href="/iniciar-sesion">Publica tu problema</ButtonLink>
-            <ButtonLink href="/iniciar-sesion" variant="outline">Resuelve un problema</ButtonLink>
+            <ButtonLink href="/app/problemas/nuevo">Publica tu problema</ButtonLink>
+            <ButtonLink href="/app/explorar" variant="outline">Resuelve un problema</ButtonLink>
           </div>
         </section>
       </main>

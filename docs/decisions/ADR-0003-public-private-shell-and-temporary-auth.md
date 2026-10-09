@@ -2,7 +2,7 @@
 
 ## Estado
 
-Aceptado.
+Supersedido en autenticación y persistencia por [ADR-0007](ADR-0007-supabase-auth-postgres.md). Se conservan la separación de rutas y los principios de interfaz.
 
 La regla visual sobre el tema oscuro fue sustituida por [ADR-0004](ADR-0004-matchwork-brand-system.md). El resto de esta decisión se mantiene vigente.
 

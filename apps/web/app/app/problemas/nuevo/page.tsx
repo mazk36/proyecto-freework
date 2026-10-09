@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { ProblemPublishingPlaceholder } from "@/components/app/problem-publishing-placeholder";
+import { ProblemPublishingWizard } from "@/components/app/problem-publishing-wizard";
 
 export const metadata: Metadata = { title: "Publicar un problema | MatchWork" };
 
 export default function NewProblemPage() {
-  return <ProblemPublishingPlaceholder />;
+  return <ProblemPublishingWizard />;
 }

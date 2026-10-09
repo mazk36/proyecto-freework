@@ -17,6 +17,22 @@ export function legacyAppTarget(pathname: string): string | null {
   return match?.[1] ?? null;
 }
 
+export function safeAppDestination(candidate: string | null): string {
+  if (!candidate || candidate.startsWith("//") || candidate.includes("\\")) return "/app";
+  if (candidate !== "/app" && !candidate.startsWith("/app/")) return "/app";
+  try {
+    const target = new URL(candidate, "https://matchwork.invalid");
+    return target.origin === "https://matchwork.invalid" ? candidate : "/app";
+  } catch {
+    return "/app";
+  }
+}
+
+export function authContinuationHref(pathname: string, candidate: string | null): string {
+  const destination = safeAppDestination(candidate);
+  return destination === "/app" ? pathname : `${pathname}?next=${encodeURIComponent(destination)}`;
+}
+
 export function isAppPath(pathname: string): boolean {
   const path = normalizePathname(pathname);
   return path === "/app" || path.startsWith("/app/");

@@ -20,7 +20,7 @@ export function AccountEmptyPage({ kind }: { kind: AccountPageKind }) {
 
   return (
     <AppEmptyState
-      description={user.role === "company" ? "Aún no has recibido propuestas." : "Aún no has enviado ninguna propuesta."}
+      description="El módulo de propuestas aún no está conectado. Esta sección se habilitará cuando exista una fuente segura para enviar, recibir y consultar propuestas reales."
       title={user.role === "company" ? "Propuestas recibidas" : "Mis propuestas"}
     />
   );

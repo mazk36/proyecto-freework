@@ -16,14 +16,14 @@ export function PublicHeader() {
         <nav aria-label="Acciones principales" className="flex items-center gap-1 sm:gap-3">
           <ButtonLink
             className="!px-1.5 !text-xs sm:!px-3 sm:!text-sm"
-            href="/iniciar-sesion"
+            href="/app/problemas/nuevo"
             size="sm"
           >
             Publica tu problema
           </ButtonLink>
           <ButtonLink
             className="!px-1.5 !text-xs sm:!px-3 sm:!text-sm"
-            href="/iniciar-sesion"
+            href="/app/explorar"
             size="sm"
             variant="outline"
           >

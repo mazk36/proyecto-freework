@@ -1,8 +1,32 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeft, Mail, ShieldAlert } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 
 export function PasswordRecoveryExperience() {
+  const { requestPasswordReset, isReady, storageNotice } = useAuth();
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError("");
+    setNotice("");
+    setIsSubmitting(true);
+    const values = new FormData(event.currentTarget);
+    const result = await requestPasswordReset(String(values.get("email") ?? ""));
+    if (result.ok) {
+      setNotice("Si el correo está asociado a una cuenta, recibirás un enlace para cambiar la contraseña.");
+    } else {
+      setError(result.error);
+    }
+    setIsSubmitting(false);
+  }
+
   return (
     <main className="grid min-h-dvh place-items-center overflow-x-hidden bg-[#080D17] p-4 text-[#F8FAFC] sm:p-6">
       <section
@@ -27,15 +51,10 @@ export function PasswordRecoveryExperience() {
           Ingresa el correo asociado a tu cuenta para solicitar un enlace seguro de recuperación.
         </p>
 
-        <div className="mt-5 flex items-start gap-2 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2.5 text-sm leading-5 text-amber-100/90" role="status">
-          <ShieldAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-amber-200" />
-          <p>
-            La autenticación y el servicio de correo aún no están configurados. No se ha enviado ningún correo.
-          </p>
-        </div>
+        {storageNotice ? <p className="mt-5 rounded-lg border border-amber-300/20 bg-amber-300/[0.06] px-3 py-2.5 text-sm leading-5 text-amber-100/90" role="status">{storageNotice}</p> : null}
 
-        <form aria-describedby="recovery-status" className="mt-5 space-y-4">
-          <fieldset className="space-y-4" disabled>
+        <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
+          <fieldset className="space-y-4" disabled={!isReady || isSubmitting || Boolean(storageNotice)}>
             <div>
               <label className="block text-sm font-medium text-[#F8FAFC]" htmlFor="recovery-email">
                 Correo electrónico
@@ -58,12 +77,11 @@ export function PasswordRecoveryExperience() {
               className="flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-xl bg-[#8A4DFF] px-5 py-2.5 text-base font-semibold text-white opacity-55"
               type="submit"
             >
-              Enviar enlace de recuperación
+              {isSubmitting ? "Enviando…" : "Enviar enlace de recuperación"}
             </button>
           </fieldset>
-          <p className="sr-only" id="recovery-status">
-            El formulario está desactivado hasta que se configure un servicio de autenticación y correo.
-          </p>
+          {error ? <p className="text-sm text-rose-200" role="alert">{error}</p> : null}
+          {notice ? <p className="rounded-lg border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-sm leading-5 text-emerald-100" role="status">{notice}</p> : null}
         </form>
 
         <Link

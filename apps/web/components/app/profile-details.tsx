@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/components/auth/auth-provider";
+import { CompanyProfileForm } from "@/components/app/company-profile-form";
 
 export function ProfileDetails() {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export function ProfileDetails() {
           <dd className="text-sm font-medium text-foreground">{user.role === "company" ? "Empresa" : "Freelancer"}</dd>
         </div>
       </dl>
+      {user.role === "company" ? <CompanyProfileForm /> : null}
     </section>
   );
 }

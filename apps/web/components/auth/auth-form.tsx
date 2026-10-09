@@ -4,11 +4,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Briefcase, Eye, EyeOff, LockKeyhole, Mail, UserRound } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { Button } from "@/components/ui/button";
 import type { UserRole } from "@/lib/auth";
+import { authContinuationHref, safeAppDestination } from "@/lib/auth-routing";
 import reversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
 
 type AuthFormProps = { mode: "login" | "register" };
@@ -21,16 +22,27 @@ const registrationInputClass =
 
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
-  const { login, register, isReady, storageNotice } = useAuth();
+  const { login, register, isReady, storageNotice, authIssue } = useAuth();
   const [role, setRole] = useState<UserRole | "">("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [status, setStatus] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [continuationQuery, setContinuationQuery] = useState("");
   const isRegistration = mode === "register";
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    const destination = new URLSearchParams(window.location.search).get("next");
+    const target = safeAppDestination(destination);
+    setContinuationQuery(target === "/app" ? "" : `?next=${encodeURIComponent(target)}`);
+  }, []);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setStatus("");
+    setIsSubmitting(true);
 
     const values = new FormData(event.currentTarget);
     const email = String(values.get("email") ?? "").trim();
@@ -41,30 +53,46 @@ export function AuthForm({ mode }: AuthFormProps) {
       const confirmation = String(values.get("confirmation") ?? "");
       if (password !== confirmation) {
         setError("Las contraseñas no coinciden.");
+        setIsSubmitting(false);
         return;
       }
       if (!role) {
         setError("Selecciona si tu cuenta será de empresa o freelancer.");
+        setIsSubmitting(false);
         return;
       }
-      const result = register({ name, email, role });
+      const result = await register({ name, email, password, role, next: getIntendedDestination() });
       if (!result.ok) {
         setError(result.error);
+        setIsSubmitting(false);
+        return;
+      }
+      if (result.requiresEmailConfirmation) {
+        setStatus("Te enviamos un enlace de confirmación. Ábrelo desde tu correo para activar la cuenta.");
+        setIsSubmitting(false);
         return;
       }
     } else {
       if (!password) {
         setError("Escribe tu contraseña.");
+        setIsSubmitting(false);
         return;
       }
-      const result = login({ email });
+      const result = await login({ email, password });
       if (!result.ok) {
         setError(result.error);
+        setIsSubmitting(false);
         return;
       }
     }
 
-    router.replace("/app");
+    router.replace(getIntendedDestination());
+  }
+
+  function getIntendedDestination(): string {
+    if (typeof window === "undefined") return "/app";
+    const candidate = new URLSearchParams(window.location.search).get("next");
+    return safeAppDestination(candidate);
   }
 
   if (isRegistration) {
@@ -115,7 +143,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                       autoComplete="new-password"
                       className={`${registrationInputClass} pr-12`}
                       id="password"
-                      minLength={1}
+                      minLength={8}
                       name="password"
                       placeholder="Crea una contraseña"
                       required
@@ -176,16 +204,18 @@ export function AuthForm({ mode }: AuthFormProps) {
                 </fieldset>
 
                 {error ? <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" role="alert">{error}</p> : null}
+                {status ? <p className="rounded-lg border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-sm leading-5 text-emerald-100" role="status">{status}</p> : null}
+                {authIssue ? <p className="rounded-lg border border-rose-300/25 bg-rose-300/10 px-3 py-2 text-sm leading-5 text-rose-100" role="alert">{authIssue}</p> : null}
                 {storageNotice ? <p className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-sm leading-5 text-amber-100" role="status">{storageNotice}</p> : null}
 
-                <Button className="w-full rounded-xl shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px" disabled={!isReady} size="lg" type="submit">
-                  Crear cuenta <ArrowRight aria-hidden="true" className="size-4" />
+                <Button className="w-full rounded-xl shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px" disabled={!isReady || isSubmitting} size="lg" type="submit">
+                  {isSubmitting ? "Creando cuenta…" : "Crear cuenta"} <ArrowRight aria-hidden="true" className="size-4" />
                 </Button>
               </form>
 
               <p className="mt-5 text-center text-sm text-[#B6C1D0]">
                 ¿Ya tienes cuenta?{" "}
-                <Link className="font-semibold text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]" href="/iniciar-sesion">
+                <Link className="font-semibold text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]" href={authContinuationHref("/iniciar-sesion", continuationQuery ? new URLSearchParams(continuationQuery).get("next") : null)}>
                   Inicia sesión
                 </Link>
               </p>
@@ -244,7 +274,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             Inicia sesión
           </h1>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Ingresa con el correo que registraste en este navegador.
+            Ingresa con el correo y la contraseña de tu cuenta.
           </p>
 
           <form className="mt-7 space-y-5" onSubmit={handleSubmit}>
@@ -259,24 +289,26 @@ export function AuthForm({ mode }: AuthFormProps) {
                 autoComplete="current-password"
                 className={inputClass}
                 id="password"
-                minLength={1}
+                minLength={8}
                 name="password"
                 required
                 type="password"
               />
             </div>
 
+            {status ? <p className="text-sm text-emerald-800" role="status">{status}</p> : null}
+            {authIssue ? <p className="text-sm text-rose-700" role="alert">{authIssue}</p> : null}
             {error ? <p className="text-sm text-rose-700" role="alert">{error}</p> : null}
             {storageNotice ? <p className="text-sm text-amber-800" role="status">{storageNotice}</p> : null}
 
-            <Button className="w-full" disabled={!isReady} size="lg" type="submit">
-              Iniciar sesión
+            <Button className="w-full" disabled={!isReady || isSubmitting} size="lg" type="submit">
+              {isSubmitting ? "Ingresando…" : "Iniciar sesión"}
             </Button>
           </form>
 
           <p className="mt-6 text-sm text-muted-foreground">
             ¿No tienes una cuenta?{" "}
-            <Link className="font-semibold text-foreground underline decoration-accent underline-offset-4 hover:text-accent" href="/registro">
+              <Link className="font-semibold text-foreground underline decoration-accent underline-offset-4 hover:text-accent" href={authContinuationHref("/registro", continuationQuery ? new URLSearchParams(continuationQuery).get("next") : null)}>
               Regístrate
             </Link>
           </p>

@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { isAppPath, legacyAppTarget } from "@/lib/auth-routing";
+import { isAppPath, legacyAppTarget, safeAppDestination } from "@/lib/auth-routing";
 import { useAuth } from "@/components/auth/auth-provider";
 
 export function AuthBoundary({ children }: { children: ReactNode }) {
@@ -23,14 +23,23 @@ export function AuthBoundary({ children }: { children: ReactNode }) {
       return;
     }
     if (!user && requiresSession) {
-      router.replace("/iniciar-sesion");
+      const requestedPath = typeof window === "undefined"
+        ? pathname
+        : `${pathname}${window.location.search}`;
+      router.replace(`/iniciar-sesion?next=${encodeURIComponent(requestedPath)}`);
       return;
     }
     if (user && legacyTarget) {
       router.replace(legacyTarget);
       return;
     }
-    if (user && (landingPath || authPage)) router.replace("/app");
+    if (user && landingPath) router.replace("/app");
+    if (user && authPage) {
+      const candidate = typeof window === "undefined"
+        ? null
+        : new URLSearchParams(window.location.search).get("next");
+      router.replace(safeAppDestination(candidate));
+    }
   }, [authPage, finishLogout, isLoggingOut, isReady, landingPath, legacyTarget, requiresSession, router, user]);
 
   const changingRoute =

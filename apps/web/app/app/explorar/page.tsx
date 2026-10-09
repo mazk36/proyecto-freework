@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { AppEmptyState } from "@/components/app/app-empty-state";
+import { OpenProblemFeed } from "@/components/app/open-problem-feed";
 
 export const metadata: Metadata = { title: "Explorar | MatchWork" };
 
 export default function ExplorePage() {
-  return <AppEmptyState description="Aquí aparecerán los problemas disponibles para explorar." title="Aún no hay problemas disponibles." />;
+  return <OpenProblemFeed />;
 }

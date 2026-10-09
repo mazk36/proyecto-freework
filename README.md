@@ -4,11 +4,9 @@ MatchWork conecta problemas con propuestas de solución de profesionales indepen
 
 ## Estado actual
 
-La interfaz está en español y sigue la identidad visual aprobada de MatchWork: azul noche, morado, lavanda y superficies claras; Sora para encabezados, Inter para la interfaz y JetBrains Mono para datos. La landing pública está separada de la aplicación privada. La app vive bajo `/app` y muestra estados vacíos; no se incluyen problemas, propuestas, empresas, perfiles ni Matches de ejemplo.
+La interfaz está en español y sigue la identidad visual aprobada de MatchWork: azul noche, morado, lavanda y superficies claras; Sora para encabezados, Inter para la interfaz y JetBrains Mono para datos. La landing pública está separada de la aplicación bajo `/app`. El Camino A guarda perfiles empresariales y problemas reales en Supabase; las secciones de propuestas y adjudicación siguen sin fuente de datos.
 
-El registro y el inicio de sesión son una simulación frontend para desarrollo. Se guardan en `localStorage` únicamente el nombre, correo, rol y la sesión temporal. Las contraseñas no se verifican ni se guardan. La protección funciona en el navegador y no proporciona autenticación ni autorización real. No uses esta versión para proteger datos.
-
-La publicación de problemas todavía no está conectada a un servicio de datos. La pantalla explica ese límite y no conserva ni envía información.
+El registro, el inicio de sesión y la recuperación de contraseña usan Supabase Auth. PostgreSQL valida rol y propiedad con RLS y RPC. La interfaz de navegación del navegador no sustituye estos controles. No uses una service role key en el cliente.
 
 ## Desarrollo local
 
@@ -16,6 +14,11 @@ Requisitos: Node.js 22.13 o posterior y pnpm 11.19.0.
 
 ```bash
 pnpm install
+```
+
+Crea `apps/web/.env.local` a partir de [`apps/web/.env.example`](apps/web/.env.example) y asigna la Project URL y publishable key de Supabase. Aplica la migración antes de registrar cuentas; consulta [configurar Supabase](docs/development/supabase-setup.md).
+
+```bash
 pnpm dev
 ```
 
@@ -26,15 +29,19 @@ La aplicación estará disponible en `http://localhost:3000`. También puedes ej
 Públicas:
 
 - `/`: landing.
-- `/iniciar-sesion`: inicio de sesión temporal.
-- `/registro`: registro temporal.
+- `/iniciar-sesion`: acceso con correo y contraseña.
+- `/registro`: registro de empresa o freelancer.
+- `/auth/callback`: confirmación de correo y recuperación segura de contraseña.
 
 Privadas:
 
 - `/app`: inicio según el tipo de cuenta.
-- `/app/descubrir` y `/app/explorar`: oportunidades, actualmente sin problemas disponibles.
-- `/app/problemas` y `/app/problemas/nuevo`: problemas de empresa y estado de publicación pendiente.
-- `/app/propuestas`, `/app/guardados`, `/app/matches` y `/app/perfil`: secciones vacías o datos de la cuenta temporal.
+- `/app/explorar`: problemas abiertos compartidos por empresas.
+- `/app/problemas`: panel empresarial con estados y borradores reales.
+- `/app/problemas/nuevo`: asistente empresarial de cinco pasos.
+- `/app/problemas/detalle`: lectura propia y gestión de estados.
+- `/app/perfil`: datos personales y perfil empresarial.
+- `/app/propuestas`, `/app/guardados` y `/app/matches`: módulos pendientes de integrar con una fuente de datos.
 
 Las antiguas rutas privadas redirigen al inicio de sesión o a su ruta canónica bajo `/app`. La ruta 404 sigue disponible públicamente.
 

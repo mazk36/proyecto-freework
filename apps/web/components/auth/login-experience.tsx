@@ -4,9 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
+import { authContinuationHref, safeAppDestination } from "@/lib/auth-routing";
 import reversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
 
 const inputClassName =
@@ -14,13 +15,21 @@ const inputClassName =
 
 export function LoginExperience() {
   const router = useRouter();
-  const { login, isReady, storageNotice } = useAuth();
+  const { login, isReady, storageNotice, authIssue } = useAuth();
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [continuationHref, setContinuationHref] = useState("/registro");
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  useEffect(() => {
+    const destination = new URLSearchParams(window.location.search).get("next");
+    setContinuationHref(authContinuationHref("/registro", destination));
+  }, []);
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
     const values = new FormData(event.currentTarget);
     const email = String(values.get("email") ?? "").trim();
@@ -28,16 +37,19 @@ export function LoginExperience() {
 
     if (!password) {
       setError("Escribe tu contraseña.");
+      setIsSubmitting(false);
       return;
     }
 
-    const result = login({ email });
+    const result = await login({ email, password });
     if (!result.ok) {
       setError(result.error);
+      setIsSubmitting(false);
       return;
     }
 
-    router.replace("/app");
+    const candidate = new URLSearchParams(window.location.search).get("next");
+    router.replace(safeAppDestination(candidate));
   }
 
   return (
@@ -91,7 +103,7 @@ export function LoginExperience() {
                     autoComplete="current-password"
                     className={`${inputClassName} pr-12`}
                     id="login-password"
-                    minLength={1}
+                    minLength={8}
                     name="password"
                     required
                     type={showPassword ? "text" : "password"}
@@ -131,13 +143,18 @@ export function LoginExperience() {
                   {storageNotice}
                 </p>
               ) : null}
+              {authIssue ? (
+                <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" role="alert">
+                  {authIssue}
+                </p>
+              ) : null}
 
               <button
                 className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#8A4DFF] px-5 py-2.5 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
-                disabled={!isReady}
+                disabled={!isReady || isSubmitting}
                 type="submit"
               >
-                Iniciar sesión <ArrowRight aria-hidden="true" className="size-4" />
+                {isSubmitting ? "Ingresando…" : "Iniciar sesión"} <ArrowRight aria-hidden="true" className="size-4" />
               </button>
             </form>
 
@@ -162,7 +179,7 @@ export function LoginExperience() {
               ¿No tienes una cuenta?{" "}
               <Link
                 className="font-semibold text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
-                href="/registro"
+                href={continuationHref}
               >
                 Regístrate
               </Link>

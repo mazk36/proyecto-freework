@@ -3,7 +3,7 @@ import { AuthForm } from "@/components/auth/auth-form";
 
 export const metadata: Metadata = {
   title: "Registrarse | MatchWork",
-  description: "Crea una cuenta temporal de MatchWork.",
+  description: "Crea una cuenta de empresa o freelancer en MatchWork.",
 };
 
 export default function RegisterPage() {

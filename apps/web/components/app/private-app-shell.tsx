@@ -30,14 +30,14 @@ const navigationByRole: Record<UserRole, NavigationItem[]> = {
 
 export function PrivateAppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/app";
-  const { user, logout, storageNotice } = useAuth();
+  const { user, logout, storageNotice, authIssue } = useAuth();
 
   if (!user) return null;
 
   const roleLabel = user.role === "company" ? "Empresa" : "Freelancer";
 
   function handleLogout() {
-    logout();
+    void logout();
   }
 
   return (
@@ -84,8 +84,9 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
 
       <main className="flex-1">{children}</main>
       <footer className="border-t border-border px-5 py-4 text-center text-xs leading-5 text-muted-foreground">
-        <p>La autenticación de desarrollo es temporal y no protege datos en un servidor.</p>
+        <p>Tu cuenta y tus publicaciones están protegidas por los permisos de MatchWork.</p>
         {storageNotice ? <p className="mt-1 text-amber-800" role="status">{storageNotice}</p> : null}
+        {authIssue ? <p className="mt-1 text-rose-700" role="alert">{authIssue}</p> : null}
       </footer>
     </div>
   );

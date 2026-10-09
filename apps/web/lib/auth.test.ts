@@ -1,49 +1,11 @@
 import { describe, expect, it } from "vitest";
-import {
-  findAuthAccount,
-  isValidEmail,
-  normalizeEmail,
-  parseAuthAccounts,
-  parseAuthUser,
-  upsertAuthAccount,
-  type AuthUser,
-} from "@/lib/auth";
-import {
-  isAppPath,
-  isPublicAuthPath,
-  legacyAppTarget,
-} from "@/lib/auth-routing";
+import { isValidEmail } from "@/lib/auth";
+import { authContinuationHref, isAppPath, isPublicAuthPath, legacyAppTarget, safeAppDestination } from "@/lib/auth-routing";
 
-const companyAccount: AuthUser = {
-  id: "account-1",
-  name: "Equipo",
-  email: "equipo@ejemplo.com",
-  role: "company",
-};
-
-describe("temporary account data", () => {
-  it("normalizes and checks email without accepting whitespace", () => {
-    expect(normalizeEmail("  EQUIPO@Ejemplo.com ")).toBe("equipo@ejemplo.com");
-    expect(isValidEmail("equipo@ejemplo.com")).toBe(true);
+describe("email validation", () => {
+  it("normalizes whitespace and validates the basic email shape", () => {
+    expect(isValidEmail("  EQUIPO@Ejemplo.com ")).toBe(true);
     expect(isValidEmail("no-es-correo")).toBe(false);
-  });
-
-  it("parses only account metadata and ignores invalid or duplicate entries", () => {
-    const serialized = JSON.stringify([
-      { ...companyAccount, password: "never persisted" },
-      { ...companyAccount, id: "duplicate" },
-      { id: "bad", name: "Sin correo", email: "", role: "company" },
-    ]);
-
-    expect(parseAuthAccounts(serialized)).toEqual([companyAccount]);
-    expect(parseAuthUser({ ...companyAccount, role: "admin" })).toBeNull();
-    expect(parseAuthAccounts("{malformed")).toEqual([]);
-  });
-
-  it("finds and replaces accounts by normalized email", () => {
-    expect(findAuthAccount([companyAccount], " EQUIPO@EJEMPLO.COM ")).toEqual(companyAccount);
-    const updated = { ...companyAccount, name: "Equipo MatchWork" };
-    expect(upsertAuthAccount([companyAccount], updated)).toEqual([updated]);
   });
 });
 
@@ -64,5 +26,15 @@ describe("public and private route boundaries", () => {
     expect(legacyAppTarget("/problems/new")).toBe("/app/problemas/nuevo");
     expect(legacyAppTarget("/company/problems/old/solutions/discover")).toBe("/app/problemas");
     expect(legacyAppTarget("/otra-ruta")).toBeNull();
+  });
+
+  it("preserves only local app destinations after login", () => {
+    expect(safeAppDestination("/app/problemas/nuevo")).toBe("/app/problemas/nuevo");
+    expect(safeAppDestination("https://outside.example")).toBe("/app");
+    expect(safeAppDestination("//outside.example")).toBe("/app");
+    expect(safeAppDestination(null)).toBe("/app");
+    expect(authContinuationHref("/registro", "/app/problemas/nuevo")).toBe(
+      "/registro?next=%2Fapp%2Fproblemas%2Fnuevo",
+    );
   });
 });
