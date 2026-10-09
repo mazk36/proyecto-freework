@@ -55,11 +55,10 @@ const businessCategories: CategoryImageItem[] = [
     showTitle: true,
   },
   {
-    title: "REDUCIR COSTOS",
-    imageSrc: `${publicBasePath}/images/categories/costs-accounting.webp`,
-    imageAlt: "Manos usando una calculadora entre recibos y documentos en un escritorio nocturno.",
+    title: "DESARROLLAR VIDEOJUEGOS",
+    imageSrc: `${publicBasePath}/images/categories/game-development-studio.webp`,
+    imageAlt: "Manos sosteniendo un teléfono con un videojuego de acción frente a pantallas de desarrollo.",
     href: "/registro",
-    objectPosition: "center 58%",
     showTitle: true,
   },
 ];
