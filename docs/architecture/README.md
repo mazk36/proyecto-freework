@@ -6,6 +6,8 @@ La web pública contiene la landing, `/iniciar-sesion`, `/registro` y `/auth/cal
 
 `AuthProvider` integra la sesión de Supabase Auth y obtiene el rol desde `app_users`, donde los usuarios solo pueden leer su propio perfil. `AuthBoundary` ofrece navegación y redirecciones en el navegador; no es el control de seguridad. Las funciones PostgreSQL y los privilegios RLS son la autoridad para leer o mutar perfiles y publicaciones.
 
+Los portafolios profesionales se basan en `profiles`, `freelancer_profiles`, `freelancer_skills`, `portfolio_projects` y `portfolio_media`. Las filas de perfil existentes se migran desde `app_users` como borradores privados; una publicación futura requerirá acción explícita. Los avatares viven en un bucket público y los medios de proyectos en uno privado. El detalle está en [arquitectura de perfiles](../backend/profile-architecture.md) y [seguridad RLS](../backend/security-and-rls.md).
+
 No hay datasets mock en la aplicación. Las secciones sin fuente de datos muestran estados vacíos. Las funciones puras de Discovery y sus pruebas permanecen separadas de la presentación para conservar la lógica de dominio sin alimentar la UI con contenido de ejemplo.
 
 La migración para el Camino A está en `supabase/migrations`. Aplica los pasos de configuración descritos en [integración Supabase](company-proposals-integration.md) y [flujo de desarrollo](../development/supabase-setup.md) antes de probar cuentas o publicaciones reales. El módulo de propuestas y adjudicación aún no tiene tablas ni servicios.

@@ -5,7 +5,7 @@ La app web usa una exportación estática para GitHub Pages. La URL del proyecto
 ## Crear y preparar el proyecto
 
 1. Crea un proyecto PostgreSQL en Supabase y copia la Project URL y la publishable key.
-2. En Supabase **SQL Editor**, ejecuta el contenido completo de [`20261009010000_company_problem_publishing.sql`](../../supabase/migrations/20261009010000_company_problem_publishing.sql). El trigger de Auth crea el perfil de rol; no publiques una API key administrativa.
+2. Aplica las migraciones de [`supabase/migrations`](../../supabase/migrations) en orden de timestamp. Para un proyecto existente, confirma que `20261009010000_company_problem_publishing.sql` ya fue aplicada antes de ejecutar la nueva migración de perfiles. No publiques una API key administrativa.
 3. En **Authentication → Providers**, habilita Email. Supabase puede requerir confirmación de correo; el callback de MatchWork la procesa.
 4. En **Authentication → URL Configuration**, configura el sitio publicado y permite las URL de confirmación:
    - `https://marcelojauregui.me/proyecto-freework/`
@@ -34,3 +34,5 @@ Para GitHub Pages, añade `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUB
 6. Registra una cuenta freelancer distinta y abre **Explorar** para consultar publicaciones abiertas. Si la empresa ocultó su nombre, la función de base de datos devuelve `null` para ese dato.
 
 Sin URL y publishable key, la aplicación no finge autenticación ni guardados: muestra que falta conectar Supabase. Sin aplicar la migración, Auth puede crear una cuenta pero el perfil y las operaciones del Camino A no podrán completarse.
+
+La arquitectura y los permisos de perfiles están en [docs/backend](../backend/profile-architecture.md). Para despliegues remotos, primero revisa `supabase db push --dry-run`, confirma respaldos recuperables de usuarios de Auth, PostgreSQL y objetos Storage, y espera autorización antes de aplicar cualquier migración. No ejecutes `supabase db reset --linked`.
