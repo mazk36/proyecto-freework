@@ -24,6 +24,7 @@ type CategoryImageItem = {
   objectPosition?: string;
   showTitle?: boolean;
   sizes?: string;
+  compactTitleOnMobile?: boolean;
 };
 
 const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
@@ -39,7 +40,7 @@ const businessCategories: CategoryImageItem[] = [
     showTitle: true,
   },
   {
-    title: "RESOLVER ASUNTOS LEGALES",
+    title: "ASESORÍA LEGAL",
     imageSrc: `${publicBasePath}/images/categories/legal-office.webp`,
     imageAlt: "Abogado en un despacho nocturno conversando por teléfono.",
     href: "/registro",
@@ -47,7 +48,7 @@ const businessCategories: CategoryImageItem[] = [
     showTitle: true,
   },
   {
-    title: "MEJORAR TU IMAGEN DE MARCA",
+    title: "DISEÑO DE MODA",
     imageSrc: `${publicBasePath}/images/categories/brand-streetwear.webp`,
     imageAlt: "Prendas negras y bocetos de identidad visual en un estudio de diseño de moda.",
     href: "/registro",
@@ -55,7 +56,7 @@ const businessCategories: CategoryImageItem[] = [
     showTitle: true,
   },
   {
-    title: "DESARROLLAR VIDEOJUEGOS",
+    title: "DESARROLLO DE VIDEOJUEGOS",
     imageSrc: `${publicBasePath}/images/categories/game-development-studio.webp`,
     imageAlt: "Manos sosteniendo un teléfono con un videojuego de acción frente a pantallas de desarrollo.",
     href: "/registro",
@@ -65,12 +66,13 @@ const businessCategories: CategoryImageItem[] = [
 
 const specializedCategories: CategoryImageItem[] = [
   {
-    title: "AUTOMATIZAR PROCESOS",
+    title: "DISEÑO E IMPLEMENTACIÓN ROBÓTICA",
     imageSrc: `${publicBasePath}/images/categories/automatizar-procesos.webp`,
     imageAlt: "Operario con exotraje robótico levantando maquinaria pesada en una fábrica.",
     href: "/registro",
     showTitle: true,
     sizes: specializedImageSizes,
+    compactTitleOnMobile: true,
   },
   {
     title: "SOFTWARE A MEDIDA",
@@ -221,7 +223,7 @@ function FeatureMediaPanel({
   );
 }
 
-function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition, showTitle = false, sizes }: CategoryImageItem) {
+function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition, showTitle = false, sizes, compactTitleOnMobile }: CategoryImageItem) {
   return (
     <Link
       aria-label={`${title}. ${imageAlt}`}
@@ -240,7 +242,9 @@ function CategoryImageCard({ title, imageSrc, imageAlt, href, objectPosition, sh
       {showTitle ? (
         <>
           <span aria-hidden="true" className="category-image-card__overlay absolute inset-0" />
-          <span className="category-image-card__title absolute inset-x-4 bottom-4 z-10 break-words font-display text-xs font-bold leading-tight tracking-tight text-brand-white min-[375px]:text-sm min-[390px]:text-base sm:text-xl">
+          <span
+            className={`category-image-card__title absolute ${compactTitleOnMobile ? "inset-x-2 sm:inset-x-4 min-[375px]:text-[13px]" : "inset-x-4 min-[375px]:text-sm min-[390px]:text-base"} bottom-4 z-10 break-words font-display text-xs font-bold leading-tight tracking-tight text-brand-white sm:text-xl`}
+          >
             {title}
           </span>
         </>
