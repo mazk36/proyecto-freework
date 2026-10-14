@@ -9,7 +9,7 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { authContinuationHref, safeAppDestination } from "@/lib/auth-routing";
 
-const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
+const publicBasePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
 const inputClassName =
   "min-h-11 w-full rounded-xl border border-white/10 bg-[#161B22] py-2.5 pl-11 pr-4 text-base text-[#F8FAFC] outline-none placeholder:text-[#9BA7B6] focus:border-[#8A4DFF] focus:ring-2 focus:ring-[#8A4DFF]/35";
