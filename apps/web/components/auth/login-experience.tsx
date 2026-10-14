@@ -8,7 +8,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { authContinuationHref, safeAppDestination } from "@/lib/auth-routing";
-import reversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
+
+const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
 
 const inputClassName =
   "min-h-11 w-full rounded-xl border border-white/10 bg-[#161B22] py-2.5 pl-11 pr-4 text-base text-[#F8FAFC] outline-none placeholder:text-[#9BA7B6] focus:border-[#8A4DFF] focus:ring-2 focus:ring-[#8A4DFF]/35";
@@ -54,7 +55,7 @@ export function LoginExperience() {
 
   return (
     <main className="min-h-dvh overflow-x-hidden bg-[#080D17] p-2 text-[#F8FAFC] sm:p-3">
-      <div className="mx-auto grid min-h-[calc(100dvh-1rem)] w-full max-w-[92rem] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0D1117] shadow-[0_32px_100px_rgba(0,0,0,0.48)] min-[900px]:min-h-[calc(100dvh-1.5rem)] min-[900px]:grid-cols-[minmax(0,48fr)_minmax(0,52fr)]">
+      <div className="mx-auto grid min-h-[calc(100dvh-1rem)] w-full max-w-[92rem] overflow-hidden rounded-[1.5rem] border border-white/10 bg-[#0D1117] shadow-[0_32px_100px_rgba(0,0,0,0.48)] min-[768px]:min-h-[calc(100dvh-1.5rem)] min-[768px]:grid-cols-[minmax(0,48fr)_minmax(0,52fr)]">
         <section aria-labelledby="login-title" className="flex flex-col justify-center px-4 py-[clamp(0.625rem,1.5dvh,1rem)] sm:px-8 min-[900px]:px-8 xl:px-14">
           <div className="mx-auto flex w-full max-w-[27rem] flex-col gap-[clamp(0.625rem,1.75dvh,1.125rem)]">
             <Link
@@ -187,63 +188,30 @@ export function LoginExperience() {
           </div>
         </section>
 
-        <aside aria-label="Identidad de MatchWork" className="relative hidden min-h-full overflow-hidden bg-[#0B2A5B] min-[900px]:flex min-[900px]:items-center min-[900px]:justify-center min-[900px]:px-10 xl:px-14">
+        <aside aria-labelledby="login-promise-title" className="relative hidden min-h-full overflow-hidden bg-[#0B2A5B] min-[768px]:block">
+          <Image
+            alt=""
+            aria-hidden="true"
+            className="object-cover object-[68%_50%]"
+            fill
+            sizes="(min-width: 92rem) 46rem, 52vw"
+            src={`${publicBasePath}/images/auth/everest-login.webp`}
+            unoptimized
+          />
           <div
             aria-hidden="true"
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "radial-gradient(ellipse at 18% 18%, rgb(138 77 255 / 22%), transparent 34%), radial-gradient(ellipse at 82% 76%, rgb(35 89 160 / 40%), transparent 42%), linear-gradient(145deg, #0B2A5B 0%, #101c42 52%, #11152f 100%)",
+                "linear-gradient(180deg, rgba(7, 12, 23, 0.04) 0%, rgba(11, 42, 91, 0.12) 42%, rgba(7, 12, 23, 0.86) 100%)",
             }}
           />
-          <svg
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 size-full opacity-70"
-            fill="none"
-            preserveAspectRatio="none"
-            viewBox="0 0 900 760"
-          >
-            <g stroke="#D8C4FF" strokeOpacity=".24" strokeWidth="1.2">
-              <path d="M-55 132C86 126 99 258 207 275c89 14 127-43 191-31" />
-              <path d="M-40 592c101-3 146-86 240-92 57-4 89 14 135-3" />
-              <path d="M951 115c-117 8-142 113-235 128-51 8-81-1-116 20" />
-              <path d="M942 612c-113-17-149-95-250-85-67 7-86 37-140 26" />
-              <path d="M44 410c82-33 98-93 166-118" strokeOpacity=".14" />
-              <path d="M859 354c-89 24-113 71-183 79" strokeOpacity=".14" />
-            </g>
-            <g fill="#D8C4FF">
-              <circle cx="207" cy="275" r="3" />
-              <circle cx="191" cy="500" r="2.5" />
-              <circle cx="716" cy="243" r="3" />
-              <circle cx="692" cy="553" r="2.5" />
-              <circle cx="83" cy="131" r="2" />
-              <circle cx="811" cy="611" r="2" />
-            </g>
-            <g fill="#8A4DFF" fillOpacity=".9">
-              <circle cx="136" cy="173" r="2" />
-              <circle cx="758" cy="190" r="2" />
-              <circle cx="105" cy="589" r="2" />
-              <circle cx="792" cy="574" r="2" />
-            </g>
-          </svg>
-
-          <div className="relative z-10 flex w-full max-w-[34rem] flex-col items-center text-center">
-            <div className="w-full max-w-[25rem] drop-shadow-[0_12px_36px_rgba(4,10,28,0.32)]">
-              <Image
-                alt="MatchWork"
-                className="h-auto w-full object-contain"
-                height={reversedWordmark.height}
-                preload
-                src={reversedWordmark}
-                unoptimized
-                width={reversedWordmark.width}
-              />
-            </div>
-            <h2 className="mt-7 text-balance font-display text-2xl font-semibold leading-tight tracking-[-0.035em] text-[#F8FAFC] sm:text-3xl xl:text-[2.1rem]">
-              El talento correcto. La oportunidad correcta.
+          <div className="absolute inset-x-6 bottom-8 z-10 max-w-[34rem] sm:inset-x-8 sm:bottom-10 lg:inset-x-10 lg:bottom-12 xl:inset-x-14 xl:bottom-14">
+            <h2 className="text-balance font-display text-[1.75rem] font-semibold leading-[1.12] tracking-[-0.04em] text-[#F8FAFC] lg:text-[2.15rem] xl:text-[2.6rem]" id="login-promise-title">
+              Los humanos siempre hemos buscado <span className="text-[#D8C4FF]">retos.</span>
             </h2>
-            <p className="mt-3 max-w-[29rem] text-sm leading-6 text-[#D8C4FF]/90 sm:text-base sm:leading-7">
-              Donde los desafíos de las empresas encuentran soluciones creadas por el talento adecuado.
+            <p className="mt-4 max-w-[30rem] font-sans text-sm font-normal leading-6 text-[#F8FAFC]/90 sm:text-base sm:leading-7 lg:text-lg">
+              Resolver problemas es parte de quienes somos.
             </p>
           </div>
         </aside>
