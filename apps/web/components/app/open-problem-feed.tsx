@@ -14,13 +14,8 @@ export function OpenProblemFeed() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || user.role !== "freelancer") return;
     let active = true;
-    if (user.role !== "freelancer") {
-      setError("La exploración de problemas está disponible para cuentas freelancer.");
-      setIsLoading(false);
-      return;
-    }
     void listOpenBusinessProblems().then((items) => {
       if (active) setProblems(items);
     }).catch((loadError: unknown) => {
@@ -30,6 +25,16 @@ export function OpenProblemFeed() {
     });
     return () => { active = false; };
   }, [user]);
+
+  if (!user) return null;
+  if (user.role === "company") {
+    return (
+      <AppEmptyState
+        description="La búsqueda de perfiles públicos se habilitará cuando conectemos la consulta segura de portafolios. No se muestran perfiles de ejemplo."
+        title="Explora talento profesional"
+      />
+    );
+  }
 
   if (isLoading) return <main className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando problemas disponibles…</main>;
   if (error) return <AppEmptyState action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir Explorar." />;

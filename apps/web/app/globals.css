@@ -36,6 +36,18 @@
   --surface-raised: color-mix(in srgb, var(--brand-slate) 14%, var(--night-surface-raised));
 }
 
+.private-app-shell {
+  color-scheme: dark;
+  --background: var(--night-background);
+  --foreground: var(--brand-white);
+  --muted: #aab5c5;
+  --border: color-mix(in srgb, var(--brand-slate) 48%, transparent);
+  --accent-hover: #9d69ff;
+  --accent-foreground: var(--brand-white);
+  --surface: color-mix(in srgb, var(--brand-slate) 12%, var(--night-surface));
+  --surface-raised: color-mix(in srgb, var(--brand-slate) 18%, var(--night-surface-raised));
+}
+
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-sora);
