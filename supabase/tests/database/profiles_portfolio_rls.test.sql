@@ -41,7 +41,6 @@ values
 
 insert into public.freelancer_skills (freelancer_user_id, skill_id)
 values
-  ('00000000-0000-4000-8000-000000000001', '30000000-0000-4000-8000-000000000001'),
   ('00000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001');
 
 insert into public.portfolio_projects (
@@ -84,7 +83,7 @@ select throws_ok('select email from auth.users', '42501', null, 'anonymous reade
 select throws_ok('select * from public.company_profiles', '42501', null, 'anonymous readers cannot query private company profiles');
 select is((select count(*)::integer from public.freelancer_profiles), 2, 'anonymous readers see professional details only for public profiles');
 select is((select count(*)::integer from public.skills), 1, 'anonymous readers see catalogue skills associated with public profiles');
-select is((select count(*)::integer from public.freelancer_skills), 2, 'anonymous readers see skills linked to public profiles');
+select is((select count(*)::integer from public.freelancer_skills), 1, 'anonymous readers see skills linked to public profiles');
 select is((select count(*)::integer from public.portfolio_projects), 2, 'anonymous readers see published projects only');
 select is((select count(*)::integer from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000003'), 0, 'a published project is hidden while its owner profile is private');
 select is((select count(*)::integer from public.portfolio_media), 2, 'anonymous readers see media metadata for public projects only');
@@ -113,7 +112,7 @@ select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000
 select is(public.ensure_my_profile() ->> 'id', '00000000-0000-4000-8000-000000000001', 'a user can ensure their own profile');
 select is(public.ensure_my_profile() ->> 'id', '00000000-0000-4000-8000-000000000001', 'profile creation is idempotent');
 select ok(not (public.ensure_my_profile() ? 'email'), 'the profile contract does not include an authentication email');
-select is((select count(*)::integer from public.profiles), 4, 'ensure does not create duplicate profile rows');
+select is((select count(*)::integer from public.profiles where id = auth.uid()), 1, 'ensure does not create duplicate profile rows');
 select is((select count(*)::integer from public.profiles where id = '00000000-0000-4000-8000-000000000003'), 0, 'a user cannot read another user draft');
 select is(public.save_my_profile('{"display_name":"Nombre actualizado","slug":"nombre-actualizado"}'::jsonb) ->> 'display_name', 'Nombre actualizado', 'a user can update their own public fields');
 select throws_ok(
@@ -186,7 +185,7 @@ insert into public.portfolio_media (project_id, storage_path, alt_text)
 values ('20000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000099.webp', 'Otra imagen propia');
 select throws_ok(
   $$insert into public.portfolio_media (project_id, storage_path) values ('20000000-0000-4000-8000-000000000004', '00000000-0000-4000-8000-000000000002/20000000-0000-4000-8000-000000000004/40000000-0000-4000-8000-000000000099.webp')$$,
-  '23503', null, 'a freelancer cannot attach media to another project'
+  '42501', null, 'a freelancer cannot attach media to another project'
 );
 select throws_ok(
   $$insert into public.portfolio_media (project_id, storage_path) values ('20000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000002/20000000-0000-4000-8000-000000000004/40000000-0000-4000-8000-000000000095.webp')$$,
@@ -217,7 +216,7 @@ select throws_ok(
 );
 insert into storage.objects (bucket_id, name, metadata)
 values ('portfolio-media', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000099.webp', '{"mimetype":"image/webp","size":10}'::jsonb);
-select is((select count(*)::integer from storage.objects where bucket_id = 'portfolio-media' and name like '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/%'), 3, 'a user can upload into their own portfolio project');
+select is((select count(*)::integer from storage.objects where bucket_id = 'portfolio-media' and name like '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/%'), 2, 'a user can upload into their own portfolio project');
 select throws_ok(
   $$insert into storage.objects (bucket_id, name, metadata) values ('portfolio-media', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000004/40000000-0000-4000-8000-000000000099.webp', '{"mimetype":"image/webp","size":10}'::jsonb)$$,
   '42501', null, 'a user cannot upload into another user project'

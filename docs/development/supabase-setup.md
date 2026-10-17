@@ -36,3 +36,5 @@ Para GitHub Pages, añade `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUB
 Sin URL y publishable key, la aplicación no finge autenticación ni guardados: muestra que falta conectar Supabase. Sin aplicar la migración, Auth puede crear una cuenta pero el perfil y las operaciones del Camino A no podrán completarse.
 
 La arquitectura y los permisos de perfiles están en [docs/backend](../backend/profile-architecture.md). Para despliegues remotos, primero revisa `supabase db push --dry-run`, confirma respaldos recuperables de usuarios de Auth, PostgreSQL y objetos Storage, y espera autorización antes de aplicar cualquier migración. No ejecutes `supabase db reset --linked`.
+
+`supabase test db --local` habilita pgTAP mediante el primer archivo de prueba, por lo que los tests se pueden ejecutar después de un `supabase db reset --local` limpio sin habilitar extensiones a mano ni incluir pgTAP en migraciones de producción.

@@ -99,6 +99,22 @@ create table public.skills (
   created_at timestamptz not null default now()
 );
 
+create or replace function public.is_active_catalog_skill(p_skill_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select exists (
+    select 1 from public.skills s
+    where s.id = p_skill_id and s.is_active
+  )
+$$;
+
+revoke all on function public.is_active_catalog_skill(uuid) from public, anon, authenticated;
+grant execute on function public.is_active_catalog_skill(uuid) to authenticated;
+
 create table public.freelancer_skills (
   id uuid primary key default pg_catalog.gen_random_uuid(),
   freelancer_user_id uuid not null references public.freelancer_profiles (user_id) on delete cascade,
@@ -475,7 +491,7 @@ grant select (id, freelancer_user_id, title, description, category, project_peri
 grant select (id, project_id, storage_path, alt_text, sort_order, created_at)
   on table public.portfolio_media to anon, authenticated;
 
-grant insert (freelancer_user_id, headline, bio, location_text, years_experience, website_url, availability_status)
+grant insert (user_id, headline, bio, location_text, years_experience, website_url, availability_status)
   on table public.freelancer_profiles to authenticated;
 grant update (headline, bio, location_text, years_experience, website_url, availability_status)
   on table public.freelancer_profiles to authenticated;
@@ -573,7 +589,7 @@ create policy freelancer_skills_insert_self on public.freelancer_skills
     )
     and (
       skill_id is null
-      or exists (select 1 from public.skills s where s.id = freelancer_skills.skill_id and s.is_active)
+      or public.is_active_catalog_skill(freelancer_skills.skill_id)
     )
   );
 create policy freelancer_skills_update_self on public.freelancer_skills
@@ -588,7 +604,7 @@ create policy freelancer_skills_update_self on public.freelancer_skills
     )
     and (
       skill_id is null
-      or exists (select 1 from public.skills s where s.id = freelancer_skills.skill_id and s.is_active)
+      or public.is_active_catalog_skill(freelancer_skills.skill_id)
     )
   );
 create policy freelancer_skills_delete_self on public.freelancer_skills
