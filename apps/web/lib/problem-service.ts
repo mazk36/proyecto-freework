@@ -9,6 +9,7 @@ import {
   type ProblemDraft,
   type ProblemStatus,
   type PublicProblem,
+  validateCompanyProfile,
 } from "@/lib/problem-domain";
 import type { Json } from "@/types/database";
 
@@ -21,15 +22,22 @@ export async function getCompanyProfile(): Promise<CompanyProfile | null> {
     companyName: stringValue(data.company_name),
     industry: stringValue(data.industry),
     countryCode: stringValue(data.country_code) || "PE",
+    description: stringValue(data.description),
+    websiteUrl: stringValue(data.website_url),
   };
 }
 
 export async function saveCompanyProfile(profile: CompanyProfile): Promise<CompanyProfile> {
+  const validationError = validateCompanyProfile(profile);
+  if (validationError) throw new ProblemServiceError(validationError);
+
   const data = await callRpc("save_company_profile", {
     p_profile: {
       company_name: profile.companyName.trim(),
       industry: profile.industry.trim(),
       country_code: profile.countryCode,
+      description: profile.description?.trim() ?? "",
+      website_url: profile.websiteUrl?.trim() ?? "",
     },
   });
   if (!isRecord(data)) throw new ProblemServiceError("No pudimos guardar el perfil empresarial.");
@@ -37,6 +45,8 @@ export async function saveCompanyProfile(profile: CompanyProfile): Promise<Compa
     companyName: stringValue(data.company_name),
     industry: stringValue(data.industry),
     countryCode: stringValue(data.country_code) || "PE",
+    description: stringValue(data.description),
+    websiteUrl: stringValue(data.website_url),
   };
 }
 

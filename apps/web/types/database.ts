@@ -48,6 +48,8 @@ export type Database = {
           location_text: string | null;
           years_experience: number | null;
           website_url: string | null;
+          linkedin_url: string | null;
+          github_url: string | null;
           availability_status: string | null;
           created_at: string;
           updated_at: string;
@@ -59,6 +61,8 @@ export type Database = {
           location_text?: string | null;
           years_experience?: number | null;
           website_url?: string | null;
+          linkedin_url?: string | null;
+          github_url?: string | null;
           availability_status?: string | null;
         };
         Update: {
@@ -67,6 +71,8 @@ export type Database = {
           location_text?: string | null;
           years_experience?: number | null;
           website_url?: string | null;
+          linkedin_url?: string | null;
+          github_url?: string | null;
           availability_status?: string | null;
         };
         Relationships: [
@@ -158,6 +164,7 @@ export type Database = {
           category: string | null;
           project_period: string | null;
           external_url: string | null;
+          skills_used: string[];
           cover_image_path: string | null;
           sort_order: number;
           is_published: boolean;
@@ -171,6 +178,7 @@ export type Database = {
           category?: string | null;
           project_period?: string | null;
           external_url?: string | null;
+          skills_used?: string[];
           cover_image_path?: string | null;
           sort_order?: number;
           is_published?: boolean;
@@ -181,6 +189,7 @@ export type Database = {
           category?: string | null;
           project_period?: string | null;
           external_url?: string | null;
+          skills_used?: string[];
           cover_image_path?: string | null;
           sort_order?: number;
           is_published?: boolean;

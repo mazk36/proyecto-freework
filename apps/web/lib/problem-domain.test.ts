@@ -4,6 +4,7 @@ import {
   isCompanyProfileComplete,
   validateProblemForPublishing,
   validateProblemStep,
+  validateCompanyProfile,
   type ProblemDraft,
 } from "@/lib/problem-domain";
 
@@ -42,5 +43,19 @@ describe("company problem publication rules", () => {
   it("requires business profile fields before company publishing", () => {
     expect(isCompanyProfileComplete({ companyName: "Acme", industry: "Comercio", countryCode: "PE" })).toBe(true);
     expect(isCompanyProfileComplete({ companyName: "", industry: "Comercio", countryCode: "PE" })).toBe(false);
+  });
+
+  it("validates the supported company description and website fields", () => {
+    const profile = {
+      companyName: "Acme",
+      industry: "Comercio",
+      countryCode: "PE",
+      description: "Empresa de comercio local.",
+      websiteUrl: "https://acme.example",
+    };
+
+    expect(validateCompanyProfile(profile)).toBeNull();
+    expect(validateCompanyProfile({ ...profile, websiteUrl: "javascript:alert(1)" })).toContain("http o https");
+    expect(validateCompanyProfile({ ...profile, description: "x".repeat(3001) })).toContain("3000");
   });
 });

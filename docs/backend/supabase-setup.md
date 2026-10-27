@@ -63,4 +63,6 @@ La app existente requiere `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_PUB
 
 ## Estado de este checkout
 
-El CLI de Supabase, Docker y `psql` no están instalados aquí. No se han consultado tablas, usuarios o buckets remotos y no se ha aplicado ninguna migración a Supabase. Por ello, las condiciones reales del proyecto, su historial de migraciones y la existencia de copias recuperables aún deben verificarse manualmente antes del despliegue.
+Despliegue verificado el 2026-10-19 en el proyecto enlazado `kcbooheuultksqljujfk`. La migración base `20261009010000` ya tenía sus objetos materializados y se registró mediante `migration repair`; después se aplicaron `20261014010000`, `20261019010000` y `20261019020000` con `db push --linked`. El dry-run posterior no encuentra migraciones pendientes. El respaldo `MatchWork-production-20261019.tar.gz` conserva su checksum verificado y ya se ensayó su restauración aislada.
+
+La comprobación remota encontró 2 usuarios Auth, 2 perfiles privados tras el backfill, cero proyectos y cero objetos. Los buckets `avatars` y `portfolio-media` tienen la visibilidad, límites y tipos MIME definidos por la migración; las tablas profesionales tienen RLS, y el lint remoto de `public` no encontró errores. No se crearon usuarios ni archivos de prueba persistentes. Las pruebas pgTAP siguen pasando localmente (105 aserciones); el proyecto remoto no tiene pgTAP habilitado y no se instaló allí solo para ejecutar las pruebas.

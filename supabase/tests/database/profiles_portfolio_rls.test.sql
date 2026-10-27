@@ -34,6 +34,11 @@ where user_id in (
   '00000000-0000-4000-8000-000000000003'
 );
 
+update public.freelancer_profiles
+set linkedin_url = 'https://www.linkedin.com/in/freelancer-dos',
+    github_url = 'https://github.com/freelancer-dos'
+where user_id = '00000000-0000-4000-8000-000000000002';
+
 insert into public.skills (id, slug, name, category, is_active)
 values
   ('30000000-0000-4000-8000-000000000001', 'postgresql', 'PostgreSQL', 'Programación', true),
@@ -44,12 +49,12 @@ values
   ('00000000-0000-4000-8000-000000000002', '30000000-0000-4000-8000-000000000001');
 
 insert into public.portfolio_projects (
-  id, freelancer_user_id, title, is_published
+  id, freelancer_user_id, title, is_published, skills_used
 ) values
-  ('20000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000001', 'Proyecto publicado', true),
-  ('20000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000001', 'Proyecto borrador', false),
-  ('20000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000003', 'Proyecto de perfil privado', true),
-  ('20000000-0000-4000-8000-000000000004', '00000000-0000-4000-8000-000000000002', 'Otro proyecto publicado', true);
+  ('20000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000001', 'Proyecto publicado', true, array['PostgreSQL', 'Automatización']),
+  ('20000000-0000-4000-8000-000000000002', '00000000-0000-4000-8000-000000000001', 'Proyecto borrador', false, '{}'::text[]),
+  ('20000000-0000-4000-8000-000000000003', '00000000-0000-4000-8000-000000000003', 'Proyecto de perfil privado', true, array['Privada']),
+  ('20000000-0000-4000-8000-000000000004', '00000000-0000-4000-8000-000000000002', 'Otro proyecto publicado', true, array['Diseño']);
 
 insert into public.portfolio_media (project_id, storage_path, alt_text)
 values
@@ -82,10 +87,14 @@ select throws_ok('select * from public.app_users', '42501', null, 'anonymous rea
 select throws_ok('select email from auth.users', '42501', null, 'anonymous readers cannot query authentication records');
 select throws_ok('select * from public.company_profiles', '42501', null, 'anonymous readers cannot query private company profiles');
 select is((select count(*)::integer from public.freelancer_profiles), 2, 'anonymous readers see professional details only for public profiles');
+select is((select count(*)::integer from public.freelancer_profiles where user_id = '00000000-0000-4000-8000-000000000002' and linkedin_url = 'https://www.linkedin.com/in/freelancer-dos'), 1, 'professional links are readable on a published profile');
+select is((select count(*)::integer from public.freelancer_profiles where user_id = '00000000-0000-4000-8000-000000000003' and linkedin_url is not null), 0, 'professional links remain hidden on a private profile');
 select is((select count(*)::integer from public.skills), 1, 'anonymous readers see catalogue skills associated with public profiles');
 select is((select count(*)::integer from public.freelancer_skills), 1, 'anonymous readers see skills linked to public profiles');
 select is((select count(*)::integer from public.portfolio_projects), 2, 'anonymous readers see published projects only');
+select is((select skills_used from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000001'), array['PostgreSQL', 'Automatización'], 'visitors can see skills used in a published project');
 select is((select count(*)::integer from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000003'), 0, 'a published project is hidden while its owner profile is private');
+select is((select count(*)::integer from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000003' and cardinality(skills_used) > 0), 0, 'skills used in private projects stay hidden');
 select is((select count(*)::integer from public.portfolio_media), 2, 'anonymous readers see media metadata for public projects only');
 select is((select count(*)::integer from storage.objects where bucket_id = 'portfolio-media'), 2, 'private portfolio object metadata is visible only for published projects');
 select throws_ok(
@@ -147,6 +156,19 @@ select throws_ok(
 );
 update public.freelancer_profiles set headline = 'Actualizado por su titular' where user_id = auth.uid();
 select is((select headline from public.freelancer_profiles where user_id = auth.uid()), 'Actualizado por su titular', 'freelancer can edit their own professional details');
+update public.freelancer_profiles
+set linkedin_url = 'https://www.linkedin.com/in/freelancer-uno',
+    github_url = 'https://github.com/freelancer-uno'
+where user_id = auth.uid();
+select is((select github_url from public.freelancer_profiles where user_id = auth.uid()), 'https://github.com/freelancer-uno', 'freelancers can save their own social links');
+update public.freelancer_profiles
+set linkedin_url = 'https://www.linkedin.com/in/otro', github_url = 'https://github.com/otro'
+where user_id = '00000000-0000-4000-8000-000000000002';
+select is((select github_url from public.freelancer_profiles where user_id = '00000000-0000-4000-8000-000000000002'), 'https://github.com/freelancer-dos', 'freelancers cannot change another profile social links');
+select throws_ok(
+  $$update public.freelancer_profiles set linkedin_url = 'https://linkedin.com.attacker.test/in/fake' where user_id = auth.uid()$$,
+  '23514', null, 'social links must use their approved destination domain'
+);
 update public.freelancer_profiles set headline = 'Intento cruzado' where user_id = '00000000-0000-4000-8000-000000000002';
 select is((select headline from public.freelancer_profiles where user_id = '00000000-0000-4000-8000-000000000002'), 'Diseñador de producto', 'freelancer cannot edit another professional profile');
 insert into public.freelancer_skills (freelancer_user_id, skill_id)
@@ -167,9 +189,17 @@ select throws_ok(
 );
 update public.freelancer_skills set custom_name = 'Habilidad ajena' where freelancer_user_id = '00000000-0000-4000-8000-000000000002';
 select is((select count(*)::integer from public.freelancer_skills where freelancer_user_id = '00000000-0000-4000-8000-000000000002' and skill_id = '30000000-0000-4000-8000-000000000001'), 1, 'freelancer cannot update another skill relation');
-insert into public.portfolio_projects (freelancer_user_id, title)
-values (auth.uid(), 'Mi proyecto en borrador');
+insert into public.portfolio_projects (freelancer_user_id, title, skills_used)
+values (auth.uid(), 'Mi proyecto en borrador', array['Automatización']);
 select is((select count(*)::integer from public.portfolio_projects where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador' and not is_published), 1, 'new projects start as drafts');
+select is((select skills_used from public.portfolio_projects where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador'), array['Automatización'], 'project owners can save skills used');
+update public.portfolio_projects set skills_used = array['Automatización', 'PostgreSQL']
+where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador';
+select is((select cardinality(skills_used)::integer from public.portfolio_projects where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador'), 2, 'project owners can edit skills used');
+select throws_ok(
+  $$update public.portfolio_projects set skills_used = array_fill('habilidad'::text, array[21]) where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador'$$,
+  '23514', null, 'projects limit the number of skills used'
+);
 update public.portfolio_projects set is_published = true
 where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador';
 select is((select count(*)::integer from public.portfolio_projects where freelancer_user_id = auth.uid() and title = 'Mi proyecto en borrador' and is_published), 1, 'an owner can explicitly publish their project');
@@ -179,6 +209,8 @@ select throws_ok(
 );
 update public.portfolio_projects set title = 'Intento de edición ajena' where id = '20000000-0000-4000-8000-000000000004';
 select is((select title from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000004'), 'Otro proyecto publicado', 'a freelancer cannot edit another project');
+update public.portfolio_projects set skills_used = array['Manipulada'] where id = '20000000-0000-4000-8000-000000000004';
+select is((select skills_used from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000004'), array['Diseño'], 'a freelancer cannot edit skills on another project');
 delete from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000004';
 select is((select count(*)::integer from public.portfolio_projects where id = '20000000-0000-4000-8000-000000000004'), 1, 'a freelancer cannot delete another project');
 insert into public.portfolio_media (project_id, storage_path, alt_text)

@@ -71,12 +71,14 @@ const { error } = await supabase
     location_text: "Lima, Perú",
     years_experience: 6,
     website_url: "https://example.com",
+    linkedin_url: "https://www.linkedin.com/in/perfil",
+    github_url: "https://github.com/perfil",
     availability_status: "available",
   })
   .eq("user_id", user.id);
 ```
 
-`availability_status` es texto opcional limitado a 40 caracteres; sus valores visibles deben acordarse en la futura UI. No existe una taxonomía de disponibilidad aprobada por esta migración.
+`linkedin_url` y `github_url` se agregan mediante `20261019010000_freelancer_social_links.sql`; ambos aceptan solo URLs `http(s)` de sus respectivos dominios. `availability_status` es texto opcional limitado a 40 caracteres; no hay una taxonomía de disponibilidad aprobada.
 
 ## Habilidades
 
@@ -123,6 +125,13 @@ const { data, error } = await supabase.storage
 ```
 
 El plazo del ejemplo es ilustrativo. La autorización del enlace se verifica con RLS al crearlo.
+
+La aplicación utiliza `portfolio_projects.cover_image_path` para la imagen principal y solicita URLs firmadas de corta duración. RLS solo permite leer una imagen propia o una imagen de un proyecto publicado cuyo perfil también sea público.
+`portfolio_projects.skills_used` se añade con `20261019020000_portfolio_project_skills.sql`; guarda hasta 20 etiquetas profesionales por proyecto y hereda la privacidad de su fila.
+
+## Ruta pública estática
+
+La vista pública se sirve desde `/profesionales/?slug={profiles.slug}`. El documento HTML es estático y consulta el slug desde el navegador; RLS devuelve únicamente perfiles públicos y sus proyectos publicados. No se usa una ruta dinámica que requiera prerenderizar perfiles desconocidos en GitHub Pages.
 
 ## Errores esperados
 

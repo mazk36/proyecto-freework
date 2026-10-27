@@ -42,6 +42,8 @@ export type CompanyProfile = {
   companyName: string;
   industry: string;
   countryCode: string;
+  description?: string;
+  websiteUrl?: string;
 };
 
 export type ProblemDraft = {
@@ -103,6 +105,39 @@ export function isCompanyProfileComplete(
   profile: CompanyProfile | null,
 ): profile is CompanyProfile {
   return Boolean(profile?.companyName.trim() && profile.industry.trim() && /^[A-Z]{2}$/.test(profile.countryCode));
+}
+
+export function validateCompanyProfile(profile: CompanyProfile): string | null {
+  const companyName = profile.companyName.trim();
+  const industry = profile.industry.trim();
+  const description = profile.description?.trim() ?? "";
+  const websiteUrl = profile.websiteUrl?.trim() ?? "";
+
+  if (companyName.length < 2 || companyName.length > 160) {
+    return "El nombre comercial debe tener entre 2 y 160 caracteres.";
+  }
+  if (industry.length < 2 || industry.length > 100) {
+    return "El sector debe tener entre 2 y 100 caracteres.";
+  }
+  if (!/^[A-Z]{2}$/.test(profile.countryCode)) {
+    return "Selecciona un país válido.";
+  }
+  if (description.length > 3000) {
+    return "La descripción admite hasta 3000 caracteres.";
+  }
+  if (websiteUrl) {
+    try {
+      const url = new URL(websiteUrl);
+      if ((url.protocol !== "https:" && url.protocol !== "http:") || !url.hostname || url.username || url.password) {
+        return "Introduce un sitio web con una URL http o https válida.";
+      }
+    } catch {
+      return "Introduce la URL completa de tu sitio, por ejemplo https://empresa.com.";
+    }
+    if (websiteUrl.length > 2048) return "El sitio web admite hasta 2048 caracteres.";
+  }
+
+  return null;
 }
 
 export function validateProblemStep(step: number, draft: ProblemDraft): string[] {
