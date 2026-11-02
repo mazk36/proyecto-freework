@@ -24,6 +24,14 @@ El catálogo `skills` no concede `INSERT`, `UPDATE` ni `DELETE` a clientes. Los 
 
 El trigger de registro comparte la transacción del alta de Auth y, por eso, un error SQL puede rechazar un registro. Se conserva como mecanismo atómico ya usado por `app_users`; `ensure_my_profile()` permite completar de forma idempotente perfiles de cuentas existentes sin confiar en metadata de Auth. La prueba de trigger debe correrse en Supabase local antes del despliegue.
 
+## Propuestas
+
+La migración de `proposals` activa RLS y deniega todo acceso a `anon`. Un freelancer autenticado lee sus propias propuestas, incluidas las retiradas; la empresa dueña del problema solo lee las enviadas. Ningún cliente puede insertar, actualizar ni eliminar filas directamente. Una función `SECURITY DEFINER` de solo lectura comprueba la propiedad del problema para la política de la empresa, sin conceder acceso a `business_problems`.
+
+Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uuid)` y `withdraw_proposal(uuid)`, todas con `search_path` fijo, comprobación del rol persistido y del problema abierto. En la edición se comprueba además que la propuesta sea del autor y siga en borrador; el envío y retiro comprueban propiedad y transición de estado. Los bloqueos mantienen el problema abierto durante cada transacción. El índice único parcial impide más de una propuesta no retirada por freelancer y problema; retirar conserva el historial y permite crear otra.
+
+La prueba `supabase/tests/database/proposals_rls.test.sql` cubre permisos, aislamiento por propietario, validaciones y transiciones. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
 ## Storage
 
 `avatars` es público: cualquier persona con la URL puede recuperar el archivo incluso si el perfil es borrador. Los controles de Storage siguen exigiendo autenticación para subir, reemplazar o borrar y limitan la ruta a la carpeta del usuario.

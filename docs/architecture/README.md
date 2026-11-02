@@ -10,4 +10,4 @@ Los portafolios profesionales se basan en `profiles`, `freelancer_profiles`, `fr
 
 No hay datasets mock en la aplicación. Las secciones sin fuente de datos muestran estados vacíos. Las funciones puras de Discovery y sus pruebas permanecen separadas de la presentación para conservar la lógica de dominio sin alimentar la UI con contenido de ejemplo.
 
-La migración para el Camino A está en `supabase/migrations`. Aplica los pasos de configuración descritos en [integración Supabase](company-proposals-integration.md) y [flujo de desarrollo](../development/supabase-setup.md) antes de probar cuentas o publicaciones reales. El módulo de propuestas y adjudicación aún no tiene tablas ni servicios.
+Las migraciones están en `supabase/migrations`. La base de propuestas está definida en una migración, pero aún no está integrada con la aplicación ni incluye adjudicación. Consulta el [contrato de propuestas](company-proposals-integration.md) y el [flujo de desarrollo](../development/supabase-setup.md) antes de probar cuentas, publicaciones o propuestas reales.
