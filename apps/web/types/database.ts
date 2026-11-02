@@ -1,3 +1,5 @@
+import type { FreelancerProblemInteraction } from "@/types/domain";
+
 export type Json =
   | string
   | number
@@ -8,6 +10,7 @@ export type Json =
 
 type ProblemStatus = "draft" | "open" | "paused" | "closed";
 type ProposalStatus = "draft" | "submitted" | "withdrawn";
+type StoredProblemInteraction = Exclude<FreelancerProblemInteraction, "unseen">;
 
 export type Database = {
   public: {
@@ -282,6 +285,33 @@ export type Database = {
           },
         ];
       };
+      freelancer_problem_interactions: {
+        Row: {
+          freelancer_id: string;
+          problem_id: string;
+          state: StoredProblemInteraction;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "freelancer_problem_interactions_freelancer_id_fkey";
+            columns: ["freelancer_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "freelancer_problem_interactions_problem_id_fkey";
+            columns: ["problem_id"];
+            isOneToOne: false;
+            referencedRelation: "business_problems";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -299,6 +329,14 @@ export type Database = {
       save_proposal_draft: { Args: { p_problem_id: string; p_data: Json }; Returns: string };
       submit_proposal: { Args: { p_proposal_id: string }; Returns: string };
       withdraw_proposal: { Args: { p_proposal_id: string }; Returns: string };
+      set_problem_interaction: {
+        Args: { p_problem_id: string; p_next: StoredProblemInteraction | null };
+        Returns: StoredProblemInteraction | null;
+      };
+      list_my_problem_interactions: {
+        Args: Record<string, never>;
+        Returns: { problem_id: string; state: StoredProblemInteraction; updated_at: string }[];
+      };
     };
     Enums: {
       user_role: "company" | "freelancer";

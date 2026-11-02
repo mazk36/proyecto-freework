@@ -255,6 +255,8 @@ export function toFriendlyError(message: string): string {
   if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
   if (/proposal not found/i.test(message)) return "No encontramos esta propuesta o ya no tienes acceso.";
+  if (/open problem required for interaction/i.test(message)) return "Este problema ya no está disponible para esta acción.";
+  if (/invalid problem interaction state/i.test(message)) return "La acción seleccionada para este problema no es válida.";
   if (/open problem required/i.test(message)) return "Este problema ya no está disponible para recibir propuestas.";
   if (/invalid proposal currency/i.test(message)) return "Selecciona una moneda válida: PEN o USD.";
   if (/invalid proposal price/i.test(message)) return "Ingresa un precio válido mayor o igual a cero.";

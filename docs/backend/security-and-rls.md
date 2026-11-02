@@ -32,6 +32,14 @@ Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uu
 
 La prueba `supabase/tests/database/proposals_rls.test.sql` cubre permisos, aislamiento por propietario, validaciones y transiciones. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
 
+## Interacciones del freelancer con problemas
+
+`freelancer_problem_interactions` tiene RLS: solo un freelancer autenticado puede leer sus propias filas. `anon` no tiene acceso y los clientes autenticados no tienen escrituras directas. Los RPC `set_problem_interaction(uuid, text)` y `list_my_problem_interactions()` verifican el rol persistido con `require_freelancer_user`, usan `SECURITY DEFINER` con `search_path = ''` y no aceptan un propietario indicado por el cliente.
+
+La ausencia de fila representa `unseen`. Solo se guardan `saved`, `dismissed` y `proposal_submitted`; deshacer elimina `saved` o `dismissed`, incluso si el problema dejó de estar abierto. Las demás transiciones no permitidas conservan el estado. Para las acciones distintas de deshacer, el problema debe estar abierto. Se bloquean el problema, la cuenta del freelancer y la fila existente para serializar también las primeras interacciones. Enviar una propuesta aplica la transición a `proposal_submitted` en la misma transacción si estaba sin interacción o guardada; respeta `dismissed`. Retirarla no cambia la interacción.
+
+`supabase/tests/database/freelancer_problem_interactions.test.sql` contiene la matriz de 16 transiciones compartida con Vitest y comprueba permisos, aislamiento y envío. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
 ## Storage
 
 `avatars` es público: cualquier persona con la URL puede recuperar el archivo incluso si el perfil es borrador. Los controles de Storage siguen exigiendo autenticación para subir, reemplazar o borrar y limitan la ruta a la carpeta del usuario.
