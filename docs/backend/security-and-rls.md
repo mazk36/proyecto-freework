@@ -30,7 +30,9 @@ La migración de `proposals` activa RLS y deniega todo acceso a `anon`. Un freel
 
 Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uuid)` y `withdraw_proposal(uuid)`, todas con `search_path` fijo, comprobación del rol persistido y del problema abierto. En la edición se comprueba además que la propuesta sea del autor y siga en borrador; el envío y retiro comprueban propiedad y transición de estado. Los bloqueos mantienen el problema abierto durante cada transacción. El índice único parcial impide más de una propuesta no retirada por freelancer y problema; retirar conserva el historial y permite crear otra.
 
-La prueba `supabase/tests/database/proposals_rls.test.sql` cubre permisos, aislamiento por propietario, validaciones y transiciones. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+Las pruebas `supabase/tests/database/proposals_rls.test.sql` y `supabase/tests/database/proposal_input_limits.test.sql` cubren permisos, aislamiento por propietario, validaciones, límites y transiciones. Deben ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
+Pendiente para la fase anti-spam: definir cuotas y límites de frecuencia para las propuestas.
 
 ## Interacciones del freelancer con problemas
 

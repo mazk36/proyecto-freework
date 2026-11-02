@@ -59,4 +59,12 @@ describe("proposal service", () => {
     await expect(listMyProposals()).rejects.toThrow("Inicia sesión para continuar.");
     expect(mocks.from).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ["proposal field too long", "Uno de los campos de tu propuesta supera el límite de caracteres permitido."],
+    ["invalid proposal price", "Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales."],
+  ])("translates the %s RPC error", async (message, expected) => {
+    mocks.rpc.mockResolvedValue({ data: null, error: { message } });
+    await expect(saveProposalDraft("problem-id", createEmptyProposalDraft())).rejects.toThrow(expected);
+  });
 });

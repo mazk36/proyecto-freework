@@ -260,7 +260,8 @@ export function toFriendlyError(message: string): string {
   if (/invalid problem interaction state/i.test(message)) return "La acción seleccionada para este problema no es válida.";
   if (/open problem required/i.test(message)) return "Este problema ya no está disponible para recibir propuestas.";
   if (/invalid proposal currency/i.test(message)) return "Selecciona una moneda válida: PEN o USD.";
-  if (/invalid proposal price/i.test(message)) return "Ingresa un precio válido mayor o igual a cero.";
+  if (/invalid proposal price/i.test(message)) return "Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales.";
+  if (/proposal field too long/i.test(message)) return "Uno de los campos de tu propuesta supera el límite de caracteres permitido.";
   if (/proposal requires/i.test(message)) return "Completa el diagnóstico, la solución, los entregables, el plazo y el precio antes de enviar tu propuesta.";
   if (/proposals_one_active_per_problem_freelancer_idx/i.test(message)) return "Ya tienes una propuesta activa para este problema.";
   if (/not found|does not exist/i.test(message)) return "No encontramos esta publicación o ya no tienes acceso.";

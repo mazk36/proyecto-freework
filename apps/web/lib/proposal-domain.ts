@@ -51,8 +51,26 @@ export function validateProposalForSubmit(input: ProposalDraftInput): string[] {
   if (!input.solution.trim()) errors.push("Describe la solución que propones.");
   if (!input.deliverables.trim()) errors.push("Describe los entregables de tu propuesta.");
   if (!input.timeline.trim()) errors.push("Indica el plazo de tu propuesta.");
+  const textLimits = [
+    ["diagnosis", 5000, "El diagnóstico no puede superar los 5000 caracteres."],
+    ["solution", 5000, "La solución no puede superar los 5000 caracteres."],
+    ["deliverables", 5000, "Los entregables no pueden superar los 5000 caracteres."],
+    ["timeline", 300, "El plazo no puede superar los 300 caracteres."],
+    ["recurringCosts", 2000, "Los costos recurrentes no pueden superar los 2000 caracteres."],
+    ["maintenanceWarranty", 2000, "El mantenimiento y la garantía no pueden superar los 2000 caracteres."],
+    ["relatedExperience", 2000, "La experiencia relacionada no puede superar los 2000 caracteres."],
+  ] as const;
+  for (const [field, limit, message] of textLimits) {
+    // PostgreSQL char_length counts Unicode code points, not UTF-16 code units.
+    if (Array.from(input[field]).length > limit) errors.push(message);
+  }
   if (input.price === null) errors.push("Indica el precio de tu propuesta.");
-  else if (!Number.isFinite(input.price) || input.price < 0) errors.push("Ingresa un precio válido mayor o igual a cero.");
+  else if (
+    !Number.isFinite(input.price)
+    || input.price < 0
+    || input.price > 9999999999.99
+    || Math.round(input.price * 100) / 100 !== input.price
+  ) errors.push("Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales.");
   if (input.currency !== "PEN" && input.currency !== "USD") errors.push("Selecciona una moneda válida: PEN o USD.");
   return errors;
 }

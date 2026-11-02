@@ -34,11 +34,31 @@ describe("proposal domain", () => {
     expect(validateProposalForSubmit(completeDraft({ [field]: "  " }))).toEqual([message]);
   });
 
-  it("requires a finite nonnegative price and a supported currency", () => {
+  it.each([
+    ["diagnosis", 5000, "El diagnóstico no puede superar los 5000 caracteres."],
+    ["solution", 5000, "La solución no puede superar los 5000 caracteres."],
+    ["deliverables", 5000, "Los entregables no pueden superar los 5000 caracteres."],
+    ["timeline", 300, "El plazo no puede superar los 300 caracteres."],
+    ["recurringCosts", 2000, "Los costos recurrentes no pueden superar los 2000 caracteres."],
+    ["maintenanceWarranty", 2000, "El mantenimiento y la garantía no pueden superar los 2000 caracteres."],
+    ["relatedExperience", 2000, "La experiencia relacionada no puede superar los 2000 caracteres."],
+  ] as const)("accepts the character limit for %s and rejects one extra character", (field, limit, message) => {
+    expect(validateProposalForSubmit(completeDraft({ [field]: "😀".repeat(limit) }))).toEqual([]);
+    expect(validateProposalForSubmit(completeDraft({ [field]: "😀".repeat(limit) + "x" }))).toEqual([message]);
+  });
+
+  it("requires a finite price from zero to the maximum, with at most two decimals", () => {
     expect(validateProposalForSubmit(completeDraft({ price: null }))).toContain("Indica el precio de tu propuesta.");
-    for (const price of [-1, NaN, Infinity]) {
-      expect(validateProposalForSubmit(completeDraft({ price }))).toContain("Ingresa un precio válido mayor o igual a cero.");
+    for (const price of [0, 0.29, 125.5, 9999999999.99]) {
+      expect(validateProposalForSubmit(completeDraft({ price }))).toEqual([]);
     }
+    for (const price of [-1, NaN, Infinity, -Infinity, 0.004, 1.001, 10000000000]) {
+      expect(validateProposalForSubmit(completeDraft({ price })))
+        .toContain("Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales.");
+    }
+  });
+
+  it("requires a supported currency", () => {
     expect(validateProposalForSubmit(completeDraft({ currency: "EUR" as ProposalDraftInput["currency"] })))
       .toContain("Selecciona una moneda válida: PEN o USD.");
   });
