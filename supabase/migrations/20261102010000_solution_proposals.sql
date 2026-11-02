@@ -239,24 +239,11 @@ set search_path = ''
 as $$
 declare
   v_user_id uuid := public.require_freelancer_user();
-  v_problem_id uuid;
   v_proposal public.proposals%rowtype;
 begin
-  select p.problem_id into v_problem_id from public.proposals p
-  where p.id = p_proposal_id and p.freelancer_id = v_user_id;
-  if not found then
-    raise exception 'proposal not found' using errcode = '42501';
-  end if;
-
-  perform 1 from public.business_problems p
-  where p.id = v_problem_id and p.status = 'open'::public.business_problem_status
-  for share;
-  if not found then
-    raise exception 'open problem required' using errcode = '22023';
-  end if;
-
+  -- The author may withdraw even when the problem is paused or closed.
   select p.* into v_proposal from public.proposals p
-  where p.id = p_proposal_id and p.freelancer_id = v_user_id and p.problem_id = v_problem_id
+  where p.id = p_proposal_id and p.freelancer_id = v_user_id
   for update;
   if not found then
     raise exception 'proposal not found' using errcode = '42501';

@@ -1,6 +1,6 @@
 begin;
 
-select plan(74);
+select plan(73);
 
 set local role anon;
 select throws_ok(
@@ -254,7 +254,6 @@ select throws_ok(
   '22023', null, 'a draft cannot be edited while the problem is paused'
 );
 select throws_ok($$select public.submit_proposal(current_setting('test.proposal_id')::uuid)$$, '22023', null, 'a proposal cannot be submitted while the problem is paused');
-select throws_ok($$select public.withdraw_proposal(current_setting('test.proposal_id')::uuid)$$, '22023', null, 'a proposal cannot be withdrawn while the problem is paused');
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
@@ -310,9 +309,14 @@ select set_config(
   true
 );
 select is((select count(*) from public.proposals), 2::bigint, 'a withdrawn proposal permits a new draft and preserves history');
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+select public.transition_business_problem('10000000-0000-4000-8000-000000000001', 'pause');
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000003', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
 select is(
   public.withdraw_proposal(current_setting('test.replacement_id')::uuid)::text,
-  current_setting('test.replacement_id'), 'the author can also withdraw a draft'
+  current_setting('test.replacement_id'), 'the author can withdraw a draft even while the problem is paused'
 );
 
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000001', true);
