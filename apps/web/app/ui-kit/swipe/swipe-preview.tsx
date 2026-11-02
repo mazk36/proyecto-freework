@@ -39,7 +39,7 @@ const navigation = [
 ];
 
 export function SwipePreview() {
-  return <div className="private-app-shell min-h-dvh bg-background text-foreground">
+  return <div className="private-app-shell swipe-preview min-h-dvh bg-background text-foreground">
     <header className="border-b border-border"><div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6"><MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" /><span className="rounded-full border border-warning/40 bg-warning-soft px-3 py-1 text-xs font-semibold text-warning">Datos de muestra · revisión visual</span></div></header>
     <div className="grid md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)]">
       <aside aria-label="Navegación de muestra" className="hidden border-r border-border px-3 py-7 md:block lg:px-5"><div className="grid gap-2">{navigation.map(({ label, icon: Icon }, index) => <div className={`flex min-h-11 items-center justify-center gap-3 rounded-xl px-3 text-sm lg:justify-start ${index === 0 ? "bg-accent/15 text-foreground" : "text-muted-foreground"}`} key={label}><Icon aria-hidden="true" className="size-5" /><span className="sr-only lg:not-sr-only">{label}</span></div>)}</div></aside>

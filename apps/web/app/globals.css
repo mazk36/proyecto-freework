@@ -349,13 +349,58 @@ html:has(.ui-kit) {
   scrollbar-gutter: stable;
 }
 
+.swipe-deck {
+  /* Cabecera y navegación del shell, incluido el borde de 1px. */
+  --swipe-header-height: calc(4rem + 1px);
+  --swipe-nav-height: calc(4rem + 1px);
+  height: calc(100dvh - var(--swipe-header-height) - var(--swipe-nav-height) - env(safe-area-inset-bottom));
+  min-height: 29rem;
+}
+
+@media (min-width: 40rem) {
+  .swipe-deck {
+    --swipe-header-height: calc(4.5rem + 1px);
+  }
+}
+
+@media (min-width: 48rem) {
+  .swipe-deck {
+    height: calc(100dvh - var(--swipe-header-height));
+    min-height: 38rem;
+  }
+}
+
 .swipe-summary {
   mask-image: linear-gradient(to bottom, #000 72%, transparent);
 }
 
-@media (max-height: 850px) {
-  .swipe-summary {
-    -webkit-line-clamp: 3;
+@media (max-width: 767px) {
+  .swipe-preview {
+    padding-bottom: calc(4rem + 1px + env(safe-area-inset-bottom));
+  }
+
+  .private-app-shell:has(.swipe-deck) footer {
+    padding-bottom: calc(4.5rem + 1px + env(safe-area-inset-bottom));
+  }
+}
+
+/* En alturas menores las acciones siguen el flujo para no tapar la tarjeta. */
+@media (max-width: 767px) and (min-height: 740px) {
+  .private-app-shell:has(.swipe-deck) footer {
+    padding-bottom: calc(8.5rem + 1px + env(safe-area-inset-bottom));
+  }
+
+  .swipe-actions {
+    height: 3.5rem;
+  }
+
+  .swipe-actions__bar {
+    position: fixed;
+    z-index: 40;
+    bottom: calc(var(--swipe-nav-height) + 0.5rem + env(safe-area-inset-bottom));
+    left: 50%;
+    width: calc(100% - 2rem);
+    transform: translateX(-50%);
   }
 }
 

@@ -72,7 +72,7 @@ export function SwipeCard({
       animate={{ opacity: position === 0 ? 1 : position === 1 ? 0.72 : 0.45, scale: reducedMotion ? 1 : 1 - position * 0.04, y: reducedMotion ? 0 : position * 10 }}
       aria-hidden={!interactive || undefined}
       aria-label={interactive ? `Problema: ${problem.title}. Pulsa Enter para ver el detalle.` : undefined}
-      className={`absolute inset-0 flex min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-surface p-5 shadow-[0_20px_60px_rgba(0,0,0,0.24)] ring-1 ring-inset ring-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-7 ${interactive ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"}`}
+      className={`absolute inset-0 flex min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-surface p-4 shadow-[0_20px_60px_rgba(0,0,0,0.24)] ring-1 ring-inset ring-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-6 ${interactive ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"}`}
       drag={interactive && !disabled ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={reducedMotion ? 0 : 1}
@@ -97,22 +97,22 @@ export function SwipeCard({
     >
       <motion.span aria-hidden="true" className="pointer-events-none absolute right-5 top-6 z-10 rounded-lg border-2 border-brand-lavender bg-surface px-3 py-2 font-mono text-xs font-semibold tracking-wider text-brand-lavender sm:text-sm" style={{ opacity: likeOpacity, rotate: reducedMotion ? 0 : -8 }}>ME INTERESA</motion.span>
       <motion.span aria-hidden="true" className="pointer-events-none absolute left-5 top-6 z-10 rounded-lg border-2 border-muted-foreground bg-surface px-3 py-2 font-mono text-xs font-semibold tracking-wider text-foreground sm:text-sm" style={{ opacity: dismissOpacity, rotate: reducedMotion ? 0 : 8 }}>NO POR AHORA</motion.span>
-      <div className="flex min-w-0 items-start gap-3">
+      <div className="flex min-w-0 shrink-0 items-start gap-3">
         <div aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl border border-accent/25 bg-accent/10 font-display text-sm font-semibold text-brand-lavender">M</div>
         <div className="min-w-0 pt-0.5"><p className="truncate text-xs font-medium text-brand-lavender">{problem.industrySnapshot || "Sector empresarial"}</p><p className="mt-1 truncate text-sm text-muted-foreground">{problem.companyName || "Empresa reservada"}</p></div>
       </div>
-      <div className="mt-5 min-h-0">
+      <div className="mt-3 shrink-0 sm:mt-4">
         <p className="font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-muted-foreground">Un problema por resolver</p>
-        <h2 className="mt-2 line-clamp-3 break-words font-display text-xl font-semibold leading-snug tracking-tight sm:text-2xl">{problem.title}</h2>
-        <div className="relative mt-3"><p className="swipe-summary line-clamp-5 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">{problem.description}</p></div>
-        <button className="-ml-2 mt-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-foreground underline decoration-accent underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={(event) => { event.stopPropagation(); onOpenDetail(); }} tabIndex={interactive ? 0 : -1} type="button">Ver más <ArrowUpRight aria-hidden="true" className="size-3.5" /></button>
+        <h2 className="mt-1 line-clamp-3 break-words font-display text-xl font-semibold leading-snug tracking-tight sm:text-2xl">{problem.title}</h2>
       </div>
-      <div className="mt-auto pt-3">
-        {objectives.length ? <div className="flex flex-wrap gap-1.5">{objectives.slice(0, 3).map((objective) => <Badge key={objective}>{objective}</Badge>)}{objectives.length > 3 ? <Badge>+{objectives.length - 3}</Badge> : null}</div> : null}
-        <div className="mt-4 grid grid-cols-2 gap-3 border-t border-border pt-4">
-          <div className="min-w-0"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><CircleDollarSign aria-hidden="true" className="size-4" /> Presupuesto</p><p className="mt-1 break-words font-mono text-xs font-medium leading-5 sm:text-sm">{formatProblemBudget(problem.budgetChoice, problem.currency)}</p></div>
-          <div className="min-w-0"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><CalendarDays aria-hidden="true" className="size-4" /> Plazo</p><p className="mt-1 break-words text-xs font-medium leading-5 sm:text-sm">{formatProblemDeadline(problem.deadlineChoice)}</p></div>
-        </div>
+      <div className="swipe-summary mt-2 min-h-0 flex-1 overflow-hidden">
+        <p className="line-clamp-5 whitespace-pre-wrap break-words text-sm leading-6 text-muted-foreground">{problem.description}</p>
+        {objectives.length ? <div className="mt-3 flex flex-wrap gap-1.5">{objectives.slice(0, 3).map((objective) => <Badge key={objective}>{objective}</Badge>)}{objectives.length > 3 ? <Badge>+{objectives.length - 3}</Badge> : null}</div> : null}
+      </div>
+      <button className="-ml-2 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center gap-1 self-start rounded-lg px-2 text-sm font-semibold text-foreground underline decoration-accent underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={(event) => { event.stopPropagation(); onOpenDetail(); }} tabIndex={interactive ? 0 : -1} type="button">Ver más <ArrowUpRight aria-hidden="true" className="size-3.5" /></button>
+      <div className="mt-1 grid shrink-0 grid-cols-2 gap-3 border-t border-border pt-3">
+        <div className="min-w-0"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><CircleDollarSign aria-hidden="true" className="size-4" /> Presupuesto</p><p className="mt-1 break-words font-mono text-xs font-medium leading-5 sm:text-sm">{formatProblemBudget(problem.budgetChoice, problem.currency)}</p></div>
+        <div className="min-w-0"><p className="flex items-center gap-1.5 text-xs text-muted-foreground"><CalendarDays aria-hidden="true" className="size-4" /> Plazo</p><p className="mt-1 break-words text-xs font-medium leading-5 sm:text-sm">{formatProblemDeadline(problem.deadlineChoice)}</p></div>
       </div>
     </motion.article>
   );

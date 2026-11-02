@@ -96,7 +96,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
 
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex min-h-16 w-full max-w-[1720px] items-center justify-between gap-4 px-4 sm:min-h-[72px] sm:px-6 lg:px-8">
-          <Link aria-label="MatchWork, inicio de la aplicación" className="shrink-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
+          <Link aria-label="MatchWork, inicio de la aplicación" className="inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
             <MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" preload />
           </Link>
 
@@ -106,7 +106,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
               <p className="text-[0.6875rem] text-muted-foreground sm:text-xs">{roleLabel}</p>
             </div>
             <button
-              className="min-h-10 shrink-0 rounded-xl border border-border px-3 text-xs font-semibold text-foreground transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:px-4 sm:text-sm"
+              className="min-h-11 shrink-0 rounded-xl border border-border px-3 text-xs font-semibold text-foreground transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:px-4 sm:text-sm"
               onClick={handleLogout}
               type="button"
             >

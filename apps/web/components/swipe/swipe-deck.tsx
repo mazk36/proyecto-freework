@@ -51,17 +51,17 @@ export function SwipeDeck() {
 }
 
 function DeckShell({ children }: { children: React.ReactNode }) {
-  return <main className="swipe-deck mx-auto w-full max-w-6xl overflow-x-clip px-4 pb-10 pt-6 sm:px-8 sm:pt-9">{children}</main>;
+  return <main className="swipe-deck mx-auto flex w-full max-w-6xl flex-col overflow-x-clip px-4 pb-2 pt-4 sm:px-8 sm:pt-6">{children}</main>;
 }
 
 function DeckHeading() {
-  return <header className="mb-5 flex flex-wrap items-end justify-between gap-3 sm:mb-7">
+  return <header className="mb-3 flex shrink-0 flex-wrap items-end justify-between gap-3 sm:mb-5">
     <div><p className="font-mono text-xs font-medium uppercase tracking-[0.16em] text-brand-lavender">Descubrir</p><h1 className="mt-2 font-display text-2xl font-semibold tracking-tight sm:text-3xl">Problemas que esperan una solución</h1><p className="mt-2 text-sm leading-6 text-muted-foreground">Explora el contexto y encuentra dónde puedes aportar.</p></div>
   </header>;
 }
 
 function DeckLoading() {
-  return <><DeckHeading /><div aria-label="Cargando problemas" className="grid items-start gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-10" role="status"><span className="sr-only">Cargando problemas</span><div className="relative mx-auto h-[min(70dvh,40rem)] w-full max-w-md lg:mx-0">{[2, 1, 0].map((position) => <div className="absolute inset-0" key={position} style={{ transform: `translateY(${position * 10}px) scale(${1 - position * 0.04})`, opacity: 1 - position * 0.25 }}><SkeletonCard className="h-full" /></div>)}</div><SkeletonCard className="hidden h-96 lg:block" /></div></>;
+  return <><DeckHeading /><div aria-label="Cargando problemas" className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-10" role="status"><span className="sr-only">Cargando problemas</span><div className="mx-auto flex h-full min-h-0 w-full max-w-md flex-col lg:mx-0"><div className="relative min-h-80 w-full max-h-[40rem] flex-1 sm:min-h-[22rem]">{[2, 1, 0].map((position) => <div className="absolute inset-0" key={position} style={{ transform: `translateY(${position * 10}px) scale(${1 - position * 0.04})`, opacity: 1 - position * 0.25 }}><SkeletonCard className="h-full" /></div>)}</div><div aria-hidden="true" className="mt-3 h-14 shrink-0 lg:mb-7" /></div><SkeletonCard className="hidden h-full max-h-[40rem] lg:block" /></div></>;
 }
 
 export function DeckExperience({
@@ -220,23 +220,22 @@ export function DeckExperience({
       <DeckShell>
         <DeckHeading />
         <p aria-atomic="true" aria-live="polite" className="sr-only">{announcement}</p>
-        {displayedProblem ? <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-10">
-          <div className="mx-auto w-full max-w-md lg:mx-0">
-            <div className="relative h-[min(70dvh,40rem)] w-full pb-5">
+        {displayedProblem ? <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-10">
+          <div className="mx-auto flex h-full min-h-0 w-full max-w-md flex-col lg:mx-0">
+            <div className="relative min-h-80 w-full max-h-[40rem] flex-1 sm:min-h-[22rem]">
               <AnimatePresence custom={exitDirection} initial={false} onExitComplete={() => setLastExiting(null)}>{cards.slice(0, 3).map((problem, position) => <SwipeCard activeRef={activeCard} disabled={resetting || pending.has(problem.id)} key={problem.id} onDecision={decide} onOpenDetail={openDetail} position={position} problem={problem} />)}</AnimatePresence>
               <DeckTutorial storageKey={tutorialStorageKey} />
             </div>
-            <div className="h-24 md:hidden" aria-hidden="true" />
-            <div className="fixed inset-x-0 z-40 border-t border-border bg-background/95 px-4 py-3 backdrop-blur md:static md:mt-5 md:border-0 md:bg-transparent md:p-0 md:backdrop-blur-none" style={{ bottom: "calc(5.1rem + env(safe-area-inset-bottom))" }}>
-              <div className="mx-auto flex w-full max-w-md items-center justify-center gap-3">
+            <div className="swipe-actions relative z-10 mt-3 shrink-0">
+              <div className="swipe-actions__bar mx-auto flex w-full max-w-md items-center justify-center gap-3">
                 <button aria-label="No me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-border bg-surface text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("dismiss")} type="button"><X aria-hidden="true" className="size-6" /></button>
                 <Button className="min-h-14 min-w-0 flex-1" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => setProposalProblem(displayedProblem)}>Proponer ahora <ArrowUpRight aria-hidden="true" className="size-4" /></Button>
                 <button aria-label="Me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-accent/40 bg-accent/15 text-brand-lavender transition-colors hover:bg-accent/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("like")} type="button"><Heart aria-hidden="true" className="size-6" /></button>
               </div>
             </div>
-            <p className="mt-4 hidden items-center justify-center gap-2 text-xs text-muted-foreground lg:flex"><ArrowLeft aria-hidden="true" className="size-3.5" /> descartar <ArrowRight aria-hidden="true" className="ml-2 size-3.5" /> me interesa <span className="ml-2">Enter detalle · P proponer · Z deshacer</span></p>
+            <p className="mt-2 hidden shrink-0 items-center justify-center gap-2 text-xs text-muted-foreground lg:flex"><ArrowLeft aria-hidden="true" className="size-3.5" /> descartar <ArrowRight aria-hidden="true" className="ml-2 size-3.5" /> me interesa <span className="ml-2">Enter detalle · P proponer · Z deshacer</span></p>
           </div>
-          <div aria-label="Detalle del problema actual" className="ui-scrollbar hidden max-h-[min(76dvh,45rem)] overflow-y-auto rounded-3xl border border-border bg-surface p-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:block" ref={desktopDetail} tabIndex={-1}>
+          <div aria-label="Detalle del problema actual" className="ui-scrollbar hidden min-h-0 max-h-full overflow-y-auto rounded-3xl border border-border bg-surface p-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:block" ref={desktopDetail} tabIndex={-1}>
             <AnimatePresence initial={false} mode="wait"><motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }} key={displayedProblem.id} transition={{ duration: 0.15 }}><DeckDetail onPropose={() => setProposalProblem(displayedProblem)} problem={displayedProblem} /></motion.div></AnimatePresence>
           </div>
         </div> : <div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" ref={emptyState} tabIndex={-1}><EmptyState action={<div className="flex flex-wrap justify-center gap-3"><ButtonLink href="/app/likes">Ver mis Likes</ButtonLink><Button disabled={!dismissedIds.length || resetting || pending.size > 0} onClick={() => { void reviewDismissed(); }} variant="outline">Volver a revisar descartados</Button></div>} description="Cuando haya más problemas disponibles, los encontrarás aquí." icon={Network} title="Ya viste todo por ahora" /></div>}
