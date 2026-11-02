@@ -121,7 +121,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-body:has(.public-landing) {
+body:has(.public-landing),
+body:has(.private-app-shell) {
   color-scheme: dark;
   background: var(--night-background);
   color: var(--brand-white);
