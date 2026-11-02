@@ -136,7 +136,7 @@ export function impactLabels(values: string[]): string[] {
   return values.map((value) => impactOptions.find((item) => item.value === value)?.label ?? value);
 }
 
-async function callRpc<Name extends keyof import("@/types/database").Database["public"]["Functions"]>(
+export async function callRpc<Name extends keyof import("@/types/database").Database["public"]["Functions"]>(
   name: Name,
   args: import("@/types/database").Database["public"]["Functions"][Name]["Args"],
 ): Promise<import("@/types/database").Database["public"]["Functions"][Name]["Returns"]> {
@@ -250,9 +250,16 @@ function parseDeadline(value: unknown): ProblemDraft["deadlineChoice"] {
   return deadlineOptions.some((item) => item.value === value) ? value as ProblemDraft["deadlineChoice"] : "";
 }
 
-function toFriendlyError(message: string): string {
+export function toFriendlyError(message: string): string {
   if (/not authenticated/i.test(message)) return "Inicia sesión para continuar.";
+  if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
+  if (/proposal not found/i.test(message)) return "No encontramos esta propuesta o ya no tienes acceso.";
+  if (/open problem required/i.test(message)) return "Este problema ya no está disponible para recibir propuestas.";
+  if (/invalid proposal currency/i.test(message)) return "Selecciona una moneda válida: PEN o USD.";
+  if (/invalid proposal price/i.test(message)) return "Ingresa un precio válido mayor o igual a cero.";
+  if (/proposal requires/i.test(message)) return "Completa el diagnóstico, la solución, los entregables, el plazo y el precio antes de enviar tu propuesta.";
+  if (/proposals_one_active_per_problem_freelancer_idx/i.test(message)) return "Ya tienes una propuesta activa para este problema.";
   if (/not found|does not exist/i.test(message)) return "No encontramos esta publicación o ya no tienes acceso.";
   if (/transition|cannot be edited|closed/i.test(message)) return "El estado actual no permite esa acción.";
   if (/title|description|objective|budget|deadline|consent|agreement/i.test(message)) return "Revisa los campos obligatorios antes de continuar.";

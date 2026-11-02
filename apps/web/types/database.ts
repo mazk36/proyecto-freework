@@ -7,6 +7,7 @@ export type Json =
   | Json[];
 
 type ProblemStatus = "draft" | "open" | "paused" | "closed";
+type ProposalStatus = "draft" | "submitted" | "withdrawn";
 
 export type Database = {
   public: {
@@ -254,6 +255,33 @@ export type Database = {
           },
         ];
       };
+      proposals: {
+        Row: {
+          id: string; problem_id: string; freelancer_id: string; status: ProposalStatus;
+          diagnosis: string; solution: string; deliverables: string; timeline: string;
+          price: number | null; currency: "PEN" | "USD"; recurring_costs: string;
+          maintenance_warranty: string; related_experience: string; submitted_at: string | null;
+          created_at: string; updated_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "proposals_problem_id_fkey";
+            columns: ["problem_id"];
+            isOneToOne: false;
+            referencedRelation: "business_problems";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "proposals_freelancer_id_fkey";
+            columns: ["freelancer_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -268,6 +296,9 @@ export type Database = {
       publish_business_problem: { Args: { p_problem_id: string }; Returns: string };
       begin_business_problem_edit: { Args: { p_problem_id: string }; Returns: string };
       transition_business_problem: { Args: { p_problem_id: string; p_action: string }; Returns: string };
+      save_proposal_draft: { Args: { p_problem_id: string; p_data: Json }; Returns: string };
+      submit_proposal: { Args: { p_proposal_id: string }; Returns: string };
+      withdraw_proposal: { Args: { p_proposal_id: string }; Returns: string };
     };
     Enums: {
       user_role: "company" | "freelancer";
