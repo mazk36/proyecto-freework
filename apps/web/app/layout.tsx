@@ -3,6 +3,7 @@ import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import type { ReactNode } from "react";
 import { AuthBoundary } from "@/components/auth/auth-boundary";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 const bodyFont = Inter({
@@ -38,7 +39,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <AuthProvider>
-          <AuthBoundary>{children}</AuthBoundary>
+          <ToastProvider>
+            <AuthBoundary>{children}</AuthBoundary>
+          </ToastProvider>
         </AuthProvider>
       </body>
     </html>

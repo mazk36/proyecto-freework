@@ -39,3 +39,6 @@ __pycache__/
 .venv/
 venv/
 target/
+
+# Local UI review captures
+apps/web/.ui-captures/
