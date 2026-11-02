@@ -6,6 +6,9 @@ export type ToastOptions = {
   tone: ToastTone;
   actionLabel?: string;
   onAction?: () => void;
+  secondaryActionLabel?: string;
+  onSecondaryAction?: () => void;
+  onClose?: () => void;
   durationMs?: number;
 };
 

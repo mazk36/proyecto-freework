@@ -44,6 +44,7 @@ function ToastNotice({
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const remainingMs = useRef(item.durationMs);
+  const closeNotified = useRef(false);
   const { icon: Icon, className: iconClassName } = toneDetails[item.tone];
 
   useEffect(() => {
@@ -59,9 +60,13 @@ function ToastNotice({
 
   useEffect(() => {
     if (item.state !== "closing") return;
+    if (!closeNotified.current) {
+      closeNotified.current = true;
+      item.onClose?.();
+    }
     const timer = window.setTimeout(() => remove(item.id), 150);
     return () => window.clearTimeout(timer);
-  }, [item.id, item.state, remove]);
+  }, [item, remove]);
 
   return (
     <div
@@ -78,21 +83,23 @@ function ToastNotice({
       <div className="min-w-0 flex-1">
         <p className="break-words text-sm font-semibold leading-5">{item.title}</p>
         {item.description ? <p className="mt-1 break-words text-sm leading-5 text-muted-foreground">{item.description}</p> : null}
-        {item.actionLabel && item.onAction ? (
-          <button
-            className="-ml-2 mt-1 min-h-11 rounded-lg px-2 text-sm font-semibold text-foreground underline decoration-accent underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-            onClick={() => {
-              try {
-                item.onAction?.();
-              } finally {
-                dismiss(item.id);
-              }
-            }}
-            type="button"
-          >
-            {item.actionLabel}
-          </button>
-        ) : null}
+        {item.actionLabel && item.onAction ? <div className="-ml-2 mt-1 flex flex-wrap gap-x-2">
+          {[
+            { label: item.actionLabel, action: item.onAction },
+            { label: item.secondaryActionLabel, action: item.onSecondaryAction },
+          ].map(({ label, action }) => label && action ? (
+            <button
+              className="min-h-11 rounded-lg px-2 text-sm font-semibold text-foreground underline decoration-accent underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              key={label}
+              onClick={() => {
+                try { action(); } finally { dismiss(item.id); }
+              }}
+              type="button"
+            >
+              {label}
+            </button>
+          ) : null)}
+        </div> : null}
       </div>
       <button
         aria-label="Cerrar notificación"

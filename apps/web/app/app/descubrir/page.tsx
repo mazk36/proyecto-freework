@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { AppEmptyState } from "@/components/app/app-empty-state";
+import { SwipeDeck } from "@/components/swipe/swipe-deck";
 
 export const metadata: Metadata = { title: "Descubrir | MatchWork" };
 
 export default function DiscoverPage() {
-  return <AppEmptyState description="Cuando se publiquen problemas podrás revisarlos aquí." title="Aún no hay problemas disponibles." />;
+  return <SwipeDeck />;
 }

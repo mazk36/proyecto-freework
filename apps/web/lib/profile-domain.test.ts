@@ -54,7 +54,7 @@ describe("portfolio and skill validation", () => {
   it("requires project titles and validates external URLs", () => {
     const project = { title: "Proyecto", description: "", category: "", projectPeriod: "", externalUrl: "https://example.com/work", skillsUsed: "React\nTypeScript" };
     expect(validatePortfolioProject(project)).toBeNull();
-    expect(validatePortfolioProject({ ...project, externalUrl: "javascript:alert(1)" })).toContain("URL http o https");
+    expect(validatePortfolioProject({ ...project, externalUrl: "javascript:void(0)" })).toContain("URL http o https");
     expect(validatePortfolioProject({ ...project, title: " " })).toContain("título");
   });
 

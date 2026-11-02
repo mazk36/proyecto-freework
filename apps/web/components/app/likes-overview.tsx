@@ -3,6 +3,7 @@
 import { ArrowUpRight, Bookmark, Heart, MessagesSquare, Send } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/components/auth/auth-provider";
+import { SavedProblems } from "@/components/swipe/saved-problems";
 
 export function LikesOverview() {
   const { user } = useAuth();
@@ -17,10 +18,10 @@ export function LikesOverview() {
       description: "El seguimiento se habilitará cuando esté disponible la integración segura de propuestas.",
     },
     {
-      href: "/app/guardados",
+      href: isCompany ? "/app/guardados" : "#saved-problems-heading",
       icon: Bookmark,
       title: isCompany ? "Propuestas guardadas" : "Problemas guardados",
-      description: "Revisa aquí los elementos que hayas guardado cuando la función esté conectada.",
+      description: isCompany ? "Revisa aquí las propuestas que hayas guardado cuando la función esté conectada." : "Revisa más abajo los problemas abiertos que guardaste desde Descubrir.",
     },
     {
       href: "/app/matches",
@@ -58,6 +59,8 @@ export function LikesOverview() {
           </Link>
         ))}
       </div>
+
+      {!isCompany ? <SavedProblems key={user.id} /> : null}
 
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-5 text-sm">
         <Link className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app/chats">

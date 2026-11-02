@@ -213,6 +213,7 @@ function parsePublicProblem(value: unknown): PublicProblem | null {
     impacts: problem.impacts,
     industrySnapshot: problem.industrySnapshot,
     objectives: problem.objectives,
+    successCriteria: problem.successCriteria,
     budgetChoice: problem.budgetChoice,
     currency: problem.currency,
     deadlineChoice: problem.deadlineChoice,
