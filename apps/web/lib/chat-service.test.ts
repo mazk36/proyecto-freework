@@ -36,6 +36,14 @@ describe("chat service", () => {
     expect(mocks.rpc).toHaveBeenNthCalledWith(1, "send_message", { p_match_id: "match", p_body: " Hola ", p_client_id: "client" });
   });
 
+  it("passes external contact details through without filtering or masking", async () => {
+    const body = "Escríbeme a persona@example.com, al +51 999 123 456 o en https://example.com/contacto";
+    mocks.rpc.mockResolvedValue({ data: { ...row, body }, error: null });
+
+    await expect(sendMessage("match", body, "client")).resolves.toEqual({ ...message, body });
+    expect(mocks.rpc).toHaveBeenCalledWith("send_message", { p_match_id: "match", p_body: body, p_client_id: "client" });
+  });
+
   it("loads paginated messages without losing the server timestamp precision", async () => {
     mocks.rpc.mockResolvedValue({ data: [row], error: null });
     await expect(listMessages("match", row.created_at, 20)).resolves.toEqual([message]);

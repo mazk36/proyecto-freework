@@ -56,6 +56,8 @@ La transición valida que el problema esté abierto o pausado y la propuesta sig
 
 `send_message` recorta y valida texto de 1 a 2000 caracteres, deduplica por Match, remitente y `client_id`, y limita a 30 envíos por minuto y conversación para cada remitente. El bloqueo del Match serializa los envíos y los marcadores de lectura, evitando que solicitudes simultáneas eludan la cuota. `mark_conversation_read` registra el último mensaje existente en ese momento; los no leídos solo cuentan mensajes de la otra parte posteriores al marcador. La cuota es una medida mínima y no sustituye una fase posterior de prevención de abuso. El contrato no incorpora adjuntos ni campos de contacto externo y no inspecciona el texto libre en busca de datos de contacto.
 
+Está permitido compartir contacto externo en el texto del chat. Un aviso suave y descartable sugiere mantener la conversación en MatchWork; el descarte se recuerda en el navegador por Match. No se filtran ni se enmascaran datos de contacto. Esta decisión se revisará cuando exista moderación.
+
 `supabase/tests/database/match_chat.test.sql` cubre permisos, privacidad, validación, paginación, idempotencia, no leídos y cuota. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
 
 ## Storage

@@ -4,6 +4,7 @@ import { ArrowDown, ArrowLeft, Check, Clock3, MessageCircle, Send } from "lucide
 import { motion } from "motion/react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent } from "react";
 import { ChatAvatar, ProblemChip, RefreshIcon, ThreadSkeleton, counterpartName, roleLabel } from "@/components/chat/chat-parts";
+import { ConversationNotice } from "@/components/chat/conversation-notice";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { CHAT_MESSAGE_LIMIT, CHAT_PAGE_SIZE, groupMessagesByDay, isScrollNearBottom, needsEarlierPageToBridge, sortAndDedupeMessages, type ChatMessage } from "@/lib/chat";
@@ -31,6 +32,7 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
   const [draft, setDraft] = useState("");
   const [composeError, setComposeError] = useState("");
   const [viewport, setViewport] = useState<{ height: number; top: number } | null>(null);
+  const threadRef = useRef<HTMLElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
@@ -228,13 +230,14 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
 
   const viewportStyle = viewport ? { "--chat-viewport-height": `${viewport.height}px`, "--chat-viewport-top": `${viewport.top}px` } as CSSProperties : undefined;
 
-  return <section aria-label={`Conversación con ${counterpartName(conversation)}`} className="chat-thread-mobile flex h-full min-h-0 min-w-0 flex-col bg-background" style={viewportStyle}>
+  return <section aria-label={`Conversación con ${counterpartName(conversation)}`} className="chat-thread-mobile flex h-full min-h-0 min-w-0 flex-col bg-background" ref={threadRef} style={viewportStyle} tabIndex={-1}>
     <header className="flex shrink-0 items-center gap-2 border-b border-border bg-surface px-3 py-3 sm:px-5">
       <button aria-label="Volver a conversaciones" className="grid size-11 shrink-0 place-items-center rounded-xl text-foreground hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:hidden" onClick={onBack} ref={backRef} type="button"><ArrowLeft aria-hidden="true" className="size-5" /></button>
       <ChatAvatar name={conversation.counterpartName} role={conversation.counterpartRole} />
       <div className="min-w-0 flex-1"><h2 className="truncate font-display text-sm font-semibold sm:text-base">{counterpartName(conversation)}</h2><p className="mt-0.5 text-xs text-muted-foreground">{roleLabel(conversation.counterpartRole)}</p><div className="mt-1.5 min-w-0"><ProblemChip title={conversation.problemTitle} /></div></div>
       <button aria-label={refreshing ? "Actualizando conversación" : "Actualizar conversación"} className="grid size-11 shrink-0 place-items-center rounded-xl text-muted-foreground hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={refreshing} onClick={() => void loadLatest()} title="Actualizar conversación" type="button"><RefreshIcon /></button>
     </header>
+    <ConversationNotice matchId={conversation.matchId} onDismiss={() => (scrollRef.current ?? threadRef.current)?.focus({ preventScroll: true })} />
     {realtime === "unavailable" ? <p className="shrink-0 border-b border-border px-4 py-2 text-xs leading-5 text-warning" role="status">La actualización en tiempo real no está disponible. Puedes actualizar la conversación.</p> : null}
     {readError ? <p className="shrink-0 border-b border-border px-4 py-2 text-xs leading-5 text-warning" role="status">{readError}</p> : null}
     <div className="relative flex min-h-0 flex-1 flex-col">
