@@ -56,7 +56,7 @@ export function BusinessProblemDashboard() {
         <div>
           <p className="text-sm font-medium text-muted-foreground">{profile?.companyName || "Área empresarial"}</p>
           <h1 className="mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">Mis problemas</h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Consulta tus borradores y publicaciones. Las propuestas aparecerán cuando se integre el módulo correspondiente.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">Consulta tus borradores, publicaciones y propuestas recibidas.</p>
         </div>
         <ButtonLink href="/app/problemas/nuevo">Publicar un problema</ButtonLink>
       </header>
@@ -80,7 +80,8 @@ export function BusinessProblemDashboard() {
 
       <section className="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="font-semibold">Propuestas recibidas</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">Todavía no hay un módulo conectado para recibir, comparar o elegir propuestas. No se muestran propuestas ni cifras hasta que existan registros reales.</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">Consulta y compara las propuestas enviadas para cada problema.</p>
+        <ButtonLink className="mt-4" href="/app/propuestas" variant="outline">Ir a propuestas</ButtonLink>
       </section>
     </main>
   );

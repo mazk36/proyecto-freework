@@ -4,10 +4,9 @@ import { ArrowUpRight, Bookmark, Heart, MessagesSquare, Send } from "lucide-reac
 import Link from "next/link";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { MyMatches } from "@/components/inbox/my-matches";
 import { MyProposals } from "@/components/proposals/my-proposals";
 import { SavedProblems } from "@/components/swipe/saved-problems";
-import { ButtonLink } from "@/components/ui/button";
-import { EmptyState } from "@/components/ui/empty-state";
 
 export function LikesOverview() {
   const { user } = useAuth();
@@ -20,19 +19,19 @@ export function LikesOverview() {
       href: "/app/propuestas",
       icon: Send,
       title: isCompany ? "Propuestas recibidas" : "Mis propuestas",
-      description: "El seguimiento se habilitará cuando esté disponible la integración segura de propuestas.",
+      description: "Revisa las propuestas enviadas para cada uno de tus problemas.",
     },
     {
       href: isCompany ? "/app/guardados" : "#saved-problems-heading",
       icon: Bookmark,
       title: isCompany ? "Propuestas guardadas" : "Problemas guardados",
-      description: isCompany ? "Revisa aquí las propuestas que hayas guardado cuando la función esté conectada." : "Revisa más abajo los problemas abiertos que guardaste desde Descubrir.",
+      description: isCompany ? "Revisa las propuestas que guardaste para consultar después." : "Revisa más abajo los problemas abiertos que guardaste desde Descubrir.",
     },
     {
       href: "/app/matches",
       icon: Heart,
       title: "Matches",
-      description: "Las conexiones mutuas aparecerán aquí cuando exista una fuente real de Matches.",
+      description: "Consulta los Matches que hiciste para continuar la conversación.",
     },
   ];
 
@@ -101,7 +100,7 @@ function FreelancerLikes() {
     {tabs.map((label, index) => <div aria-labelledby={`likes-tab-${index}`} className="mt-8" hidden={selected !== index} id={`likes-panel-${index}`} key={label} role="tabpanel" tabIndex={0}>
       {selected === index && index === 0 ? <SavedProblems /> : null}
       {selected === index && index === 1 ? <MyProposals /> : null}
-      {selected === index && index === 2 ? <div className="rounded-2xl border border-border bg-surface"><EmptyState action={<ButtonLink href="/app/descubrir" variant="outline">Descubrir problemas</ButtonLink>} description="Cuando una empresa muestre interés en tu propuesta, aparecerá aquí." icon={Heart} title="Tus Matches aparecerán aquí" /></div> : null}
+      {selected === index && index === 2 ? <MyMatches role="freelancer" /> : null}
     </div>)}
   </section>;
 }

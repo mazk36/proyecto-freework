@@ -120,7 +120,8 @@ export function CompanyProblemDetails() {
 
       <section className="mt-5 rounded-2xl border border-border bg-surface p-5 sm:p-6">
         <h2 className="font-semibold">Propuestas</h2>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">El módulo para recibir y comparar propuestas todavía no está conectado. Esta publicación no muestra propuestas ni estados de contratación ficticios.</p>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">Revisa las propuestas enviadas para este problema y compáralas en la bandeja.</p>
+        <ButtonLink className="mt-4" href={`/app/propuestas?problema=${encodeURIComponent(problem.id)}`} variant="outline">Ver propuestas de este problema</ButtonLink>
       </section>
 
       <div className="mt-6 flex flex-wrap gap-3">
