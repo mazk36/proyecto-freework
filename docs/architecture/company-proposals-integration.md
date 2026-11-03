@@ -1,6 +1,6 @@
 # Integración de propuestas y Matches
 
-La publicación de problemas y la integración de propuestas del freelancer ya cuentan con persistencia. La migración `20261102040000_company_inbox_matches.sql` añade la bandeja de la empresa, sus interacciones privadas y los Matches. Las migraciones deben aplicarse y probarse en Supabase para que estos contratos estén disponibles; la interfaz de bandeja y Matches queda fuera de esta fase.
+La publicación de problemas y la integración de propuestas del freelancer ya cuentan con persistencia. La migración `20261102040000_company_inbox_matches.sql` añade la bandeja de la empresa, sus interacciones privadas y los Matches. Las migraciones deben aplicarse y probarse en Supabase para que estos contratos estén disponibles. La fase de chat añade persistencia y servicios, sin implementar su interfaz.
 
 ## Propuestas del freelancer
 
@@ -18,6 +18,14 @@ Al crear cada borrador se conserva una copia inmutable del título del problema 
 - El servicio `company-inbox-service.ts` adapta los RPC a tipos de aplicación y valida las respuestas. `toggleCompare` mantiene una selección local de hasta tres propuestas; no almacena comparaciones. La bandeja no ordena por precio ni calcula compatibilidad.
 
 Un Match expresa interés mutuo para continuar conversando; no implica contratación ni pago.
+
+## Chat interno
+
+- Cada Match identifica una conversación entre la empresa y el freelancer. `send_message(match_id, body, client_id)` acepta únicamente texto de 1 a 2000 caracteres tras recortarlo. Un `client_id` estable por intento permite reintentar sin duplicados; los envíos se limitan a 30 por minuto, remitente y conversación. El Match sigue habilitando la conversación cuando se cierra el problema.
+- `list_conversations()` devuelve los Matches propios con el título inmutable de la propuesta, el nombre de contraparte permitido, el último mensaje resumido y el número de mensajes no leídos. Para el freelancer, el nombre de empresa respeta `show_company_name`. `unread_total()` suma mensajes recibidos que todavía no se han marcado como leídos.
+- `list_messages(match_id, before, limit)` devuelve hasta 100 mensajes en orden cronológico, con 50 por defecto. Para cargar la página anterior, usa el `createdAt` original del primer mensaje recibido como `before`, sin convertirlo a `Date` ni perder su precisión. Los envíos de la aplicación generan tiempos estrictamente crecientes por conversación, incluso con solicitudes concurrentes.
+- `mark_conversation_read(match_id)` marca como leídos todos los mensajes existentes hasta el momento de la llamada, no solo los visibles en pantalla. Los mensajes posteriores de la contraparte vuelven a contar como no leídos. `subscribeToMessages` escucha inserciones por Match mediante Supabase Realtime y devuelve una función para cancelar la suscripción; tras reconectar, el cliente debe volver a consultar el historial y los no leídos para recuperar eventos perdidos.
+- `chat-service.ts` valida las respuestas y adapta los RPC a tipos de aplicación. `chat.ts` agrupa por día y remitente, mantiene estados de envío y reconcilia las confirmaciones por `client_id`. La fase no incorpora UI, adjuntos ni campos o integraciones de contacto externo.
 
 ## Capacidades pendientes
 

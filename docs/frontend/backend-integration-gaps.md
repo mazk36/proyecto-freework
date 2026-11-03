@@ -15,5 +15,5 @@ La aplicación solo presenta acciones como completadas cuando una operación rea
 
 ## Matches y conversaciones
 
-- La aplicación no tiene una fuente conectada de Matches ni un servicio de conversaciones. El chat debe validar en backend que las partes tengan un Match autorizado antes de exponer el historial o permitir mensajes.
+- Los servicios de Matches y conversaciones validan la participación en backend; la interfaz de Chats todavía debe conectarse a los RPC y a Realtime después de aplicar y probar la migración de chat.
 - El estado vacío de Chats enlaza a Matches existentes como vista informativa; no crea una conversación ni presupone mensajería en tiempo real.

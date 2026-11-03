@@ -50,6 +50,14 @@ Los RPC de bandeja, interacción y Matches usan `SECURITY DEFINER`, `search_path
 
 La transición valida que el problema esté abierto o pausado y la propuesta siga enviada. Bloquea primero el problema y luego la propuesta, igual que el retiro y el envío. Marcar interés inserta el Match en la misma transacción; la unicidad por propuesta evita duplicados y el retiro posterior se rechaza. La ausencia de interacción significa `unseen`; deshacer elimina guardados o descartados. `supabase/tests/database/company_inbox_matches.test.sql` comprueba permisos, transiciones, privacidad y atomicidad; debe ejecutarse en Supabase local antes de aplicar la migración en otro entorno.
 
+## Chat por Match
+
+`messages` permite `SELECT` solo a los dos participantes del Match y `conversation_reads` solo al propietario del marcador. `anon` no tiene acceso; los clientes autenticados no tienen `INSERT`, `UPDATE` ni `DELETE` directos. Los RPC autorizan el rol persistido y la participación, usan `SECURITY DEFINER` con `search_path = ''` y devuelven el mismo error para una conversación ajena o inexistente. El historial sigue disponible si el problema se cierra. La publicación de Realtime incluye `messages` cuando `supabase_realtime` existe; el filtrado de eventos respeta RLS.
+
+`send_message` recorta y valida texto de 1 a 2000 caracteres, deduplica por Match, remitente y `client_id`, y limita a 30 envíos por minuto y conversación para cada remitente. El bloqueo del Match serializa los envíos y los marcadores de lectura, evitando que solicitudes simultáneas eludan la cuota. `mark_conversation_read` registra el último mensaje existente en ese momento; los no leídos solo cuentan mensajes de la otra parte posteriores al marcador. La cuota es una medida mínima y no sustituye una fase posterior de prevención de abuso. El contrato no incorpora adjuntos ni campos de contacto externo y no inspecciona el texto libre en busca de datos de contacto.
+
+`supabase/tests/database/match_chat.test.sql` cubre permisos, privacidad, validación, paginación, idempotencia, no leídos y cuota. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
 ## Storage
 
 `avatars` es público: cualquier persona con la URL puede recuperar el archivo incluso si el perfil es borrador. Los controles de Storage siguen exigiendo autenticación para subir, reemplazar o borrar y limitan la ruta a la carpeta del usuario.

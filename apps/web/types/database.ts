@@ -13,6 +13,26 @@ type ProposalStatus = "draft" | "submitted" | "withdrawn";
 type StoredProblemInteraction = Exclude<FreelancerProblemInteraction, "unseen">;
 type StoredCompanyProposalInteraction = Exclude<CompanyProposalInteraction, "unseen">;
 
+export type ChatMessageRow = {
+  id: string;
+  match_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+  client_id: string | null;
+};
+
+export type ChatConversationRow = {
+  match_id: string;
+  problem_title: string;
+  counterpart_name: string | null;
+  counterpart_role: "company" | "freelancer";
+  last_message_body: string | null;
+  last_message_at: string | null;
+  last_message_sender_is_me: boolean | null;
+  unread_count: number;
+};
+
 export type Database = {
   public: {
     Tables: {
@@ -340,6 +360,55 @@ export type Database = {
           },
         ];
       };
+      messages: {
+        Row: ChatMessageRow;
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "messages_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "matches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey";
+            columns: ["sender_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      conversation_reads: {
+        Row: { match_id: string; user_id: string; last_read_at: string | null; last_read_message_id: string | null };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "conversation_reads_match_id_fkey";
+            columns: ["match_id"];
+            isOneToOne: false;
+            referencedRelation: "matches";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_reads_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "conversation_reads_last_read_message_id_fkey";
+            columns: ["last_read_message_id"];
+            isOneToOne: false;
+            referencedRelation: "messages";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       matches: {
         Row: {
           id: string;
@@ -422,6 +491,17 @@ export type Database = {
         Args: { p_proposal_id: string; p_next: CompanyProposalInteraction | null };
         Returns: StoredCompanyProposalInteraction | null;
       };
+      send_message: {
+        Args: { p_match_id: string; p_body: string; p_client_id?: string | null };
+        Returns: ChatMessageRow;
+      };
+      list_conversations: { Args: Record<string, never>; Returns: ChatConversationRow[] };
+      list_messages: {
+        Args: { p_match_id: string; p_before?: string | null; p_limit?: number };
+        Returns: ChatMessageRow[];
+      };
+      mark_conversation_read: { Args: { p_match_id: string }; Returns: undefined };
+      unread_total: { Args: Record<string, never>; Returns: number };
       list_my_matches: {
         Args: Record<string, never>;
         Returns: {
