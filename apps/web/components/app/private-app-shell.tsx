@@ -9,9 +9,12 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import type { UserRole } from "@/lib/auth";
+import { CHAT_DATA_CHANGED, notifyChatDataChanged } from "@/lib/chat-events";
+import { subscribeToAllMessages, unreadTotal } from "@/lib/chat-service";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 type NavigationItem = {
@@ -41,6 +44,46 @@ const navigationByRole: Record<UserRole, NavigationItem[]> = {
 export function PrivateAppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/app";
   const { user, logout, storageNotice, authIssue } = useAuth();
+  const [unreadCount, setUnreadCount] = useState(0);
+  const isChatPage = pathname === "/app/chats" || pathname === "/app/chats/";
+
+  useEffect(() => {
+    if (!user?.id) return;
+    setUnreadCount(0);
+    let active = true;
+    let request = 0;
+    let debounce: number | undefined;
+    const refresh = () => {
+      if (document.visibilityState !== "visible") return;
+      const current = ++request;
+      void unreadTotal().then((total) => {
+        if (active && current === request) setUnreadCount(total);
+      }).catch(() => console.error("No se pudo actualizar el contador de mensajes."));
+    };
+    const scheduleRefresh = () => {
+      window.clearTimeout(debounce);
+      debounce = window.setTimeout(refresh, 150);
+    };
+    const onVisible = () => { if (document.visibilityState === "visible") refresh(); };
+    refresh();
+    const timer = window.setInterval(refresh, 30_000);
+    window.addEventListener(CHAT_DATA_CHANGED, scheduleRefresh);
+    document.addEventListener("visibilitychange", onVisible);
+    let unsubscribe = () => {};
+    try {
+      unsubscribe = subscribeToAllMessages(() => notifyChatDataChanged());
+    } catch {
+      console.error("No se pudo activar la actualización en tiempo real del contador de mensajes.");
+    }
+    return () => {
+      active = false;
+      window.clearTimeout(debounce);
+      window.clearInterval(timer);
+      window.removeEventListener(CHAT_DATA_CHANGED, scheduleRefresh);
+      document.removeEventListener("visibilitychange", onVisible);
+      unsubscribe();
+    };
+  }, [user?.id]);
 
   if (!user) return null;
 
@@ -82,19 +125,26 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         key={item.id}
         title={compact ? undefined : item.label}
       >
-        <Icon aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.8} />
+        <span className="relative shrink-0">
+          <Icon aria-hidden="true" className="size-5" strokeWidth={1.8} />
+          {item.id === "chats" && unreadCount > 0 ? (
+            <span aria-label={`${unreadCount} mensajes sin leer`} className="absolute -right-2.5 -top-2 grid min-h-[1.125rem] min-w-[1.125rem] place-items-center rounded-full bg-accent-soft px-1 text-[0.625rem] font-bold leading-none text-brand-navy" role="img">
+              <span aria-hidden="true">{unreadCount > 99 ? "99+" : unreadCount}</span>
+            </span>
+          ) : null}
+        </span>
         <span className={compact ? "max-w-full truncate" : "sr-only lg:not-sr-only"}>{item.label}</span>
       </Link>
     );
   }
 
   return (
-    <div className="private-app-shell flex min-h-screen flex-col bg-background text-foreground">
+    <div className={`private-app-shell flex flex-col bg-background text-foreground ${isChatPage ? "h-dvh overflow-hidden" : "min-h-screen"}`}>
       <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-3 focus:text-foreground" href="#main-content">
         Saltar al contenido
       </a>
 
-      <header className="border-b border-border bg-background">
+      <header className="shrink-0 border-b border-border bg-background">
         <div className="mx-auto flex min-h-16 w-full max-w-[1720px] items-center justify-between gap-4 px-4 sm:min-h-[72px] sm:px-6 lg:px-8">
           <Link aria-label="MatchWork, inicio de la aplicación" className="inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
             <MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" preload />
@@ -114,20 +164,24 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
+        {isChatPage && (storageNotice || authIssue) ? <div className="mx-auto w-full max-w-[1720px] px-4 pb-3 text-xs leading-5 sm:px-6 lg:px-8">
+          {storageNotice ? <p className="text-amber-200" role="status">{storageNotice}</p> : null}
+          {authIssue ? <p className="text-rose-300" role="alert">{authIssue}</p> : null}
+        </div> : null}
       </header>
 
-      <div className="mx-auto grid w-full max-w-[1720px] flex-1 grid-cols-1 md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)]">
+      <div className={`mx-auto grid w-full max-w-[1720px] flex-1 grid-cols-1 md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)] ${isChatPage ? "min-h-0" : ""}`}>
         <aside className="hidden border-r border-border px-3 py-7 md:block lg:px-5">
           <nav aria-label="Navegación principal" className="sticky top-6 flex flex-col gap-2">
             {navigation.map((item) => renderNavigationItem(item))}
           </nav>
         </aside>
 
-        <div className="flex min-w-0 flex-col">
-          <div className="min-w-0 flex-1 pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0" id="main-content" tabIndex={-1}>
+        <div className={`flex min-w-0 flex-col ${isChatPage ? "min-h-0" : ""}`}>
+          <div className={`min-w-0 flex-1 ${isChatPage ? "min-h-0 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : "pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0"}`} id="main-content" tabIndex={-1}>
             {children}
           </div>
-          <footer className="border-t border-border px-4 py-4 text-center text-xs leading-5 text-muted-foreground sm:px-6">
+          <footer className={`${isChatPage ? "hidden" : ""} border-t border-border px-4 py-4 text-center text-xs leading-5 text-muted-foreground sm:px-6`}>
             <p>Tu cuenta y tus publicaciones están protegidas por los permisos de MatchWork.</p>
             {storageNotice ? <p className="mt-1 text-amber-200" role="status">{storageNotice}</p> : null}
             {authIssue ? <p className="mt-1 text-rose-300" role="alert">{authIssue}</p> : null}

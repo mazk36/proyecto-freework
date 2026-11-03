@@ -342,6 +342,27 @@ html:has(.proposals-preview) {
   scrollbar-gutter: stable;
 }
 
+.chat-composer {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media (max-width: 767px) {
+  .private-app-shell:has(.chat-thread-mobile) > header,
+  .private-app-shell:has(.chat-thread-mobile) > nav,
+  .private-app-shell:has(.chat-thread-mobile) > a {
+    visibility: hidden;
+  }
+
+  .chat-thread-mobile {
+    position: fixed;
+    z-index: 60;
+    top: var(--chat-viewport-top, 0px);
+    right: 0;
+    left: 0;
+    height: var(--chat-viewport-height, 100dvh);
+  }
+}
+
 .swipe-deck {
   /* Cabecera y navegación del shell, incluido el borde de 1px. */
   --swipe-header-height: calc(4rem + 1px);

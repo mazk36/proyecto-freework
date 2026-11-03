@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
-import { AppEmptyState } from "@/components/app/app-empty-state";
-import { ButtonLink } from "@/components/ui/button";
+import { Suspense } from "react";
+import { ChatPageClient } from "@/components/chat/chat-page-client";
+import { ConversationSkeleton, ThreadSkeleton } from "@/components/chat/chat-parts";
 
 export const metadata: Metadata = { title: "Chats | MatchWork" };
 
 export default function ChatsPage() {
   return (
-    <AppEmptyState
-      action={<ButtonLink href="/app/matches" variant="outline">Consultar Matches</ButtonLink>}
-      description="El chat se habilitará cuando exista una conexión autorizada y esté integrado el servicio de conversaciones. No hay conversaciones de ejemplo."
-      title="Las conversaciones empiezan con un Match."
-    />
+    <Suspense fallback={<div className="grid h-full min-h-0 md:grid-cols-[20rem_minmax(0,1fr)]"><ConversationSkeleton /><div className="hidden border-l border-border md:flex"><ThreadSkeleton /></div></div>}>
+      <ChatPageClient />
+    </Suspense>
   );
 }

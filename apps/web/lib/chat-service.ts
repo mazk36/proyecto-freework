@@ -14,6 +14,14 @@ export type ChatConversation = {
   unreadCount: number;
 };
 
+export type ChatServices = {
+  listConversations: typeof listConversations;
+  listMessages: typeof listMessages;
+  sendMessage: typeof sendMessage;
+  markConversationRead: typeof markConversationRead;
+  subscribeToMessages: typeof subscribeToMessages;
+};
+
 export async function sendMessage(matchId: string, body: string, clientId: string | null = null): Promise<ChatMessage> {
   const data: unknown = await callRpc("send_message", { p_match_id: matchId, p_body: body, p_client_id: clientId });
   // PostgREST can serialize a composite result as a single-row array.
@@ -63,19 +71,45 @@ export async function unreadTotal(): Promise<number> {
 
 let subscriptionSequence = 0;
 
-export function subscribeToMessages(matchId: string, onMessage: (message: ChatMessage) => void): () => void {
+export type ChatRealtimeStatus = "connecting" | "connected" | "unavailable";
+
+export function subscribeToMessages(
+  matchId: string,
+  onMessage: (message: ChatMessage) => void,
+  onStatus?: (status: ChatRealtimeStatus) => void,
+): () => void {
+  return subscribeToMessageInserts(matchId, onMessage, onStatus);
+}
+
+/** Realtime applies the existing participant RLS policy to this unfiltered subscription. */
+export function subscribeToAllMessages(onMessage: (message: ChatMessage) => void): () => void {
+  return subscribeToMessageInserts(null, onMessage);
+}
+
+function subscribeToMessageInserts(
+  matchId: string | null,
+  onMessage: (message: ChatMessage) => void,
+  onStatus?: (status: ChatRealtimeStatus) => void,
+): () => void {
   const client = getSupabaseClient();
-  if (!client) return () => {};
-  const channel = client.channel(`match-messages:${matchId}:${++subscriptionSequence}`)
+  if (!client) {
+    onStatus?.("unavailable");
+    return () => {};
+  }
+  onStatus?.("connecting");
+  const channel = client.channel(`match-messages:${matchId ?? "all"}:${++subscriptionSequence}`)
     .on("postgres_changes", {
-      event: "INSERT", schema: "public", table: "messages", filter: `match_id=eq.${matchId}`,
+      event: "INSERT", schema: "public", table: "messages", ...(matchId ? { filter: `match_id=eq.${matchId}` } : {}),
     }, (payload) => {
-      if (!isMessageRow(payload.new) || payload.new.match_id !== matchId) {
+      if (!isMessageRow(payload.new) || (matchId !== null && payload.new.match_id !== matchId)) {
         console.error("Se recibió un mensaje de Realtime inválido.");
         return;
       }
       onMessage(mapMessage(payload.new));
-    }).subscribe();
+    }).subscribe((status) => {
+      if (status === "SUBSCRIBED") onStatus?.("connected");
+      else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") onStatus?.("unavailable");
+    });
   return () => {
     void client.removeChannel(channel).catch(() => console.error("No se pudo cerrar la suscripción de mensajes."));
   };
@@ -109,3 +143,7 @@ function mapMessage(row: ChatMessageRow): ChatMessage {
     createdAt: row.created_at, clientId: row.client_id, status: "sent",
   };
 }
+
+export const chatServices: ChatServices = {
+  listConversations, listMessages, sendMessage, markConversationRead, subscribeToMessages,
+};

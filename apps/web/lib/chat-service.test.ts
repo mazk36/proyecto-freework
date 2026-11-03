@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { listConversations, listMessages, markConversationRead, sendMessage, subscribeToMessages, unreadTotal } from "@/lib/chat-service";
+import { listConversations, listMessages, markConversationRead, sendMessage, subscribeToAllMessages, subscribeToMessages, unreadTotal } from "@/lib/chat-service";
 
 const mocks = vi.hoisted(() => ({
   rpc: vi.fn(), on: vi.fn(), subscribe: vi.fn(), channel: vi.fn(), removeChannel: vi.fn(), configured: true,
@@ -99,5 +99,24 @@ describe("chat service", () => {
     mocks.configured = false;
     expect(() => subscribeToMessages("match", vi.fn())()).not.toThrow();
     expect(mocks.channel).not.toHaveBeenCalled();
+  });
+
+  it("reports connection failures and subscribes globally through the RLS-protected table", () => {
+    const onStatus = vi.fn();
+    const onMessage = vi.fn();
+    const cleanup = subscribeToMessages("match", onMessage, onStatus);
+    const status = mocks.subscribe.mock.calls[0][0] as (value: string) => void;
+    status("SUBSCRIBED");
+    status("CHANNEL_ERROR");
+    expect(onStatus.mock.calls.map(([value]) => value)).toEqual(["connecting", "connected", "unavailable"]);
+    cleanup();
+
+    subscribeToAllMessages(onMessage);
+    expect(mocks.on).toHaveBeenLastCalledWith("postgres_changes", {
+      event: "INSERT", schema: "public", table: "messages",
+    }, expect.any(Function));
+    const callback = mocks.on.mock.calls.at(-1)?.[2] as (payload: { new: unknown }) => void;
+    callback({ new: row });
+    expect(onMessage).toHaveBeenCalledWith(message);
   });
 });
