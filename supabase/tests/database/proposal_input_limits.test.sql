@@ -25,8 +25,8 @@ insert into public.business_problems (id, company_user_id, status) values
 
 select throws_ok(
   pg_catalog.format(
-    'insert into public.proposals (problem_id, freelancer_id, %I) values (%L::uuid, %L::uuid, pg_catalog.repeat(%L, %s))',
-    field_name, '19000000-0000-4000-8000-000000000001', '09000000-0000-4000-8000-000000000002', 'x', max_chars + 1
+    'insert into public.proposals (problem_id, freelancer_id, problem_title_snapshot, %I) values (%L::uuid, %L::uuid, %L, pg_catalog.repeat(%L, %s))',
+    field_name, '19000000-0000-4000-8000-000000000001', '09000000-0000-4000-8000-000000000002', 'Título', 'x', max_chars + 1
   ),
   '23514', null, 'the table independently rejects an overlong ' || field_name
 )

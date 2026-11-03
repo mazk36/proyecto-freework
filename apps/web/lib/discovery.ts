@@ -82,6 +82,13 @@ export function transitionFreelancerProblem(
   return current;
 }
 
+export function interactionAfterWithdraw(
+  current: FreelancerProblemInteraction | undefined,
+  hasOtherActiveProposal: boolean,
+): FreelancerProblemInteraction | undefined {
+  return current === "proposal_submitted" && !hasOtherActiveProposal ? "saved" : current;
+}
+
 export function transitionCompanyProposal(
   current: CompanyProposalInteraction | undefined,
   next: CompanyProposalInteraction | null,

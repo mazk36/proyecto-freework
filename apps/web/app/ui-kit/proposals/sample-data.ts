@@ -11,7 +11,7 @@ export const sampleProblems: PublicProblem[] = [
 export function createSampleProposalServices(includeExamples = true): ProposalServices {
   const createdAt = "2026-10-25T12:00:00Z";
   const example = (id: string, problemId: string, status: Proposal["status"], price: number | null): Proposal => ({
-    ...createEmptyProposalDraft(), id, problemId, freelancerId: "profesional-de-muestra", status,
+    ...createEmptyProposalDraft(), id, problemId, problemTitleSnapshot: sampleProblems.find((problem) => problem.id === problemId)?.title ?? "Problema de muestra", freelancerId: "profesional-de-muestra", status,
     diagnosis: "Entiendo que el equipo necesita una forma clara de dar seguimiento.",
     solution: "Propongo revisar el proceso actual y diseñar una solución acorde.",
     deliverables: "Mapa del proceso y propuesta de implementación.", timeline: "Tres semanas", price,
@@ -31,7 +31,8 @@ export function createSampleProposalServices(includeExamples = true): ProposalSe
       const existing = proposals.find((item) => item.id === id);
       if (existing && existing.status !== "draft") throw new Error("Este ejemplo ya no es editable.");
       const now = new Date().toISOString();
-      const proposal: Proposal = { ...input, id, problemId, freelancerId: "profesional-de-muestra", status: "draft", submittedAt: null, createdAt: existing?.createdAt ?? now, updatedAt: now };
+      const problemTitleSnapshot = existing?.problemTitleSnapshot ?? sampleProblems.find((problem) => problem.id === problemId)?.title ?? "Problema de muestra";
+      const proposal: Proposal = { ...input, id, problemId, problemTitleSnapshot, freelancerId: "profesional-de-muestra", status: "draft", submittedAt: null, createdAt: existing?.createdAt ?? now, updatedAt: now };
       proposals = [proposal, ...proposals.filter((item) => item.id !== id)];
       return id;
     },

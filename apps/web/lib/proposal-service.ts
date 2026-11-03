@@ -38,6 +38,7 @@ function mapProposal(row: Database["public"]["Tables"]["proposals"]["Row"]): Pro
   return {
     id: row.id,
     problemId: row.problem_id,
+    problemTitleSnapshot: row.problem_title_snapshot,
     freelancerId: row.freelancer_id,
     status: row.status,
     diagnosis: row.diagnosis,

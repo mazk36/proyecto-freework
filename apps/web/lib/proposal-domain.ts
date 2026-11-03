@@ -23,6 +23,7 @@ export type ProposalDraftInput = {
 export type Proposal = ProposalDraftInput & {
   id: string;
   problemId: string;
+  problemTitleSnapshot: string;
   freelancerId: string;
   status: ProposalStatus;
   submittedAt: string | null;

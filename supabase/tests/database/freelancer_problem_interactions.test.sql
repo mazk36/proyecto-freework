@@ -1,6 +1,6 @@
 begin;
 
--- Shared with apps/web/lib/interaction-transitions.test.ts. SQL NULL means unseen.
+-- Both matrices are shared with apps/web/lib/interaction-transitions.test.ts. SQL NULL means unseen.
 create temporary table interaction_transition_cases (
   case_no integer primary key,
   current_state text,
@@ -27,8 +27,27 @@ insert into interaction_transition_cases (case_no, current_state, next_state, ex
   (16, 'proposal_submitted', 'proposal_submitted', 'proposal_submitted');
 -- END FREELANCER TRANSITION CASES
 
-select plan(16 + 51);
+create temporary table interaction_withdraw_cases (
+  case_no integer primary key,
+  current_state text,
+  has_other_active boolean not null,
+  expected_state text
+);
+-- BEGIN FREELANCER WITHDRAW CASES
+insert into interaction_withdraw_cases (case_no, current_state, has_other_active, expected_state) values
+  (1, null, false, null),
+  (2, null, true, null),
+  (3, 'saved', false, 'saved'),
+  (4, 'saved', true, 'saved'),
+  (5, 'dismissed', false, 'dismissed'),
+  (6, 'dismissed', true, 'dismissed'),
+  (7, 'proposal_submitted', false, 'saved'),
+  (8, 'proposal_submitted', true, 'proposal_submitted');
+-- END FREELANCER WITHDRAW CASES
+
+select plan(16 + 51 + 19);
 grant select on interaction_transition_cases to authenticated;
+grant select on interaction_withdraw_cases to authenticated;
 
 -- Force a failure after the proposal update to verify that the entire RPC rolls back.
 create function pg_temp.fail_interaction_for_atomicity_test()
@@ -164,7 +183,7 @@ select set_config('test.dismissed_proposal', public.save_proposal_draft('1200000
 select is(public.submit_proposal(current_setting('test.dismissed_proposal')::uuid)::text, current_setting('test.dismissed_proposal'), 'a proposal can be submitted for a dismissed problem');
 select is((select state from public.freelancer_problem_interactions where problem_id = '12000000-0000-4000-8000-000000000003'), 'dismissed', 'submission does not change dismissed');
 select is(public.withdraw_proposal(current_setting('test.empty_proposal')::uuid)::text, current_setting('test.empty_proposal'), 'a submitted proposal can be withdrawn');
-select is((select state from public.freelancer_problem_interactions where problem_id = '12000000-0000-4000-8000-000000000001'), 'proposal_submitted', 'withdrawing does not change interactions');
+select is((select state from public.freelancer_problem_interactions where problem_id = '12000000-0000-4000-8000-000000000001'), 'saved', 'withdrawing restores a submitted interaction to saved');
 select set_config('test.incomplete_proposal', public.save_proposal_draft('12000000-0000-4000-8000-000000000004', '{}'::jsonb)::text, true);
 select throws_ok($$select public.submit_proposal(current_setting('test.incomplete_proposal')::uuid)$$, '22023', null, 'an incomplete proposal cannot be submitted');
 select is((select count(*) from public.freelancer_problem_interactions where problem_id = '12000000-0000-4000-8000-000000000004'), 0::bigint, 'a failed submission creates no interaction');
@@ -185,6 +204,53 @@ select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-0000000
 select is((select count(*) from public.freelancer_problem_interactions), 0::bigint, 'a company cannot read interactions even for its own problem or an own row');
 select throws_ok($$select public.set_problem_interaction('12000000-0000-4000-8000-000000000001', 'saved')$$, '42501', 'freelancer account required', 'a company cannot transition interactions');
 select throws_ok('select * from public.list_my_problem_interactions()', '42501', 'freelancer account required', 'a company cannot list interactions');
+
+reset role;
+-- The production index forbids another active proposal. Temporarily remove it
+-- inside this rolled-back test to exercise the defensive branch for legacy data.
+drop index public.proposals_one_active_per_problem_freelancer_idx;
+insert into public.business_problems (id, company_user_id, status, title)
+select ('13000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  '00000000-0000-4000-8000-000000000001', 'open'::public.business_problem_status, 'Problema de prueba'
+from interaction_withdraw_cases;
+insert into public.proposals (id, problem_id, problem_title_snapshot, freelancer_id, status, submitted_at)
+select ('23000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  ('13000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  'Problema de prueba', '00000000-0000-4000-8000-000000000003', 'submitted', now()
+from interaction_withdraw_cases;
+insert into public.proposals (problem_id, problem_title_snapshot, freelancer_id, status, submitted_at)
+select ('13000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  'Problema de prueba', '00000000-0000-4000-8000-000000000003',
+  case when case_no in (4, 8) then 'submitted' else 'draft' end,
+  case when case_no in (4, 8) then now() else null end
+from interaction_withdraw_cases where has_other_active;
+insert into public.freelancer_problem_interactions (freelancer_id, problem_id, state, created_at, updated_at)
+select '00000000-0000-4000-8000-000000000003',
+  ('13000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  current_state, '2001-01-01 00:00:00+00', '2001-01-01 00:00:00+00'
+from interaction_withdraw_cases where current_state is not null;
+
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000003', true);
+select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
+select is(
+  public.withdraw_proposal(('23000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid),
+  ('23000000-0000-4000-8000-' || pg_catalog.lpad(case_no::text, 12, '0'))::uuid,
+  'withdrawal succeeds for case ' || case_no::text
+)
+from interaction_withdraw_cases order by case_no;
+select is(
+  (select i.state from public.freelancer_problem_interactions i
+   where i.problem_id = ('13000000-0000-4000-8000-' || pg_catalog.lpad(c.case_no::text, 12, '0'))::uuid),
+  c.expected_state, 'withdrawal interaction case ' || c.case_no::text
+)
+from interaction_withdraw_cases c order by c.case_no;
+select is((select count(*) from public.proposals where problem_id::text like '13000000-%' and status <> 'withdrawn'), 4::bigint, 'other active proposals remain unchanged');
+select is((select count(*) from public.proposals where problem_id::text like '13000000-%' and status = 'submitted'), 2::bigint, 'other submitted proposals remain active');
+select is((select count(*) from public.freelancer_problem_interactions where problem_id::text like '13000000-%' and updated_at = '2001-01-01 00:00:00+00'::timestamptz), 5::bigint, 'no-op withdrawals preserve interaction timestamps');
+reset role;
+create unique index proposals_one_active_per_problem_freelancer_idx
+  on public.proposals (problem_id, freelancer_id) where status <> 'withdrawn';
 
 select * from finish();
 rollback;

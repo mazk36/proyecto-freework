@@ -6,7 +6,7 @@ const draft = createEmptyProposalDraft();
 
 describe("proposal form state", () => {
   it("restores the existing draft and does not reopen a submitted proposal for editing", () => {
-    const existing: Proposal = { ...draft, id: "p1", problemId: "problem", freelancerId: "freelancer", status: "draft", diagnosis: "Diagnóstico previo", price: 120.5, currency: "USD", submittedAt: null, createdAt: "2026-10-01", updatedAt: "2026-10-02" };
+    const existing: Proposal = { ...draft, id: "p1", problemId: "problem", problemTitleSnapshot: "Título original", freelancerId: "freelancer", status: "draft", diagnosis: "Diagnóstico previo", price: 120.5, currency: "USD", submittedAt: null, createdAt: "2026-10-01", updatedAt: "2026-10-02" };
     const restored = proposalFormReducer(initialProposalFormState(), { type: "load", proposal: existing });
     expect(restored.phase).toBe("ready");
     expect(restored.draft).toMatchObject({ id: "p1", diagnosis: "Diagnóstico previo", currency: "USD" });
@@ -96,11 +96,11 @@ describe("proposal form state", () => {
     expect(groups.withdrawn.map((item) => item.id)).toEqual(["2"]);
   });
 
-  it("uses only public problem information and falls back to the real identifier", () => {
-    const proposal = { ...draft, id: "p1", problemId: "missing-id", currency: "USD", status: "draft" } as Proposal;
+  it("uses public problem information when available and the saved title otherwise", () => {
+    const proposal = { ...draft, id: "p1", problemId: "missing-id", problemTitleSnapshot: "Título guardado", currency: "USD", status: "draft" } as Proposal;
     const fallback = resolveProposalProblem(proposal, []);
     expect(fallback.unavailable).toBe(true);
-    expect(fallback.problem).toMatchObject({ id: "missing-id", title: "Problema #missing-id", companyName: null, currency: "USD" });
+    expect(fallback.problem).toMatchObject({ id: "missing-id", title: "Título guardado", companyName: null, currency: "USD" });
     const available = { ...fallback.problem, title: "Título público", companyName: "Empresa pública" };
     expect(resolveProposalProblem(proposal, [available])).toEqual({ problem: available, unavailable: false });
   });

@@ -261,7 +261,7 @@ export type Database = {
       };
       proposals: {
         Row: {
-          id: string; problem_id: string; freelancer_id: string; status: ProposalStatus;
+          id: string; problem_id: string; problem_title_snapshot: string; freelancer_id: string; status: ProposalStatus;
           diagnosis: string; solution: string; deliverables: string; timeline: string;
           price: number | null; currency: "PEN" | "USD"; recurring_costs: string;
           maintenance_warranty: string; related_experience: string; submitted_at: string | null;

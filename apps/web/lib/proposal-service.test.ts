@@ -38,13 +38,13 @@ describe("proposal service", () => {
 
   it("filters by author and maps every proposal field", async () => {
     mocks.order.mockResolvedValue({ data: [{
-      id: "proposal-id", problem_id: "problem-id", freelancer_id: "author-id", status: "submitted",
+      id: "proposal-id", problem_id: "problem-id", problem_title_snapshot: "Título original", freelancer_id: "author-id", status: "submitted",
       diagnosis: "Diagnóstico", solution: "Solución", deliverables: "Informe", timeline: "Dos semanas",
       price: 30.5, currency: "USD", recurring_costs: "Costos", maintenance_warranty: "Garantía",
       related_experience: "Experiencia", submitted_at: "submitted", created_at: "created", updated_at: "updated",
     }], error: null });
     await expect(listMyProposals()).resolves.toEqual([{
-      id: "proposal-id", problemId: "problem-id", freelancerId: "author-id", status: "submitted",
+      id: "proposal-id", problemId: "problem-id", problemTitleSnapshot: "Título original", freelancerId: "author-id", status: "submitted",
       diagnosis: "Diagnóstico", solution: "Solución", deliverables: "Informe", timeline: "Dos semanas",
       price: 30.5, currency: "USD", recurringCosts: "Costos", maintenanceWarranty: "Garantía",
       relatedExperience: "Experiencia", submittedAt: "submitted", createdAt: "created", updatedAt: "updated",

@@ -8,6 +8,8 @@ La publicación de problemas y la integración de propuestas del freelancer ya c
 - `submit_proposal(proposal_id)` exige diagnóstico, solución, entregables, plazo y precio; costos recurrentes, mantenimiento/garantía y experiencia son opcionales. El plazo es texto libre. `withdraw_proposal(proposal_id)` admite borradores y propuestas enviadas sin Match y conserva el historial; rechaza retirar una propuesta con Match.
 - Las operaciones requieren una cuenta freelancer y usan bloqueos transaccionales. Guardar y enviar comprueban que el problema siga abierto; retirar también está permitido si fue pausado o cerrado. El autor puede leer todas sus propuestas; la empresa dueña solo las enviadas. Cada freelancer puede tener una sola propuesta no retirada por problema. No se realiza conversión de moneda. Las propuestas enviadas no se editan como borrador.
 
+Al crear cada borrador se conserva una copia inmutable del título del problema abierto, utilizada en «Mis propuestas» aunque el problema cambie de título o deje de estar disponible. Para propuestas anteriores, la migración toma el título existente en ese momento. Al retirar una propuesta sin Match, la interacción vuelve de `proposal_submitted` a `saved` si no queda otra propuesta activa del mismo freelancer para el problema; así reaparece en «Me interesan» mientras esté abierto. Los demás estados permanecen iguales y el RPC general de interacción no permite realizar esa transición.
+
 ## Bandeja y Matches
 
 - `list_problem_proposals(problem_id)` requiere la empresa dueña y devuelve todas las propuestas enviadas, ordenadas por fecha de envío ascendente. Incluye diagnóstico, solución, entregables, plazo, precio y moneda originales, costos recurrentes, mantenimiento/garantía y experiencia relacionada, además del nombre de perfil del autor. El slug y titular solo se incluyen si el perfil es público. También devuelve el estado privado de la empresa o `null` y el UUID del Match, si existe.
@@ -19,6 +21,4 @@ Un Match expresa interés mutuo para continuar conversando; no implica contratac
 
 ## Capacidades pendientes
 
-- La lista del freelancer cruza sus propuestas con la lectura pública de problemas abiertos. Esa lectura no devuelve problemas pausados, cerrados o en edición: en esos casos se muestra `Problema #<id>` y el borrador puede abrirse para consulta, pero el servidor solo permite guardarlo o enviarlo mientras el problema esté abierto. Obtener sus títulos de forma segura cuando dejen de estar abiertos requeriría ampliar el contrato de datos autorizado.
-- Retirar una propuesta sin Match no cambia la interacción `proposal_submitted`; por el contrato actual, el problema no reaparece automáticamente en el mazo después del retiro.
 - Una publicación abierta que se edite vuelve a `draft` y deja de aparecer en la función pública hasta su nueva confirmación. Cuando existan propuestas, esa operación debe correr en transacción, conservar el historial y avisar a los desarrolladores afectados de cualquier cambio material de alcance o presupuesto.

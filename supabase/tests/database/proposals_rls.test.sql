@@ -38,15 +38,15 @@ insert into public.business_problems (id, company_user_id, status) values
   ('10000000-0000-4000-8000-000000000005', '00000000-0000-4000-8000-000000000001', 'closed');
 
 select throws_ok(
-  $$insert into public.proposals (problem_id, freelancer_id, currency) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', 'EUR')$$,
+  $$insert into public.proposals (problem_id, freelancer_id, problem_title_snapshot, currency) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', 'Título', 'EUR')$$,
   '23514', null, 'the table constraint independently rejects unsupported currencies'
 );
 select throws_ok(
-  $$insert into public.proposals (problem_id, freelancer_id, price) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', -1)$$,
+  $$insert into public.proposals (problem_id, freelancer_id, problem_title_snapshot, price) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', 'Título', -1)$$,
   '23514', null, 'the table constraint independently rejects negative prices'
 );
 select throws_ok(
-  $$insert into public.proposals (problem_id, freelancer_id, price) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', 'NaN')$$,
+  $$insert into public.proposals (problem_id, freelancer_id, problem_title_snapshot, price) values ('10000000-0000-4000-8000-000000000001', '00000000-0000-4000-8000-000000000003', 'Título', 'NaN')$$,
   '23514', null, 'the table constraint independently rejects NaN prices'
 );
 

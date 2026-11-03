@@ -129,7 +129,7 @@ export function resolveProposalProblem(proposal: Proposal, problems: readonly Pu
   const available = problems.find((problem) => problem.id === proposal.problemId);
   if (available) return { problem: available, unavailable: false };
   return { unavailable: true, problem: {
-    id: proposal.problemId, title: `Problema #${proposal.problemId}`, companyName: null,
+    id: proposal.problemId, title: proposal.problemTitleSnapshot, companyName: null,
     description: "", industrySnapshot: "", impacts: [], objectives: [], successCriteria: "",
     budgetChoice: "", currency: proposal.currency, deadlineChoice: "", publishedAt: null,
   } };
