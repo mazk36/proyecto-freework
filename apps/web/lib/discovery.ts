@@ -115,12 +115,8 @@ export function selectCompanyProposals(
 export function getFreelancerProposalStatus(
   proposal: SolutionProposal,
   matches: Match[],
-  companyInteractions: Record<string, CompanyProposalInteraction>,
 ): FreelancerProposalStatus {
   if (matches.some((match) => match.proposalId === proposal.id)) return "matched";
-  const interaction = companyInteractions[proposal.id];
-  if (interaction === "saved") return "saved";
-  if (interaction === "dismissed") return "dismissed";
   return "sent";
 }
 

@@ -1,4 +1,4 @@
-import type { FreelancerProblemInteraction } from "@/types/domain";
+import type { CompanyProposalInteraction, FreelancerProblemInteraction } from "@/types/domain";
 
 export type Json =
   | string
@@ -11,6 +11,7 @@ export type Json =
 type ProblemStatus = "draft" | "open" | "paused" | "closed";
 type ProposalStatus = "draft" | "submitted" | "withdrawn";
 type StoredProblemInteraction = Exclude<FreelancerProblemInteraction, "unseen">;
+type StoredCompanyProposalInteraction = Exclude<CompanyProposalInteraction, "unseen">;
 
 export type Database = {
   public: {
@@ -312,6 +313,76 @@ export type Database = {
           },
         ];
       };
+      company_proposal_interactions: {
+        Row: {
+          company_user_id: string;
+          proposal_id: string;
+          state: StoredCompanyProposalInteraction;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "company_proposal_interactions_company_user_id_fkey";
+            columns: ["company_user_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "company_proposal_interactions_proposal_id_fkey";
+            columns: ["proposal_id"];
+            isOneToOne: false;
+            referencedRelation: "proposals";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      matches: {
+        Row: {
+          id: string;
+          problem_id: string;
+          proposal_id: string;
+          company_user_id: string;
+          freelancer_id: string;
+          status: "matched";
+          created_at: string;
+        };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "matches_problem_id_fkey";
+            columns: ["problem_id"];
+            isOneToOne: false;
+            referencedRelation: "business_problems";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_proposal_id_fkey";
+            columns: ["proposal_id"];
+            isOneToOne: true;
+            referencedRelation: "proposals";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_company_user_id_fkey";
+            columns: ["company_user_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "matches_freelancer_id_fkey";
+            columns: ["freelancer_id"];
+            isOneToOne: false;
+            referencedRelation: "app_users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -336,6 +407,27 @@ export type Database = {
       list_my_problem_interactions: {
         Args: Record<string, never>;
         Returns: { problem_id: string; state: StoredProblemInteraction; updated_at: string }[];
+      };
+      list_problem_proposals: {
+        Args: { p_problem_id: string };
+        Returns: {
+          id: string; problem_id: string; freelancer_id: string; freelancer_name: string | null;
+          freelancer_slug: string | null; headline: string | null; diagnosis: string; solution: string;
+          deliverables: string; timeline: string; price: number | null; currency: "PEN" | "USD";
+          recurring_costs: string; maintenance_warranty: string; related_experience: string;
+          submitted_at: string; my_state: StoredCompanyProposalInteraction | null; match_id: string | null;
+        }[];
+      };
+      set_proposal_interaction: {
+        Args: { p_proposal_id: string; p_next: CompanyProposalInteraction | null };
+        Returns: StoredCompanyProposalInteraction | null;
+      };
+      list_my_matches: {
+        Args: Record<string, never>;
+        Returns: {
+          match_id: string; problem_id: string; proposal_id: string; counterpart_name: string | null;
+          problem_title: string; created_at: string;
+        }[];
       };
     };
     Enums: {

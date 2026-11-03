@@ -28,7 +28,7 @@ El trigger de registro comparte la transacción del alta de Auth y, por eso, un 
 
 La migración de `proposals` activa RLS y deniega todo acceso a `anon`. Un freelancer autenticado lee sus propias propuestas, incluidas las retiradas; la empresa dueña del problema solo lee las enviadas. Ningún cliente puede insertar, actualizar ni eliminar filas directamente. Una función `SECURITY DEFINER` de solo lectura comprueba la propiedad del problema para la política de la empresa, sin conceder acceso a `business_problems`.
 
-Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uuid)` y `withdraw_proposal(uuid)`, todas con `search_path` fijo, comprobación del rol persistido y del problema abierto. En la edición se comprueba además que la propuesta sea del autor y siga en borrador; el envío y retiro comprueban propiedad y transición de estado. Los bloqueos mantienen el problema abierto durante cada transacción. El índice único parcial impide más de una propuesta no retirada por freelancer y problema; retirar conserva el historial y permite crear otra.
+Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uuid)` y `withdraw_proposal(uuid)`, todas con `search_path` fijo y comprobación del rol persistido. Guardar y enviar requieren un problema abierto. En la edición se comprueba además que la propuesta sea del autor y siga en borrador; el envío y retiro comprueban propiedad y transición de estado. El retiro también está permitido si el problema está pausado o cerrado, pero no si existe un Match. El índice único parcial impide más de una propuesta no retirada por freelancer y problema; retirar conserva el historial y permite crear otra.
 
 Las pruebas `supabase/tests/database/proposals_rls.test.sql` y `supabase/tests/database/proposal_input_limits.test.sql` cubren permisos, aislamiento por propietario, validaciones, límites y transiciones. Deben ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
 
@@ -41,6 +41,14 @@ Pendiente para la fase anti-spam: definir cuotas y límites de frecuencia para l
 La ausencia de fila representa `unseen`. Solo se guardan `saved`, `dismissed` y `proposal_submitted`; deshacer elimina `saved` o `dismissed`, incluso si el problema dejó de estar abierto. Las demás transiciones no permitidas conservan el estado. Para las acciones distintas de deshacer, el problema debe estar abierto. Se bloquean el problema, la cuenta del freelancer y la fila existente para serializar también las primeras interacciones. Enviar una propuesta aplica la transición a `proposal_submitted` en la misma transacción si estaba sin interacción o guardada; respeta `dismissed`. Retirarla no cambia la interacción.
 
 `supabase/tests/database/freelancer_problem_interactions.test.sql` contiene la matriz de 16 transiciones compartida con Vitest y comprueba permisos, aislamiento y envío. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
+## Bandeja de empresa y Matches
+
+`company_proposal_interactions` concede lectura únicamente a la empresa de la fila; los freelancers no pueden consultar sus favoritos ni descartes. `matches` concede lectura solo a sus dos participantes. Ambas tablas tienen RLS, deniegan acceso a `anon` y no permiten escrituras directas a clientes autenticados.
+
+Los RPC de bandeja, interacción y Matches usan `SECURITY DEFINER`, `search_path = ''`, permisos explícitos y comprobación del rol y propietario. La bandeja incluye solo propuestas enviadas: expone el nombre de perfil del autor, pero el slug y titular únicamente cuando el perfil es público. En la lista de Matches del freelancer, el nombre de empresa respeta `show_company_name`. Ningún RPC expone el estado privado de la empresa al freelancer.
+
+La transición valida que el problema esté abierto o pausado y la propuesta siga enviada. Bloquea primero el problema y luego la propuesta, igual que el retiro y el envío. Marcar interés inserta el Match en la misma transacción; la unicidad por propuesta evita duplicados y el retiro posterior se rechaza. La ausencia de interacción significa `unseen`; deshacer elimina guardados o descartados. `supabase/tests/database/company_inbox_matches.test.sql` comprueba permisos, transiciones, privacidad y atomicidad; debe ejecutarse en Supabase local antes de aplicar la migración en otro entorno.
 
 ## Storage
 

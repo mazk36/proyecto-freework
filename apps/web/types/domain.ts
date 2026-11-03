@@ -63,7 +63,7 @@ export type FreelancerProblemInteraction =
 
 export type CompanyProposalInteraction = "unseen" | "saved" | "dismissed" | "interested";
 
-export type FreelancerProposalStatus = "sent" | "saved" | "matched" | "dismissed";
+export type FreelancerProposalStatus = "sent" | "matched";
 
 export type Match = {
   id: string;

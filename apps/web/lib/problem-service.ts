@@ -255,7 +255,13 @@ export function toFriendlyError(message: string): string {
   if (/not authenticated/i.test(message)) return "Inicia sesión para continuar.";
   if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
+  if (/account required/i.test(message)) return "No encontramos una cuenta de MatchWork vinculada a tu sesión.";
   if (/proposal not found/i.test(message)) return "No encontramos esta propuesta o ya no tienes acceso.";
+  if (/proposal already matched/i.test(message)) return "Esta propuesta ya tiene un Match y no puede retirarse.";
+  if (/proposal withdrawn/i.test(message)) return "El profesional retiró esta propuesta y ya no está disponible.";
+  if (/submitted proposal required/i.test(message)) return "Esta acción requiere una propuesta enviada.";
+  if (/invalid proposal interaction state/i.test(message)) return "La acción seleccionada para esta propuesta no es válida.";
+  if (/open or paused problem required for interaction/i.test(message)) return "Este problema debe estar abierto o pausado para revisar sus propuestas.";
   if (/open problem required for interaction/i.test(message)) return "Este problema ya no está disponible para esta acción.";
   if (/invalid problem interaction state/i.test(message)) return "La acción seleccionada para este problema no es válida.";
   if (/open problem required/i.test(message)) return "Este problema ya no está disponible para recibir propuestas.";

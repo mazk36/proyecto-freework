@@ -172,11 +172,9 @@ describe("proposal visibility and Match creation", () => {
     expect(createMatchForInterestedProposal(proposal, problem, "company-a", [match], new Date(NOW).toISOString())).toBeNull();
   });
 
-  it("shows the company response status only on a freelancer's proposal view", () => {
+  it("only exposes sent and matched states to the freelancer", () => {
     const proposal = makeProposal();
-    expect(getFreelancerProposalStatus(proposal, [], { [proposal.id]: "saved" })).toBe("saved");
-    expect(getFreelancerProposalStatus(proposal, [], { [proposal.id]: "dismissed" })).toBe("dismissed");
-    expect(getFreelancerProposalStatus(proposal, [], {})).toBe("sent");
+    expect(getFreelancerProposalStatus(proposal, [])).toBe("sent");
     expect(getFreelancerProposalStatus(proposal, [{
       id: "match-proposal-a",
       problemId: proposal.problemId,
@@ -185,6 +183,6 @@ describe("proposal visibility and Match creation", () => {
       freelancerId: proposal.freelancer.id,
       createdAt: new Date(NOW).toISOString(),
       status: "matched",
-    }], {})).toBe("matched");
+    }])).toBe("matched");
   });
 });
