@@ -1,11 +1,13 @@
 "use client";
 
 import { CircleUserRound, Compass, Heart, Layers3, MessagesSquare } from "lucide-react";
+import { useState } from "react";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { DeckExperience } from "@/components/swipe/swipe-deck";
 import type { StoredProblemInteraction } from "@/lib/interaction-service";
 import type { PublicProblem } from "@/lib/problem-domain";
 import type { FreelancerProblemInteraction } from "@/types/domain";
+import { createSampleProposalServices } from "../proposals/sample-data";
 
 const samples: PublicProblem[] = [
   {
@@ -39,11 +41,12 @@ const navigation = [
 ];
 
 export function SwipePreview() {
+  const [proposalServices] = useState(() => createSampleProposalServices(false));
   return <div className="private-app-shell swipe-preview min-h-dvh bg-background text-foreground">
     <header className="border-b border-border"><div className="flex min-h-16 items-center justify-between gap-4 px-4 sm:px-6"><MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" /><span className="rounded-full border border-warning/40 bg-warning-soft px-3 py-1 text-xs font-semibold text-warning">Datos de muestra · revisión visual</span></div></header>
     <div className="grid md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)]">
       <aside aria-label="Navegación de muestra" className="hidden border-r border-border px-3 py-7 md:block lg:px-5"><div className="grid gap-2">{navigation.map(({ label, icon: Icon }, index) => <div className={`flex min-h-11 items-center justify-center gap-3 rounded-xl px-3 text-sm lg:justify-start ${index === 0 ? "bg-accent/15 text-foreground" : "text-muted-foreground"}`} key={label}><Icon aria-hidden="true" className="size-5" /><span className="sr-only lg:not-sr-only">{label}</span></div>)}</div></aside>
-      <DeckExperience initialInteractions={{}} problems={samples} saveInteraction={saveSample} tutorialStorageKey="matchwork.swipe-tutorial.preview.v1" />
+      <DeckExperience initialInteractions={{}} problems={samples} proposalServices={proposalServices} saveInteraction={saveSample} tutorialStorageKey="matchwork.swipe-tutorial.preview.v1" />
     </div>
     <div aria-label="Navegación de muestra" className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-surface/95 px-2 pb-[env(safe-area-inset-bottom)] pt-2 md:hidden"><div className="mx-auto flex max-w-lg">{navigation.map(({ label, icon: Icon }, index) => <div className={`flex min-h-14 flex-1 flex-col items-center justify-center gap-1 rounded-xl text-[0.625rem] ${index === 0 ? "bg-accent/15 text-foreground" : "text-muted-foreground"}`} key={label}><Icon aria-hidden="true" className="size-5" />{label}</div>)}</div></div>
   </div>;

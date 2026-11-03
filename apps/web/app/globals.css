@@ -60,8 +60,8 @@ body:has(.private-app-shell) .ui-portal {
   --foreground: var(--brand-white);
   --muted: #aab5c5;
   --border: color-mix(in srgb, var(--brand-slate) 48%, transparent);
-  --accent-hover: #9d69ff;
-  --accent-foreground: var(--brand-white);
+  --accent-hover: #7940e8;
+  --accent-foreground: #fff;
   --surface: color-mix(in srgb, var(--brand-slate) 12%, var(--night-surface));
   --surface-raised: color-mix(in srgb, var(--brand-slate) 18%, var(--night-surface-raised));
   --success: #86efc0;
@@ -305,13 +305,7 @@ body:has(.swipe-deck) .ui-toast-region {
   border-radius: 1.5rem 1.5rem 0 0;
   box-shadow: 0 -16px 50px rgb(0 0 0 / 25%);
   outline: none;
-  transform: translateY(var(--sheet-drag-offset, 0));
-  transition: transform 420ms cubic-bezier(0.22, 1.32, 0.36, 1);
-  animation: ui-sheet-enter 300ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
-}
-
-.ui-sheet-panel[data-dragging="true"] {
-  transition: none;
+  animation: ui-fade-in 200ms ease-out both;
 }
 
 .ui-sheet-panel:focus-visible {
@@ -330,17 +324,14 @@ body:has(.swipe-deck) .ui-toast-region {
   cursor: grabbing;
 }
 
-@keyframes ui-sheet-enter {
-  from { opacity: 0; transform: translateY(2rem); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 @keyframes ui-fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
 }
 
-html:has(.ui-kit) {
+html:has(.ui-kit),
+html:has(.freelancer-likes),
+html:has(.proposals-preview) {
   --scrollbar-thumb: #9eacbc;
   --scrollbar-thumb-hover: #d8c4ff;
 }
@@ -406,33 +397,43 @@ html:has(.ui-kit) {
 
 @supports (scrollbar-color: auto) {
   .ui-scrollbar,
-  html:has(.ui-kit) {
+  html:has(.ui-kit),
+  html:has(.freelancer-likes),
+  html:has(.proposals-preview) {
     scrollbar-color: var(--scrollbar-thumb) transparent;
     scrollbar-width: auto;
   }
 
   .ui-scrollbar:hover,
-  html:has(.ui-kit):hover {
+  html:has(.ui-kit):hover,
+  html:has(.freelancer-likes):hover,
+  html:has(.proposals-preview):hover {
     scrollbar-color: var(--scrollbar-thumb-hover) transparent;
   }
 }
 
 @supports not (scrollbar-color: auto) {
   .ui-scrollbar::-webkit-scrollbar,
-  html:has(.ui-kit)::-webkit-scrollbar {
+  html:has(.ui-kit)::-webkit-scrollbar,
+  html:has(.freelancer-likes)::-webkit-scrollbar,
+  html:has(.proposals-preview)::-webkit-scrollbar {
     width: 12px;
     height: 12px;
   }
 
   .ui-scrollbar::-webkit-scrollbar-thumb,
-  html:has(.ui-kit)::-webkit-scrollbar-thumb {
+  html:has(.ui-kit)::-webkit-scrollbar-thumb,
+  html:has(.freelancer-likes)::-webkit-scrollbar-thumb,
+  html:has(.proposals-preview)::-webkit-scrollbar-thumb {
     border: 3px solid transparent;
     border-radius: 999px;
     background: var(--scrollbar-thumb) padding-box;
   }
 
   .ui-scrollbar::-webkit-scrollbar-thumb:hover,
-  html:has(.ui-kit)::-webkit-scrollbar-thumb:hover {
+  html:has(.ui-kit)::-webkit-scrollbar-thumb:hover,
+  html:has(.freelancer-likes)::-webkit-scrollbar-thumb:hover,
+  html:has(.proposals-preview)::-webkit-scrollbar-thumb:hover {
     background-color: var(--scrollbar-thumb-hover);
   }
 }
@@ -465,6 +466,8 @@ html:has(.ui-kit) {
     transform: none;
     transition: none;
     animation-name: ui-panel-enter;
+    animation-duration: 300ms;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
@@ -499,7 +502,9 @@ html:has(.ui-kit) {
 
 @media (forced-colors: active) {
   .ui-scrollbar,
-  html:has(.ui-kit) {
+  html:has(.ui-kit),
+  html:has(.freelancer-likes),
+  html:has(.proposals-preview) {
     scrollbar-color: auto;
   }
 }

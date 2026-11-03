@@ -54,3 +54,17 @@ function mapProposal(row: Database["public"]["Tables"]["proposals"]["Row"]): Pro
     updatedAt: row.updated_at,
   };
 }
+
+export type ProposalServices = {
+  list: typeof listMyProposals;
+  save: typeof saveProposalDraft;
+  submit: typeof submitProposal;
+  withdraw: typeof withdrawProposal;
+};
+
+export const proposalServices: ProposalServices = {
+  list: listMyProposals,
+  save: saveProposalDraft,
+  submit: submitProposal,
+  withdraw: withdrawProposal,
+};

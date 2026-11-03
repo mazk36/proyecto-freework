@@ -1,12 +1,12 @@
 "use client";
 
 import { X } from "lucide-react";
+import { motion, MotionConfig, useReducedMotion, useSpring } from "motion/react";
 import {
   useEffect,
   useId,
   useRef,
   useState,
-  type CSSProperties,
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
@@ -52,7 +52,8 @@ export function BottomSheet({
   const onCloseRef = useRef(onClose);
   const dragRef = useRef<DragState | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [dragOffset, setDragOffset] = useState(0);
+  const dragOffset = useSpring(0, { stiffness: 300, damping: 30 });
+  const reducedMotion = useReducedMotion();
   const [dragging, setDragging] = useState(false);
 
   useEffect(() => {
@@ -66,13 +67,17 @@ export function BottomSheet({
   useEffect(() => {
     if (!open || !mounted) {
       dragRef.current = null;
-      setDragOffset(0);
+      dragOffset.jump(0);
       setDragging(false);
       return;
     }
 
     const panel = panelRef.current;
     if (!panel) return;
+    if (!reducedMotion && window.matchMedia("(max-width: 767px)").matches) {
+      dragOffset.jump(32);
+      dragOffset.set(0);
+    }
     const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -117,7 +122,7 @@ export function BottomSheet({
       document.body.style.overflow = previousOverflow;
       if (previouslyFocused?.isConnected) previouslyFocused.focus();
     };
-  }, [mounted, open]);
+  }, [dragOffset, mounted, open, reducedMotion]);
 
   function handlePointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     if (!event.isPrimary || event.button !== 0 || window.matchMedia("(min-width: 768px)").matches) return;
@@ -142,7 +147,7 @@ export function BottomSheet({
 
   function handlePointerMove(event: ReactPointerEvent<HTMLDivElement>) {
     const drag = recordPointer(event);
-    if (drag) setDragOffset(Math.max(0, event.clientY - drag.startY));
+    if (drag && !reducedMotion) dragOffset.jump(Math.max(0, event.clientY - drag.startY));
   }
 
   function handlePointerUp(event: ReactPointerEvent<HTMLDivElement>) {
@@ -154,22 +159,22 @@ export function BottomSheet({
     const distance = Math.max(0, event.clientY - drag.startY);
     dragRef.current = null;
     setDragging(false);
-    setDragOffset(0);
+    dragOffset.set(0);
     if (shouldCloseSheet(distance, velocity)) onCloseRef.current();
   }
 
   function handlePointerCancel() {
     dragRef.current = null;
     setDragging(false);
-    setDragOffset(0);
+    dragOffset.set(0);
   }
 
   if (!open || !mounted) return null;
 
   return createPortal(
-    <div className="ui-portal ui-sheet-layer">
+    <MotionConfig reducedMotion="user"><div className="ui-portal ui-sheet-layer">
       <div aria-hidden="true" className="ui-sheet-backdrop" onClick={() => onCloseRef.current()} />
-      <section
+      <motion.section
         aria-describedby={description ? descriptionId : undefined}
         aria-labelledby={titleId}
         aria-modal="true"
@@ -177,7 +182,7 @@ export function BottomSheet({
         data-dragging={dragging}
         ref={panelRef}
         role="dialog"
-        style={{ "--sheet-drag-offset": `${dragOffset}px` } as CSSProperties}
+        style={{ y: dragOffset }}
         tabIndex={-1}
       >
         <div
@@ -207,8 +212,8 @@ export function BottomSheet({
         <div className="ui-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))] md:px-7">
           {children}
         </div>
-      </section>
-    </div>,
+      </motion.section>
+    </div></MotionConfig>,
     document.body,
   );
 }

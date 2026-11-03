@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Heart, Network, RotateCcw, Sparkle
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { ProposalSheet } from "@/components/proposals/proposal-sheet";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -14,10 +15,10 @@ import { persistDeckInteraction, type DeckInteractionWriter } from "@/lib/deck-i
 import { listMyProblemInteractions, setProblemInteraction } from "@/lib/interaction-service";
 import type { PublicProblem } from "@/lib/problem-domain";
 import { listOpenBusinessProblems, ProblemServiceError } from "@/lib/problem-service";
+import type { ProposalServices } from "@/lib/proposal-service";
 import type { FreelancerProblemInteraction } from "@/types/domain";
 import { DeckDetail } from "./deck-detail";
 import { DeckTutorial } from "./deck-tutorial";
-import { ProposalPlaceholder } from "./proposal-placeholder";
 import { SwipeCard, type ExitDirection } from "./swipe-card";
 
 type InteractionMap = Record<string, FreelancerProblemInteraction>;
@@ -65,12 +66,13 @@ function DeckLoading() {
 }
 
 export function DeckExperience({
-  problems, initialInteractions, saveInteraction, tutorialStorageKey = "matchwork.swipe-tutorial.v1",
+  problems, initialInteractions, saveInteraction, tutorialStorageKey = "matchwork.swipe-tutorial.v1", proposalServices,
 }: {
   problems: PublicProblem[];
   initialInteractions: InteractionMap;
   saveInteraction: DeckInteractionWriter;
   tutorialStorageKey?: string;
+  proposalServices?: ProposalServices;
 }) {
   const { toast, dismiss } = useToast();
   const [interactions, setInteractions] = useState(initialInteractions);
@@ -87,6 +89,7 @@ export function DeckExperience({
   const shouldFocusCard = useRef(false);
   const decisionLock = useRef<string | null>(null);
   const latestUndo = useRef<UndoEntry | null>(null);
+  const submittedIds = useRef(new Set<string>());
   const cards = useMemo(() => selectDeckProblems(problems, interactions), [problems, interactions]);
   const current = cards[0];
   const displayedProblem = current ?? lastExiting;
@@ -160,6 +163,7 @@ export function DeckExperience({
       const outcome = await persistDeckInteraction(saveInteraction, current.id, state, "unseen");
       try {
         if (outcome.confirmed) return true;
+        if (submittedIds.current.has(current.id)) return true;
         setInteraction(current.id, outcome.state);
         if (latestUndo.current === entry) { latestUndo.current = null; dismiss(entry.toastId); }
         decisionLock.current = null;
@@ -240,7 +244,12 @@ export function DeckExperience({
           </div>
         </div> : <div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" ref={emptyState} tabIndex={-1}><EmptyState action={<div className="flex flex-wrap justify-center gap-3"><ButtonLink href="/app/likes">Ver mis Likes</ButtonLink><Button disabled={!dismissedIds.length || resetting || pending.size > 0} onClick={() => { void reviewDismissed(); }} variant="outline">Volver a revisar descartados</Button></div>} description="Cuando haya más problemas disponibles, los encontrarás aquí." icon={Network} title="Ya viste todo por ahora" /></div>}
         <BottomSheet onClose={() => setDetailOpen(false)} open={detailOpen && Boolean(current)} title="Detalle del problema">{current ? <DeckDetail onPropose={() => { setDetailOpen(false); setProposalProblem(current); }} problem={current} /> : null}</BottomSheet>
-        <ProposalPlaceholder onClose={() => setProposalProblem(null)} problem={proposalProblem} />
+        {proposalProblem ? <ProposalSheet key={proposalProblem.id} onClose={() => { setProposalProblem(null); if (submittedIds.current.has(proposalProblem.id)) window.requestAnimationFrame(() => (activeCard.current ?? emptyState.current)?.focus()); }} onSubmitted={() => {
+          submittedIds.current.add(proposalProblem.id);
+          if (latestUndo.current?.problem.id === proposalProblem.id) { dismiss(latestUndo.current.toastId); latestUndo.current = null; }
+          setInteraction(proposalProblem.id, "proposal_submitted");
+          setAnnouncement(`Propuesta enviada: ${proposalProblem.title}.`);
+        }} problem={proposalProblem} services={proposalServices} /> : null}
       </DeckShell>
     </MotionConfig>
   );
