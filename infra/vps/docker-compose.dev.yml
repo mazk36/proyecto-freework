@@ -1,0 +1,28 @@
+# Entorno de prueba local del VPS (nada se despliega). Puertos alternativos para
+# no chocar con otros stacks: HTTPS/HTTP2 8443 (TCP) y HTTP3 8443 (UDP); en dev se desactiva la redirección 80->443.
+# Uso (desde la raíz del repo):
+#   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:55421 \
+#   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<clave publicable> \
+#   docker compose -f infra/vps/docker-compose.dev.yml up --build
+name: matchwork-vps-dev
+services:
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/vps/Dockerfile
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://localhost:8443}
+    environment:
+      SITE_ADDRESS: "localhost"
+      CADDY_GLOBAL_OPTIONS: "auto_https disable_redirects"
+      CSP_CONNECT: "http://127.0.0.1:55421 ws://127.0.0.1:55421"
+    ports:
+      - "127.0.0.1:8443:443"
+      - "127.0.0.1:8443:443/udp"
+    volumes:
+      - caddy_data:/data
+    restart: unless-stopped
+volumes:
+  caddy_data:

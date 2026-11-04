@@ -1,0 +1,7 @@
+**/node_modules
+**/.next
+apps/web/out
+.git
+supabase/.temp
+**/.env*
+**/*.log
