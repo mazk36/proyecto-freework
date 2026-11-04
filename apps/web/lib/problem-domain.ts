@@ -78,7 +78,7 @@ export type CompanyProblem = ProblemDraft & {
 export type PublicProblem = Pick<
   CompanyProblem,
   "id" | "title" | "description" | "impacts" | "industrySnapshot" | "objectives" | "successCriteria" | "budgetChoice" | "currency" | "deadlineChoice" | "publishedAt"
-> & { companyName: string | null };
+> & { companyName: string | null; companyVerified?: boolean };
 
 export function createEmptyProblemDraft(): ProblemDraft {
   return {

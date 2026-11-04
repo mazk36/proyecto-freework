@@ -56,6 +56,15 @@ function mapProposal(row: Database["public"]["Tables"]["proposals"]["Row"]): Pro
   };
 }
 
+export async function listMyProposalCompanyTrust(): Promise<{ proposalId: string; companyVerified: boolean }[]> {
+  const data: unknown = await callRpc("list_my_proposal_company_trust", {});
+  if (!Array.isArray(data) || !data.every((row) => typeof row === "object" && row !== null &&
+    typeof row.proposal_id === "string" && typeof row.company_verified === "boolean")) {
+    throw new ProblemServiceError("No pudimos cargar la verificación de las empresas.");
+  }
+  return data.map((row) => ({ proposalId: row.proposal_id, companyVerified: row.company_verified }));
+}
+
 export type ProposalServices = {
   list: typeof listMyProposals;
   save: typeof saveProposalDraft;

@@ -87,7 +87,7 @@ set max_events = 40, window_seconds = 3600
 where action = 'proposal_draft_create';
 ```
 
-La ventana es móvil. La mayoría de los RPC informa `rate limit exceeded` con código `54000` y un `HINT` con los segundos de espera. Para conservar el contrato del chat, con su política inicial se mantiene el error anterior `message rate limit: maximum 30 messages per minute` y el código `P0001`; si se cambia esa política, utiliza el error común. Cada llamada exitosa elimina hasta 25 eventos antiguos del usuario, siempre que no sigan dentro de una ventana configurada de más de siete días. Al ampliar una ventana solo puede contarse el historial que todavía exista.
+La ventana es móvil. La mayoría de los RPC informa `rate limit exceeded` con código `54000` y un `HINT` con los segundos de espera. Para conservar el contrato del chat, con su política inicial se mantiene el error anterior `message rate limit: maximum 30 messages per minute` y el código `P0001`; si se cambia esa política, utiliza el error común. Cada llamada exitosa puede eliminar hasta 25 eventos del usuario con más de siete días que estén fuera de la ventana de su propia política y hasta 25 más de la acción actual fuera del doble de su ventana. Al ampliar una ventana solo puede contarse el historial que todavía exista.
 
 La migración incorpora los mensajes del último minuto al registro de eventos para conservar la cuota existente durante el cambio. Debe aplicarse en una transacción y con una breve pausa de escrituras de chat para evitar envíos en curso durante el cambio de función. `supabase/tests/database/rate_limits.test.sql` cubre políticas, permisos, ventanas, aislamiento, transiciones, reintentos y cuota del chat.
 
@@ -106,3 +106,27 @@ Las políticas se diseñaron para la API Storage. SQL no debe crear o borrar fil
 ## Pruebas
 
 `supabase/tests/database/profiles_portfolio_rls.test.sql` comprueba lectura anónima, propiedad, publicación, columnas protegidas, unicidad, buckets y políticas de Storage con roles `anon` y `authenticated`. Las filas de metadata de objetos de prueba se insertan dentro de la transacción de prueba y se revierten; no suben archivos binarios. La validación de cargas HTTP reales requiere Supabase local y queda pendiente cuando no esté disponible el CLI/entorno local.
+
+## Verificación de empresa y administración (fase 5a)
+
+Aplica y valida esta migración antes de desplegar los servicios TypeScript: los contratos de feed, Matches y chat añaden campos obligatorios. La migración de esta fase crea `company_verifications`, `admins`, `admin_actions` y `app_settings` con RLS y sin privilegios directos para `anon` ni `authenticated`. La razón social, la identificación fiscal y los contactos de la solicitud se entregan únicamente a la empresa propietaria y a los administradores mediante sus RPC autorizadas. `is_admin()` devuelve solo un booleano y está disponible exclusivamente para `authenticated`; las demás RPC administrativas verifican `require_admin()` en el servidor. Las búsquedas son parametrizadas y tratan `%`, `_` y `\` como caracteres literales; las listas usan cursores de fecha y UUID y un máximo de 100 resultados por página.
+
+La ausencia de solicitud significa `not_requested`; enviar o corregir pasa a `pending`, y un administrador puede aprobar o rechazar la solicitud pendiente. La empresa verificada no puede reenviar. El rechazo requiere un motivo de 5 a 200 caracteres y reenviar lo elimina. La aprobación repetida es idempotente. `admin_undo_company_verification` permite al mismo administrador deshacer su aprobación más reciente durante ocho segundos y deja otra fila de auditoría. El RUC peruano se valida por formato de 11 dígitos, sin comprobar dígito verificador. Otros países admiten entre 4 y 30 caracteres. Hay que indicar una URL HTTPS o un correo corporativo; no se admiten credenciales en URLs ni proveedores gratuitos de la lista compartida por SQL y TypeScript. LinkedIn es opcional y limitado a `linkedin.com` y sus subdominios.
+
+El feed incluye `company_verified`; Matches y conversaciones incluyen `counterpart_company_verified`, con `null` cuando la contraparte es freelancer. `list_my_proposal_company_trust()` permite conocer únicamente ese booleano para propuestas propias, incluso cuando el problema no está en el feed. Ninguna de estas respuestas divulga datos fiscales. La verificación no altera el orden del feed.
+
+La suspensión se registra con fecha y motivo en `app_users` o `business_problems`, sin alterar el enum de estado. El control central de cuota rechaza escrituras de cuentas suspendidas con `P0001` / `account suspended`; los triggers también cubren las escrituras directas de perfil y portafolio, y políticas restrictivas protegen las cargas de sus buckets. `get_my_account_status()` permite leer el motivo propio. Las lecturas propias siguen disponibles. Los problemas suspendidos se excluyen del feed y de los agregados y rechazan nuevos borradores de propuesta, envíos e interacciones nuevas de freelancers o empresas con `P0001` / `problem suspended`; las propuestas previas siguen siendo legibles. Los agregados también excluyen empresas y freelancers suspendidos, incluidas sus propuestas. El criterio de freelancer activo sigue siendo perfil público con titular.
+
+`require_company_verification_to_publish` vive en `app_settings` y comienza en `false`. Activarlo no afecta problemas ya publicados ni cambia el ranking. Una publicación nueva sin verificar falla con `P0001` y el mensaje exacto `company verification required to publish`; el servicio devuelve el código `company_verification_required` y lo traduce a «Para publicar necesitas verificar tu empresa». La RPC `admin_set_setting` valida el booleano y audita el cambio. Los cambios de suspensión requieren motivo; no se permite suspender a un administrador. Cada mutación administrativa efectiva registra actor, acción, objetivo, motivo cuando corresponde, fecha y metadatos; los reintentos sin cambios no crean ruido.
+
+La cuota provisional `company_verification_submit` permite cinco envíos por usuario en una ventana móvil de un día y se ajusta en `rate_limit_policies`. Además de la purga anterior, cada llamada exitosa elimina hasta 25 eventos antiguos del mismo usuario y acción anteriores al doble de la ventana actual; se conserva al menos una ventana extra de margen. Aumentar una ventana solo puede recuperar eventos que aún no se hayan purgado.
+
+### Alta inicial de administración
+
+Usa una conexión `psql` con el rol dueño de la base y el UUID de un usuario existente de `public.app_users`. El siguiente comando de una línea pasa el UUID como variable de `psql` (el ejemplo es un marcador, no un usuario real):
+
+```sh
+printf '%s\n' "insert into public.admins (user_id) values (:'uid'::uuid) on conflict (user_id) do nothing;" | psql "$DB_URL" -X -v ON_ERROR_STOP=1 -v uid=00000000-0000-4000-8000-000000000000
+```
+
+También puede ejecutarse `DB_URL=... supabase/scripts/grant-admin.sh <uuid>`. El script valida el UUID y obtiene la conexión únicamente de `DB_URL`; no contiene credenciales. Este alta es una operación privilegiada fuera de las RPC y debe ejecutarse explícitamente en el entorno correcto. Las pruebas pgTAP nuevas están en `company_verification.test.sql`, `admin_moderation.test.sql`, `suspension_and_strict_mode.test.sql` y `verification_quota_cleanup.test.sql`.

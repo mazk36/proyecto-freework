@@ -22,11 +22,33 @@ export type ChatMessageRow = {
   client_id: string | null;
 };
 
+export type VerificationRequestRow = {
+  company_user_id: string; company_name: string; legal_name: string; country_code: string; tax_id: string;
+  website_url: string | null; corporate_email: string | null; linkedin_url: string | null;
+  status: "pending" | "verified" | "rejected"; rejection_reason: string | null;
+  submitted_at: string; verified_at: string | null; updated_at: string;
+};
+export type AdminUserRow = {
+  user_id: string; full_name: string; role: "company" | "freelancer"; email: string | null;
+  created_at: string; suspended_at: string | null; suspension_reason: string | null;
+};
+export type AdminProblemRow = {
+  problem_id: string; title: string; company_user_id: string; company_name: string | null;
+  company_verified: boolean; budget_choice: string; currency: string; published_at: string | null;
+  sort_at: string; proposal_count: number; status: ProblemStatus;
+  suspended_at: string | null; suspension_reason: string | null;
+};
+export type AdminSummaryRow = {
+  pending_verifications: number; verified_companies: number; open_problems: number; active_freelancers: number;
+};
+export type AdminSettingRow = { key: string; value: Json; updated_at: string; updated_by: string | null };
+
 export type ChatConversationRow = {
   match_id: string;
   problem_title: string;
   counterpart_name: string | null;
   counterpart_role: "company" | "freelancer";
+  counterpart_company_verified: boolean | null;
   last_message_body: string | null;
   last_message_at: string | null;
   last_message_sender_is_me: boolean | null;
@@ -36,8 +58,30 @@ export type ChatConversationRow = {
 export type Database = {
   public: {
     Tables: {
+      admins: {
+        Row: { user_id: string; created_at: string };
+        Insert: never; Update: never; Relationships: [];
+      };
+      company_verifications: {
+        Row: {
+          company_user_id: string; status: "pending" | "verified" | "rejected"; legal_name: string;
+          country_code: string; tax_id: string; website_url: string | null; corporate_email: string | null;
+          linkedin_url: string | null; rejection_reason: string | null; submitted_at: string;
+          verified_at: string | null; updated_at: string;
+        };
+        Insert: never; Update: never; Relationships: [];
+      };
+      admin_actions: {
+        Row: { id: number; admin_id: string; action: string; target_type: string; target_id: string;
+          reason: string | null; created_at: string; metadata: Json };
+        Insert: never; Update: never; Relationships: [];
+      };
+      app_settings: {
+        Row: { key: string; value: Json; updated_at: string; updated_by: string | null };
+        Insert: never; Update: never; Relationships: [];
+      };
       app_users: {
-        Row: { id: string; full_name: string; role: "company" | "freelancer"; created_at: string };
+        Row: { id: string; full_name: string; role: "company" | "freelancer"; created_at: string; suspended_at: string | null; suspension_reason: string | null };
         Insert: never;
         Update: never;
         Relationships: [];
@@ -265,7 +309,7 @@ export type Database = {
           current_process: string; current_tools: string; special_conditions: string; objectives: string[];
           success_criteria: string; budget_choice: string; currency: string; deadline_choice: string;
           show_company_name: boolean; reviewed_and_consented: boolean; created_at: string; updated_at: string;
-          published_at: string | null;
+          published_at: string | null; suspended_at: string | null; suspension_reason: string | null;
         };
         Insert: never;
         Update: never;
@@ -455,6 +499,31 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      is_admin: { Args: Record<string, never>; Returns: boolean };
+      get_my_account_status: { Args: Record<string, never>; Returns: { suspended: boolean; reason: string | null }[] };
+      get_my_company_verification: { Args: Record<string, never>; Returns: Json };
+      submit_company_verification: { Args: { p_data: Json }; Returns: Json };
+      list_my_proposal_company_trust: { Args: Record<string, never>; Returns: { proposal_id: string; company_verified: boolean }[] };
+      admin_list_verification_requests: {
+        Args: { p_status?: string; p_after_submitted_at?: string | null; p_after_company_user_id?: string | null; p_limit?: number };
+        Returns: VerificationRequestRow[];
+      };
+      admin_verify_company: { Args: { p_company_user_id: string }; Returns: undefined };
+      admin_reject_company: { Args: { p_company_user_id: string; p_reason: string }; Returns: undefined };
+      admin_undo_company_verification: { Args: { p_company_user_id: string }; Returns: undefined };
+      admin_list_users: {
+        Args: { p_search?: string; p_role?: string; p_suspension?: string; p_before_created_at?: string | null; p_before_id?: string | null; p_limit?: number };
+        Returns: AdminUserRow[];
+      };
+      admin_set_user_suspended: { Args: { p_user_id: string; p_suspended: boolean; p_reason: string }; Returns: undefined };
+      admin_list_problems: {
+        Args: { p_search?: string; p_status?: string; p_before_sort_at?: string | null; p_before_id?: string | null; p_limit?: number };
+        Returns: AdminProblemRow[];
+      };
+      admin_set_problem_suspended: { Args: { p_problem_id: string; p_suspended: boolean; p_reason: string }; Returns: undefined };
+      admin_get_summary: { Args: Record<string, never>; Returns: AdminSummaryRow[] };
+      admin_get_settings: { Args: Record<string, never>; Returns: AdminSettingRow[] };
+      admin_set_setting: { Args: { p_key: string; p_value: Json }; Returns: undefined };
       get_public_counters: {
         Args: Record<string, never>;
         Returns: { open_problems: number; companies_published: number; freelancers_active: number; proposals_submitted: number }[];
@@ -510,7 +579,7 @@ export type Database = {
         Args: Record<string, never>;
         Returns: {
           match_id: string; problem_id: string; proposal_id: string; counterpart_name: string | null;
-          problem_title: string; created_at: string;
+          problem_title: string; created_at: string; counterpart_company_verified: boolean | null;
         }[];
       };
     };

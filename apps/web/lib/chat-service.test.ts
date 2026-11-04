@@ -52,11 +52,11 @@ describe("chat service", () => {
 
   it("maps conversation privacy and unread values and marks a conversation read", async () => {
     mocks.rpc.mockResolvedValueOnce({ data: [{
-      match_id: "match", problem_title: "Título guardado", counterpart_name: null, counterpart_role: "company",
+      match_id: "match", problem_title: "Título guardado", counterpart_name: null, counterpart_role: "company", counterpart_company_verified: true,
       last_message_body: null, last_message_at: null, last_message_sender_is_me: null, unread_count: 0,
     }], error: null }).mockResolvedValueOnce({ data: null, error: null }).mockResolvedValueOnce({ data: 2, error: null });
     await expect(listConversations()).resolves.toEqual([{
-      matchId: "match", problemTitle: "Título guardado", counterpartName: null, counterpartRole: "company",
+      matchId: "match", problemTitle: "Título guardado", counterpartName: null, counterpartRole: "company", counterpartCompanyVerified: true,
       lastMessageBody: null, lastMessageAt: null, lastMessageSenderIsMe: null, unreadCount: 0,
     }]);
     await markConversationRead("match");

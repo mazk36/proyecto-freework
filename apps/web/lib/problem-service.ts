@@ -13,7 +13,13 @@ import {
 } from "@/lib/problem-domain";
 import type { Json } from "@/types/database";
 
-export class ProblemServiceError extends Error {}
+export type ProblemServiceErrorCode = "company_verification_required" | "account_suspended" | "problem_suspended" | "not_admin" | "rate_limited";
+
+export class ProblemServiceError extends Error {
+  constructor(message: string, readonly code: ProblemServiceErrorCode | null = null) {
+    super(message);
+  }
+}
 
 export async function getCompanyProfile(): Promise<CompanyProfile | null> {
   const data = await callRpc("get_company_profile", {});
@@ -143,7 +149,7 @@ export async function callRpc<Name extends keyof import("@/types/database").Data
   const client = getSupabaseClient();
   if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
   const { data, error } = await client.rpc(name, args);
-  if (error) throw new ProblemServiceError(toFriendlyError(error.message));
+  if (error) throw new ProblemServiceError(toFriendlyError(error.message), toErrorCode(error.message));
   return data as import("@/types/database").Database["public"]["Functions"][Name]["Returns"];
 }
 
@@ -198,6 +204,7 @@ function parseCompanyProblem(value: unknown): CompanyProblem | null {
 }
 
 function parsePublicProblem(value: unknown): PublicProblem | null {
+  if (!isRecord(value) || typeof value.company_verified !== "boolean") return null;
   const problem = parseCompanyProblem({
     ...(isRecord(value) ? value : {}),
     id: isRecord(value) ? value.id : null,
@@ -218,6 +225,7 @@ function parsePublicProblem(value: unknown): PublicProblem | null {
     currency: problem.currency,
     deadlineChoice: problem.deadlineChoice,
     publishedAt: problem.publishedAt,
+    companyVerified: value.company_verified,
     companyName: typeof value === "object" && value !== null && "company_name" in value && typeof value.company_name === "string"
       ? value.company_name : null,
   };
@@ -251,7 +259,26 @@ function parseDeadline(value: unknown): ProblemDraft["deadlineChoice"] {
   return deadlineOptions.some((item) => item.value === value) ? value as ProblemDraft["deadlineChoice"] : "";
 }
 
+function toErrorCode(message: string): ProblemServiceErrorCode | null {
+  if (/company verification required to publish/i.test(message)) return "company_verification_required";
+  if (/account suspended/i.test(message)) return "account_suspended";
+  if (/problem suspended/i.test(message)) return "problem_suspended";
+  if (/not an admin/i.test(message)) return "not_admin";
+  if (/message rate limit|rate limit exceeded/i.test(message)) return "rate_limited";
+  return null;
+}
+
 export function toFriendlyError(message: string): string {
+  if (/company verification required to publish/i.test(message)) return "Para publicar necesitas verificar tu empresa";
+  if (/account suspended/i.test(message)) return "Tu cuenta está suspendida. Revisa el motivo en el aviso de tu cuenta.";
+  if (/problem suspended/i.test(message)) return "Este problema está suspendido y no admite nuevas propuestas ni interacciones.";
+  if (/not an admin/i.test(message)) return "No tienes acceso";
+  if (/verified company cannot resubmit/i.test(message)) return "Tu empresa ya está verificada y no puede reenviar la solicitud.";
+  if (/invalid verification data/i.test(message)) return "Revisa los datos de verificación e inténtalo de nuevo.";
+  if (/invalid rejection reason/i.test(message)) return "El motivo debe tener entre 5 y 200 caracteres.";
+  if (/invalid suspension reason/i.test(message)) return "Escribe el motivo de la suspensión o reactivación.";
+  if (/cannot suspend an admin/i.test(message)) return "No puedes suspender una cuenta de administración.";
+  if (/verification undo expired/i.test(message)) return "Ya no se puede deshacer esta verificación.";
   if (/not authenticated/i.test(message)) return "Inicia sesión para continuar.";
   if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";

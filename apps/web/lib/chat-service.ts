@@ -8,6 +8,7 @@ export type ChatConversation = {
   problemTitle: string;
   counterpartName: string | null;
   counterpartRole: "company" | "freelancer";
+  counterpartCompanyVerified?: boolean | null;
   lastMessageBody: string | null;
   lastMessageAt: string | null;
   lastMessageSenderIsMe: boolean | null;
@@ -42,6 +43,7 @@ export async function listConversations(): Promise<ChatConversation[]> {
     problemTitle: row.problem_title,
     counterpartName: row.counterpart_name,
     counterpartRole: row.counterpart_role,
+    counterpartCompanyVerified: row.counterpart_company_verified,
     lastMessageBody: row.last_message_body,
     lastMessageAt: row.last_message_at,
     lastMessageSenderIsMe: row.last_message_sender_is_me,
@@ -131,7 +133,7 @@ function isMessageRow(value: unknown): value is ChatMessageRow {
 
 function isConversationRow(value: unknown): value is ChatConversationRow {
   return isRecord(value) && typeof value.match_id === "string" && typeof value.problem_title === "string" &&
-    isNullableString(value.counterpart_name) && (value.counterpart_role === "company" || value.counterpart_role === "freelancer") &&
+    isNullableString(value.counterpart_name) && (value.counterpart_company_verified === null || typeof value.counterpart_company_verified === "boolean") && (value.counterpart_role === "company" || value.counterpart_role === "freelancer") &&
     isNullableString(value.last_message_body) && isNullableString(value.last_message_at) &&
     (value.last_message_sender_is_me === null || typeof value.last_message_sender_is_me === "boolean") &&
     typeof value.unread_count === "number" && Number.isSafeInteger(value.unread_count) && value.unread_count >= 0;

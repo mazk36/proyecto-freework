@@ -11,9 +11,9 @@ vi.mock("@/lib/supabase/client", () => ({ getSupabaseClient: () => ({ rpc: mocks
 
 describe("public problem listing", () => {
   it("preserves the success criteria exposed by the public RPC", async () => {
-    mocks.rpc.mockResolvedValue({ data: [{ id: "p", success_criteria: "Reducir el tiempo de atención" }], error: null });
+    mocks.rpc.mockResolvedValue({ data: [{ id: "p", company_verified: true, success_criteria: "Reducir el tiempo de atención" }], error: null });
     await expect(listOpenBusinessProblems()).resolves.toEqual([
-      expect.objectContaining({ id: "p", successCriteria: "Reducir el tiempo de atención" }),
+      expect.objectContaining({ id: "p", companyVerified: true, successCriteria: "Reducir el tiempo de atención" }),
     ]);
   });
 });

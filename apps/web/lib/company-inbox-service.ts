@@ -32,6 +32,7 @@ export type MyMatch = {
   problemId: string;
   proposalId: string;
   counterpartName: string | null;
+  counterpartCompanyVerified: boolean | null;
   problemTitle: string;
   createdAt: string;
 };
@@ -86,6 +87,7 @@ export async function listMyMatches(): Promise<MyMatch[]> {
     problemId: row.problem_id,
     proposalId: row.proposal_id,
     counterpartName: row.counterpart_name,
+    counterpartCompanyVerified: row.counterpart_company_verified,
     problemTitle: row.problem_title,
     createdAt: row.created_at,
   }));
@@ -120,6 +122,6 @@ function isProposalRow(value: unknown): value is ProposalRow {
 function isMatchRow(value: unknown): value is MatchRow {
   return isRecord(value) && typeof value.match_id === "string" &&
     typeof value.problem_id === "string" && typeof value.proposal_id === "string" &&
-    isNullableString(value.counterpart_name) && typeof value.problem_title === "string" &&
+    isNullableString(value.counterpart_name) && (value.counterpart_company_verified === null || typeof value.counterpart_company_verified === "boolean") && typeof value.problem_title === "string" &&
     typeof value.created_at === "string";
 }

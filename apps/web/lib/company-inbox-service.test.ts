@@ -66,11 +66,11 @@ describe("company inbox service", () => {
   it("maps matches and allows a hidden counterpart name", async () => {
     mocks.rpc.mockResolvedValue({ data: [{
       match_id: "m", problem_id: "p", proposal_id: "s", counterpart_name: null,
-      problem_title: "Problema", created_at: "2026-11-02T00:00:00Z",
+      problem_title: "Problema", counterpart_company_verified: false, created_at: "2026-11-02T00:00:00Z",
     }], error: null });
     await expect(listMyMatches()).resolves.toEqual([{
       matchId: "m", problemId: "p", proposalId: "s", counterpartName: null,
-      problemTitle: "Problema", createdAt: "2026-11-02T00:00:00Z",
+      problemTitle: "Problema", counterpartCompanyVerified: false, createdAt: "2026-11-02T00:00:00Z",
     }]);
     expect(mocks.rpc).toHaveBeenCalledWith("list_my_matches", {});
   });
