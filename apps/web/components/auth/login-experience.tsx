@@ -166,7 +166,6 @@ export function LoginExperience() {
             </div>
 
             <button
-              aria-label="Continuar con Google, sin proveedor configurado"
               className="flex min-h-11 w-full cursor-not-allowed items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#161B22] px-4 text-sm font-medium text-[#B6C1D0] opacity-75"
               disabled
               type="button"
