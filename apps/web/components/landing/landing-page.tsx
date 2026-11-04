@@ -22,8 +22,8 @@ const heroBenefits = [
     highlight: "propuestas gratis",
   },
   {
-    text: "Paga solo cuando estés 100% satisfecho.",
-    highlight: "100% satisfecho",
+    text: "Gratis por ahora.",
+    highlight: "Gratis por ahora",
   },
 ];
 
