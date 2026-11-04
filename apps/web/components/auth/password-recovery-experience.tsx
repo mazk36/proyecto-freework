@@ -35,7 +35,7 @@ export function PasswordRecoveryExperience() {
       >
         <Link
           aria-label="MatchWork, ir al inicio"
-          className="mb-6 inline-flex rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0D1117]"
+          className="mb-6 inline-flex min-h-11 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0D1117]"
           href="/"
         >
           <MatchWorkLogoLockup preload size="large" variant="reversed" />

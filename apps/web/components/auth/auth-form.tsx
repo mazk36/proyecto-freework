@@ -103,7 +103,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             <div className="mx-auto w-full max-w-[27rem]">
               <Link
                 aria-label="MatchWork, ir al inicio"
-                className="w-fit rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0D1117]"
+                className="inline-flex min-h-11 w-fit items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#0D1117]"
                 href="/"
               >
                 <MatchWorkLogoLockup preload size="large" variant="reversed" />
@@ -266,7 +266,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   return (
     <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
       <div className="w-full max-w-md">
-        <Link aria-label="MatchWork, ir al inicio" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
+        <Link aria-label="MatchWork, ir al inicio" className="inline-flex min-h-11 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
           <MatchWorkLogoLockup preload />
         </Link>
         <section aria-labelledby="auth-title" className="mt-8">
