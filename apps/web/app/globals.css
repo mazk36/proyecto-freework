@@ -646,3 +646,8 @@ html:has(.proposals-preview) {
   .auth-icon-spring { animation: none; }
   .auth-check-draw { animation: none; stroke-dasharray: none; }
 }
+
+/* Mensajes nuevos del chat: fundido corto con CSS (sin una animación de JS por cada burbuja). */
+@keyframes chat-message-in { from { opacity: 0; } to { opacity: 1; } }
+.chat-message-in { animation: chat-message-in 150ms ease-out both; }
+@media (prefers-reduced-motion: reduce) { .chat-message-in { animation: none; } }

@@ -1,12 +1,12 @@
 "use client";
 
-import { ArrowDown, ArrowLeft, Check, Clock3, MessageCircle, Send } from "lucide-react";
-import { motion } from "motion/react";
+import { ArrowDown, ArrowLeft, MessageCircle, Send } from "lucide-react";
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type KeyboardEvent } from "react";
 import { useAccountStatus, useCanWrite, SuspensionNotice } from "@/components/app/account-status";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CompanyTrustChip } from "@/components/ui/company-trust-chip";
 import { ChatAvatar, ProblemChip, RefreshIcon, ThreadSkeleton, counterpartName, roleLabel } from "@/components/chat/chat-parts";
+import { MessageDays } from "@/components/chat/message-days";
 import { ConversationNotice } from "@/components/chat/conversation-notice";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -24,6 +24,9 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
   onBack: () => void;
 }) {
   const canWrite = useCanWrite();
+  const sendRef = useRef(onSend);
+  sendRef.current = onSend;
+  const stableSend = useCallback((message: ChatMessage) => sendRef.current(message), []);
   const accountStatus = useAccountStatus();
   const { logout } = useAuth();
   const [serverMessages, setServerMessages] = useState<ChatMessage[]>([]);
@@ -256,19 +259,7 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
         {hasMore ? <div className="mb-5 flex justify-center"><Button disabled={loadingOlder} onClick={() => void loadOlder()} variant="outline">{loadingOlder ? "Cargando mensajes anteriores…" : "Cargar mensajes anteriores"}</Button></div> : null}
         {loadError ? <div className="mb-4 rounded-xl border border-warning/30 bg-warning-soft px-4 py-3 text-sm text-warning" role="status">{loadError.message} <button className="min-h-11 font-semibold underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => void (loadError.target === "older" ? loadOlder() : loadLatest())} type="button">Reintentar</button></div> : null}
         {!loadError && messages.length === 0 ? <div className="grid min-h-full place-items-center"><EmptyState compact description="Ya pueden conversar sobre el problema que los conectó." icon={MessageCircle} title="Empieza la conversación" tone="neutral" /></div> : null}
-        <div className="mx-auto flex max-w-3xl flex-col gap-6">{days.map((day) => <section aria-label={day.label} key={day.date}>
-          <div className="mb-5 flex items-center gap-3"><span className="h-px flex-1 bg-border" /><span className="text-xs font-medium text-muted-foreground">{day.label}</span><span className="h-px flex-1 bg-border" /></div>
-          <div className="flex flex-col gap-4">{day.groups.map((group) => {
-            const own = group.senderId === userId;
-            return <div className={`flex flex-col gap-1.5 ${own ? "items-end" : "items-start"}`} key={`${group.senderId}:${group.messages[0].id}`}>
-              {group.messages.map((message) => <motion.div animate={{ opacity: 1 }} className="max-w-[90%] sm:max-w-[80%]" initial={{ opacity: 0 }} key={message.id} transition={{ duration: 0.15 }}>
-                <div className={`rounded-2xl px-4 py-3 text-sm leading-6 ${own ? "rounded-br-md bg-accent/20 text-foreground ring-1 ring-inset ring-accent/25" : "rounded-bl-md bg-surface-raised text-foreground ring-1 ring-inset ring-border"}`}><p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{message.body}</p></div>
-                <div className={`mt-1 flex flex-wrap items-center gap-x-1.5 text-[0.6875rem] text-muted-foreground ${own ? "justify-end" : "justify-start"}`}><time dateTime={message.createdAt}>{new Intl.DateTimeFormat("es-PE", { hour: "numeric", minute: "2-digit" }).format(new Date(message.createdAt))}</time>{own ? <><span aria-hidden="true">·</span>{message.status === "sending" ? <><Clock3 aria-hidden="true" className="size-3" /> Enviando</> : message.status === "sent" ? <><Check aria-hidden="true" className="size-3" /> Enviado</> : <span className="text-danger">No enviado</span>}</> : null}</div>
-                {own && message.status === "error" ? <div className="mt-1 flex flex-wrap items-center justify-end gap-x-2 text-xs text-danger" role="status"><span>{message.clientId ? sendErrors[message.clientId] ?? "No pudimos enviar el mensaje." : "No pudimos enviar el mensaje."}</span><button className="min-h-11 rounded px-1 font-semibold underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" disabled={!canWrite} onClick={() => onSend(message)} type="button">Reintentar</button></div> : null}
-              </motion.div>)}
-            </div>;
-          })}</div>
-        </section>)}</div>
+        <MessageDays canWrite={canWrite} days={days} onSend={stableSend} sendErrors={sendErrors} userId={userId} />
       </div>}
       {showNewMessages ? <button className="absolute bottom-3 left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center gap-2 rounded-full bg-foreground px-4 text-sm font-semibold text-background shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => { stickToBottom.current = true; const element = scrollRef.current; if (element) element.scrollTop = element.scrollHeight; setShowNewMessages(false); }} type="button"><ArrowDown aria-hidden="true" className="size-4" /> Mensajes nuevos</button> : null}
     </div>

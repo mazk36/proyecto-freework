@@ -16,7 +16,11 @@ function browserStorage(): Storage | null {
 }
 
 export function ConversationNotice({ matchId, onDismiss }: { matchId: string; onDismiss?: () => void }) {
-  const [state, setState] = useState<{ matchId: string; dismissed: boolean } | null>(null);
+  // Se calcula en el primer render (el hilo solo se monta en el cliente, tras cargar): así el aviso no aparece
+  // después y no empuja el contenido (antes animaba su altura de 0 a auto y sumaba 0.1 de CLS).
+  const [state, setState] = useState<{ matchId: string; dismissed: boolean } | null>(() => CHAT_NOTICE.enabled && typeof window !== "undefined"
+    ? { matchId, dismissed: isConversationNoticeDismissed(matchId, browserStorage(), dismissedThisVisit) }
+    : null);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -40,7 +44,7 @@ export function ConversationNotice({ matchId, onDismiss }: { matchId: string; on
       animate={{ height: "auto", opacity: 1, y: 0 }}
       className="shrink-0 overflow-hidden"
       exit={{ height: 0, opacity: 0, y: reducedMotion ? 0 : -4 }}
-      initial={reducedMotion ? false : { height: 0, opacity: 0, y: -4 }}
+      initial={false}
       key={matchId}
       transition={{ duration: reducedMotion ? 0 : 0.18 }}
     >
