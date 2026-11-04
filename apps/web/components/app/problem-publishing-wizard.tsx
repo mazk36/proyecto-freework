@@ -264,7 +264,7 @@ export function ProblemPublishingWizard() {
     <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <Link className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
+          <Link className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
           <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Publicar un problema</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Describe la necesidad de tu negocio. Los desarrolladores propondrán la tecnología.</p>
         </div>

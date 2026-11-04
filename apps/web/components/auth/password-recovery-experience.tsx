@@ -85,7 +85,7 @@ export function PasswordRecoveryExperience() {
         </form>
 
         <Link
-          className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
+          className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
           href="/iniciar-sesion"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />

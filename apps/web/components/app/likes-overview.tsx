@@ -65,7 +65,7 @@ export function LikesOverview() {
       </div>
 
       <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-5 text-sm">
-        <Link className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app/chats">
+        <Link className="inline-flex min-h-11 items-center gap-2 text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app/chats">
           <MessagesSquare aria-hidden="true" className="size-4" />
           Ir a Chats
         </Link>

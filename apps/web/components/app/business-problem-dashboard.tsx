@@ -113,7 +113,7 @@ function ProblemCard({ problem, currency }: { problem: CompanyProblem; currency:
         </p>
         <div className="flex flex-wrap gap-2">
           {problem.status === "draft" ? <Link className="inline-flex min-h-10 items-center rounded-lg bg-accent px-3.5 text-sm font-semibold text-accent-foreground hover:bg-accent-hover" href={`/app/problemas/nuevo/?id=${encodeURIComponent(problem.id)}`}>Continuar borrador</Link> : null}
-          {problem.status !== "draft" ? <Link className="inline-flex min-h-10 items-center rounded-lg border border-border px-3.5 text-sm font-semibold hover:bg-background" href={`/app/problemas/detalle/?id=${encodeURIComponent(problem.id)}`}>Ver detalles</Link> : null}
+          {problem.status !== "draft" ? <Link className="inline-flex min-h-11 items-center rounded-lg border border-border px-3.5 text-sm font-semibold hover:bg-background" href={`/app/problemas/detalle/?id=${encodeURIComponent(problem.id)}`}>Ver detalles</Link> : null}
         </div>
       </div>
     </article>

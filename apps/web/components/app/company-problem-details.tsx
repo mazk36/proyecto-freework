@@ -93,7 +93,7 @@ export function CompanyProblemDetails() {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
-      <Link className="text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
+      <Link className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
         <div>
           <span className="rounded-full bg-background px-3 py-1 text-xs font-semibold">{statusLabel[problem.status]}</span>

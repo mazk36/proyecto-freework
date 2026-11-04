@@ -73,7 +73,7 @@ export function CompanyProfilePublications() {
                   <li className="flex flex-wrap items-center gap-3 p-4" key={problem.id}>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${status.className}`}>{status.label}</span>
                     <span className="min-w-0 flex-1 break-words text-sm font-medium">{problem.title || "Borrador sin título"}</span>
-                    <Link className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-accent-soft transition hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href={href}>
+                    <Link className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-accent-soft transition hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href={href}>
                       {problem.status === "draft" ? "Continuar" : "Ver detalles"}<ArrowUpRight aria-hidden="true" className="size-4" />
                     </Link>
                   </li>

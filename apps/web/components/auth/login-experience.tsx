@@ -127,7 +127,7 @@ export function LoginExperience() {
 
               <div className="flex justify-end">
                 <Link
-                  className="text-right text-xs font-medium text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] sm:text-sm"
+                  className="inline-flex min-h-11 items-center text-right text-xs font-medium text-[#D8C4FF] underline decoration-[#8A4DFF]/70 underline-offset-4 transition-colors hover:text-white focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] sm:text-sm"
                   href="/recuperar-contrasena"
                 >
                   ¿Olvidaste tu contraseña?

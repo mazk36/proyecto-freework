@@ -57,7 +57,7 @@ export function PublicFreelancerProfilePage() {
           <Link aria-label="MatchWork, ir al inicio" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
             <MatchWorkLogoLockup size="large" preload variant="reversed" />
           </Link>
-          <Link className="text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href="/registro">Únete a MatchWork</Link>
+          <Link className="inline-flex min-h-11 items-center text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href="/registro">Únete a MatchWork</Link>
         </div>
       </header>
       <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
