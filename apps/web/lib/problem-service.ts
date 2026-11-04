@@ -149,7 +149,7 @@ export async function callRpc<Name extends keyof import("@/types/database").Data
   const client = await loadSupabaseClient();
   if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
   const { data, error } = await client.rpc(name, args);
-  if (error) throw new ProblemServiceError(toFriendlyError(error.message), toErrorCode(error.message));
+  if (error) throw new ProblemServiceError(toFriendlyError(error.message, error.hint), toErrorCode(error.message));
   return data as import("@/types/database").Database["public"]["Functions"][Name]["Returns"];
 }
 
@@ -268,7 +268,19 @@ function toErrorCode(message: string): ProblemServiceErrorCode | null {
   return null;
 }
 
-export function toFriendlyError(message: string): string {
+/** Seconds from the "Retry after N seconds." hint that `enforce_rate_limit` attaches to its error. */
+export function retryAfterSeconds(hint: string | null | undefined): number | null {
+  const match = /Retry after (\d{1,6}) seconds?/i.exec(hint ?? "");
+  return match ? Math.max(1, Number(match[1])) : null;
+}
+
+export function formatWait(seconds: number): string {
+  if (seconds < 60) return seconds === 1 ? "1 segundo" : `${seconds} segundos`;
+  const minutes = Math.ceil(seconds / 60);
+  return minutes === 1 ? "1 minuto" : `${minutes} minutos`;
+}
+
+export function toFriendlyError(message: string, hint?: string | null): string {
   if (/company verification required to publish/i.test(message)) return "Para publicar necesitas verificar tu empresa";
   if (/verification request changed/i.test(message)) return "La empresa modificó su solicitud mientras la revisabas. Recarga la lista y vuelve a revisarla.";
   if (/expected request version required/i.test(message)) return "No se pudo confirmar la versión de la solicitud. Recarga la lista e inténtalo de nuevo.";
@@ -285,7 +297,10 @@ export function toFriendlyError(message: string): string {
   if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
   if (/account required/i.test(message)) return "No encontramos una cuenta de MatchWork vinculada a tu sesión.";
-  if (/message rate limit|rate limit exceeded/i.test(message)) return "Hiciste muchas acciones seguidas. Espera un momento y vuelve a intentarlo.";
+  if (/message rate limit|rate limit exceeded/i.test(message)) {
+    const seconds = retryAfterSeconds(hint);
+    return `Hiciste muchas acciones seguidas. Espera ${seconds ? formatWait(seconds) : "un momento"} y vuelve a intentarlo.`;
+  }
   if (/message body empty/i.test(message)) return "Escribe un mensaje antes de enviarlo.";
   if (/message body too long/i.test(message)) return "El mensaje no puede superar los 2000 caracteres.";
   if (/conversation not found/i.test(message)) return "No encontramos esta conversación o ya no tienes acceso.";
