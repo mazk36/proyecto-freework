@@ -133,7 +133,7 @@ function FeatureMediaPanel({
   const isNight = themeVariant === "night";
 
   return (
-    <article className={`${mediaOnly ? "aspect-[4/3]" : "flex h-full min-h-[30rem] flex-col"} ${className}`.trim()}>
+    <article className={`min-w-0 ${mediaOnly ? "aspect-[4/3]" : "flex h-full min-h-[30rem] flex-col"} ${className}`.trim()}>
       <div className={`relative isolate flex overflow-hidden rounded-[1.75rem] border border-border bg-surface text-foreground ${mediaOnly ? "size-full" : "min-h-[21rem] flex-1"}`}>
         {videoSrc ? (
           <video
