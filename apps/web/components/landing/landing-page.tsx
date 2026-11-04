@@ -100,7 +100,7 @@ export function LandingPage() {
             <HeroVideoBackground basePath={publicBasePath} />
             <div className="relative z-10 mx-auto max-w-6xl px-5 pb-20 pt-20 sm:px-8 sm:pb-28 sm:pt-28">
               <h1 className="max-w-5xl text-balance text-4xl font-semibold leading-[1.08] tracking-[-0.055em] sm:text-6xl lg:text-7xl">
-                Contrata la <span className="text-brand-lavender">mejor solución</span> para tu{" "}
+                Encuentra la <span className="text-brand-lavender">mejor solución</span> para tu{" "}
                 <span className="text-[#c1a5ff]">problema</span> en línea.
               </h1>
               <ul className="mt-7 grid max-w-3xl gap-3 text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8">
