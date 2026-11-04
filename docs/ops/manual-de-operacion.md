@@ -1,4 +1,4 @@
-# Manual de operación de Matchwork
+# Manual de operación de MatchWork
 
 Para quien administra la plataforma (no hace falta saber programar). Lo que depende del servidor de producción (copias, claves) se escribe para cuando exista el servidor propio; en local se puede probar igual.
 

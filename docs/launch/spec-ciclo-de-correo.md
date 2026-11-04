@@ -40,7 +40,7 @@ Es muy común registrarse en el ordenador y abrir el correo en el móvil. Si hoy
 
 ## 6) Correos en español (hoy salen las plantillas de GoTrue en inglés)
 
-- Confirmación y recuperación, y las demás que estén activas, en `supabase/templates/*.html` con `content_path` en `config.toml`. Diseño simple y responsive (ancho máximo 560 px, tablas y estilos en línea), nombre Matchwork, un único botón grande con el color de marca, el enlace en texto debajo por si el botón falla, «Si no fuiste tú, ignora este correo», sin imágenes remotas ni seguimiento y con versión de texto plano. Asuntos: «Confirma tu cuenta en Matchwork» y «Crea una contraseña nueva en Matchwork». Revísalos en Mailpit (HTML y texto) y documenta en `docs/security/auth-produccion.md` que en producción hay que cargar las mismas plantillas (`GOTRUE_MAILER_TEMPLATES_*`).
+- Confirmación y recuperación, y las demás que estén activas, en `supabase/templates/*.html` con `content_path` en `config.toml`. Diseño simple y responsive (ancho máximo 560 px, tablas y estilos en línea), nombre MatchWork, un único botón grande con el color de marca, el enlace en texto debajo por si el botón falla, «Si no fuiste tú, ignora este correo», sin imágenes remotas ni seguimiento y con versión de texto plano. Asuntos: «Confirma tu cuenta en MatchWork» y «Crea una contraseña nueva en MatchWork». Revísalos en Mailpit (HTML y texto) y documenta en `docs/security/auth-produccion.md` que en producción hay que cargar las mismas plantillas (`GOTRUE_MAILER_TEMPLATES_*`).
 
 ## 7) Pruebas (e2e con Mailpit, a 390 px)
 

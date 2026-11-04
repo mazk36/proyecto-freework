@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-# Matchwork web (export estático de Next.js) servido por Caddy.
+# MatchWork web (export estático de Next.js) servido por Caddy.
 # Contexto de build: la raíz del repositorio.
 
 FROM node:26-alpine AS build

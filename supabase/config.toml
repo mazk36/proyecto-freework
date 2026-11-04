@@ -33,15 +33,15 @@ max_frequency = "1m0s"
 enable_confirmations = false
 
 [auth.email.template.confirmation]
-subject = "Confirma tu cuenta en Matchwork"
+subject = "Confirma tu cuenta en MatchWork"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.reauthentication]
-subject = "Tu código de seguridad de Matchwork"
+subject = "Tu código de seguridad de MatchWork"
 content_path = "./supabase/templates/reauthentication.html"
 
 [auth.email.template.recovery]
-subject = "Crea una contraseña nueva en Matchwork"
+subject = "Crea una contraseña nueva en MatchWork"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.rate_limit]

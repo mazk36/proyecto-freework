@@ -30,8 +30,8 @@ Las plantillas están en `supabase/templates/confirmation.html` y `supabase/temp
 |---|---|
 | `GOTRUE_MAILER_TEMPLATES_CONFIRMATION` | URL o ruta de `confirmation.html` (servida por el propio servidor) |
 | `GOTRUE_MAILER_TEMPLATES_RECOVERY` | URL o ruta de `recovery.html` |
-| `GOTRUE_MAILER_SUBJECTS_CONFIRMATION` | `Confirma tu cuenta en Matchwork` |
-| `GOTRUE_MAILER_SUBJECTS_RECOVERY` | `Crea una contraseña nueva en Matchwork` |
+| `GOTRUE_MAILER_SUBJECTS_CONFIRMATION` | `Confirma tu cuenta en MatchWork` |
+| `GOTRUE_MAILER_SUBJECTS_RECOVERY` | `Crea una contraseña nueva en MatchWork` |
 | `GOTRUE_SMTP_MAX_FREQUENCY` | `1m0s` (la web usa un cooldown de 60 s) |
 | `GOTRUE_RATE_LIMIT_EMAIL_SENT` | por ejemplo `30` por hora |
 

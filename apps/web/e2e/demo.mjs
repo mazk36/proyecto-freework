@@ -119,7 +119,7 @@ const bakeryProblem = "Controlar el inventario de insumos y mermas";
 // 1) La empresa publica su problema
 clips.push(await segment("1-empresa-publica", async ({ page, caption, login }) => {
   await page.goto("/");
-  await caption("Matchwork conecta negocios con profesionales que resuelven problemas concretos", 2600);
+  await caption("MatchWork conecta negocios con profesionales que resuelven problemas concretos", 2600);
   await login("demo-panaderia@example.test");
   await caption("Rosa, de Panadería Los Andes, publica su problema", 2000);
   await page.goto("/app/problemas/nuevo/");
@@ -294,10 +294,10 @@ async function sheet(taken, columns, fileName, title, thumbWidth) {
   await page.screenshot({ path: join(OUT, fileName), fullPage: true });
   await page.close();
 }
-await sheet(await shots(390, 844, "shots390", true), 5, "hoja-de-contactos-390px.png", "Matchwork · pantallas principales a 390 px (iPhone)", 260);
-await sheet(await shots(1280, 800, "shots1280", false), 3, "hoja-de-contactos-1280px.png", "Matchwork · pantallas principales a 1280 px (escritorio)", 560);
+await sheet(await shots(390, 844, "shots390", true), 5, "hoja-de-contactos-390px.png", "MatchWork · pantallas principales a 390 px (iPhone)", 260);
+await sheet(await shots(1280, 800, "shots1280", false), 3, "hoja-de-contactos-1280px.png", "MatchWork · pantallas principales a 1280 px (escritorio)", 560);
 await browser.close();
 
-writeFileSync(join(OUT, "LEEME.txt"), `Demostración de Matchwork (datos de ejemplo, nada real)\n\nrecorrido-matchwork-390x844.mp4  Video del recorrido completo: la empresa publica, la freelancer hace swipe y propone, la empresa compara, hace Match y conversan.\nhoja-de-contactos-390px.png      Pantallas principales en el teléfono.\nhoja-de-contactos-1280px.png     Pantallas principales en el escritorio.\n\nLos nombres (Panadería Los Andes, Camila Rojas, etc.) son inventados.\n`);
+writeFileSync(join(OUT, "LEEME.txt"), `Demostración de MatchWork (datos de ejemplo, nada real)\n\nrecorrido-matchwork-390x844.mp4  Video del recorrido completo: la empresa publica, la freelancer hace swipe y propone, la empresa compara, hace Match y conversan.\nhoja-de-contactos-390px.png      Pantallas principales en el teléfono.\nhoja-de-contactos-1280px.png     Pantallas principales en el escritorio.\n\nLos nombres (Panadería Los Andes, Camila Rojas, etc.) son inventados.\n`);
 rmSync(WORK, { recursive: true, force: true });
 console.log(`Listo: ${OUT}`);

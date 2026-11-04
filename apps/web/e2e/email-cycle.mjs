@@ -69,7 +69,7 @@ try {
   // ---------- 2) Correo en español y enlace con token_hash ----------
   const first = (await waitMessages(ana.email, 1))[0];
   const firstMail = await detail(first.ID);
-  check("E2.1 el asunto del correo está en español", firstMail.Subject === "Confirma tu cuenta en Matchwork", firstMail.Subject);
+  check("E2.1 el asunto del correo está en español", firstMail.Subject === "Confirma tu cuenta en MatchWork", firstMail.Subject);
   check("E2.2 el HTML tiene botón, enlace de respaldo y aviso de «ignora este correo»", /Confirmar mi cuenta/.test(firstMail.HTML) && /Si el botón no funciona/.test(firstMail.HTML) && /ignora este correo/.test(firstMail.HTML));
   check("E2.3 el correo no carga imágenes remotas ni seguimiento", !/<img|http:\/\/[^"]*track|pixel/i.test(firstMail.HTML));
   const firstLink = linkIn(firstMail);
@@ -163,7 +163,7 @@ try {
   check("E7.2 incluye reenvío con cuenta atrás y vuelta al inicio de sesión", (await rec.page.getByRole("button", { name: /Reenviar en \d:\d\d/ }).count()) === 1 && (await rec.page.getByRole("link", { name: /Volver al inicio de sesión/ }).count()) === 1);
   const recMail = (await waitMessages(ana.email, 3))[0];
   const recDetail = await detail(recMail.ID);
-  check("E7.3 el correo de recuperación está en español", recDetail.Subject === "Crea una contraseña nueva en Matchwork", recDetail.Subject);
+  check("E7.3 el correo de recuperación está en español", recDetail.Subject === "Crea una contraseña nueva en MatchWork", recDetail.Subject);
   const recLink = linkIn(recDetail);
   check("E7.4 el enlace de recuperación usa token_hash y type=recovery", /type=recovery/.test(recLink ?? "") && /token_hash=/.test(recLink ?? ""));
   await auditScreen(rec, "Recuperación enviada (390 px)", { widths: [360, 390], axeWidths: [390] });
