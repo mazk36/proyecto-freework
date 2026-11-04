@@ -29,6 +29,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const captcha = useTurnstile();
   const [role, setRole] = useState<UserRole | "">("");
   const [error, setError] = useState("");
+  const [errorField, setErrorField] = useState<"password" | "confirmation" | "role" | "">("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [status, setStatus] = useState("");
@@ -46,9 +47,20 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
   }, []);
 
+  /** Muestra el error, lo asocia al campo y lleva el foco allí. */
+  function fail(message: string, field: "password" | "confirmation" | "role" | "" = "") {
+    setError(message);
+    setErrorField(field);
+    setIsSubmitting(false);
+    if (!field) return;
+    const target = field === "role" ? document.querySelector<HTMLElement>("input[name=role]") : document.getElementById(field);
+    target?.focus();
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setErrorField("");
     setStatus("");
     setIsSubmitting(true);
 
@@ -60,20 +72,17 @@ export function AuthForm({ mode }: AuthFormProps) {
       const name = String(values.get("name") ?? "").trim();
       const confirmation = String(values.get("confirmation") ?? "");
       if (password !== confirmation) {
-        setError("Las contraseñas no coinciden.");
-        setIsSubmitting(false);
+        fail("Las contraseñas no coinciden.", "confirmation");
         return;
       }
       if (!role) {
-        setError("Selecciona si tu cuenta será de empresa o freelancer.");
-        setIsSubmitting(false);
+        fail("Selecciona si tu cuenta será de empresa o freelancer.", "role");
         return;
       }
       const result = await register({ name, email, password, role, next: getIntendedDestination(), captchaToken: captcha.token });
       captcha.reset();
       if (!result.ok) {
-        setError(result.error);
-        setIsSubmitting(false);
+        fail(result.error);
         return;
       }
       if (result.requiresEmailConfirmation) {
@@ -84,15 +93,13 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
     } else {
       if (!password) {
-        setError("Escribe tu contraseña.");
-        setIsSubmitting(false);
+        fail("Escribe tu contraseña.", "password");
         return;
       }
       const result = await login({ email, password, captchaToken: captcha.token });
       if (!result.ok) {
         captcha.reset();
-        setError(result.error);
-        setIsSubmitting(false);
+        fail(result.error, "password");
         return;
       }
     }
@@ -179,6 +186,8 @@ export function AuthForm({ mode }: AuthFormProps) {
                   <div className="relative mt-1.5">
                     <LockKeyhole aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 size-[1.125rem] -translate-y-1/2 text-[#9BA7B6]" />
                     <input
+                      aria-describedby={errorField === "confirmation" ? "auth-error" : undefined}
+                      aria-invalid={errorField === "confirmation" ? true : undefined}
                       autoComplete="new-password"
                       className={`${registrationInputClass} pr-12`}
                       id="confirmation"
@@ -200,23 +209,23 @@ export function AuthForm({ mode }: AuthFormProps) {
                   </div>
                 </div>
 
-                <fieldset>
+                <fieldset aria-describedby={errorField === "role" ? "auth-error" : undefined}>
                   <legend className="block text-sm font-medium text-[#F8FAFC]">Tipo de cuenta</legend>
                   <div className="mt-2 grid grid-cols-2 gap-3">
                     <label className={`flex min-h-[4.25rem] cursor-pointer items-center gap-2.5 rounded-xl border px-3 transition duration-200 hover:border-white/20 hover:bg-white/[0.03] sm:gap-3 sm:px-4 ${role === "company" ? "border-[#8A4DFF] bg-[#8A4DFF]/10 shadow-[0_0_0_1px_rgba(138,77,255,0.18)]" : "border-white/10 bg-[#161B22]"}`}>
-                      <input checked={role === "company"} className="size-4 shrink-0 accent-[#8A4DFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D8C4FF]" name="role" onChange={() => setRole("company")} type="radio" value="company" />
+                      <input checked={role === "company"} className="size-4 shrink-0 accent-[#8A4DFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D8C4FF]" aria-invalid={errorField === "role" ? true : undefined} name="role" onChange={() => setRole("company")} type="radio" value="company" />
                       <Briefcase aria-hidden="true" className="hidden size-4 shrink-0 text-[#D8C4FF] min-[400px]:block" />
                       <span className="text-sm font-medium text-[#F8FAFC]">Empresa</span>
                     </label>
                     <label className={`flex min-h-[4.25rem] cursor-pointer items-center gap-2.5 rounded-xl border px-3 transition duration-200 hover:border-white/20 hover:bg-white/[0.03] sm:gap-3 sm:px-4 ${role === "freelancer" ? "border-[#8A4DFF] bg-[#8A4DFF]/10 shadow-[0_0_0_1px_rgba(138,77,255,0.18)]" : "border-white/10 bg-[#161B22]"}`}>
-                      <input checked={role === "freelancer"} className="size-4 shrink-0 accent-[#8A4DFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D8C4FF]" name="role" onChange={() => setRole("freelancer")} type="radio" value="freelancer" />
+                      <input checked={role === "freelancer"} className="size-4 shrink-0 accent-[#8A4DFF] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#D8C4FF]" aria-invalid={errorField === "role" ? true : undefined} name="role" onChange={() => setRole("freelancer")} type="radio" value="freelancer" />
                       <UserRound aria-hidden="true" className="hidden size-4 shrink-0 text-[#D8C4FF] min-[400px]:block" />
                       <span className="text-sm font-medium text-[#F8FAFC]">Freelancer</span>
                     </label>
                   </div>
                 </fieldset>
 
-                {error ? <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" role="alert">{error}</p> : null}
+                {error ? <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" id="auth-error" role="alert">{error}</p> : null}
                 {status ? <p className="rounded-lg border border-emerald-300/25 bg-emerald-300/10 px-3 py-2 text-sm leading-5 text-emerald-100" role="status">{status}</p> : null}
                 {authIssue ? <p className="rounded-lg border border-rose-300/25 bg-rose-300/10 px-3 py-2 text-sm leading-5 text-rose-100" role="alert">{authIssue}</p> : null}
                 {storageNotice ? <p className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-sm leading-5 text-amber-100" role="status">{storageNotice}</p> : null}
@@ -301,6 +310,8 @@ export function AuthForm({ mode }: AuthFormProps) {
             <div>
               <label className={labelClass} htmlFor="password">Contraseña</label>
               <input
+                aria-describedby={errorField === "password" ? "auth-error" : undefined}
+                aria-invalid={errorField === "password" ? true : undefined}
                 autoComplete="current-password"
                 className={inputClass}
                 id="password"
@@ -312,7 +323,7 @@ export function AuthForm({ mode }: AuthFormProps) {
 
             {status ? <p className="text-sm text-emerald-800" role="status">{status}</p> : null}
             {authIssue ? <p className="text-sm text-rose-700" role="alert">{authIssue}</p> : null}
-            {error ? <p className="text-sm text-rose-700" role="alert">{error}</p> : null}
+            {error ? <p className="text-sm text-rose-700" id="auth-error" role="alert">{error}</p> : null}
             {storageNotice ? <p className="text-sm text-amber-800" role="status">{storageNotice}</p> : null}
 
             {captcha.field}

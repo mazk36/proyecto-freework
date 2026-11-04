@@ -42,9 +42,12 @@ try {
       if (semantics.mains !== 1) problems.push(`${semantics.mains} landmarks main`);
       if (!semantics.title || /^undefined/.test(semantics.title)) problems.push("sin título");
       if (path.startsWith("/app") && !semantics.skip) problems.push("sin enlace «Saltar al contenido»");
-      const previous = titles.get(semantics.title);
+      // Las rutas que redirigen (p. ej. Guardados y Propuestas del freelancer → Likes) comparten el título de su destino.
+      const finalPath = new URL(p.page.url()).pathname;
+      const redirected = finalPath !== new URL(path, "http://x").pathname;
+      const previous = redirected ? null : titles.get(semantics.title);
       if (previous && previous !== route.path.split("?")[0] && !/^\/app\/chats|^\/app\/problemas\/detalle|^\/app\/$|^\/profesionales/.test(route.path)) problems.push(`título repetido con ${previous}: «${semantics.title}»`);
-      titles.set(semantics.title, route.path.split("?")[0]);
+      if (!redirected) titles.set(semantics.title, route.path.split("?")[0]);
       check(`SEMÁNTICA ${route.path} · ${label}`, problems.length === 0, problems.join(" || "));
       await p.context.close();
     }

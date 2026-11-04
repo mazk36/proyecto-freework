@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       className={`${bodyFont.variable} ${displayFont.variable} ${monoFont.variable}`}
       data-scroll-behavior="smooth"
-      lang="es"
+      lang="es-PE"
     >
       <body>
         {/* Constante propia (sin contenido de usuario): avisa a navegadores sin color-mix() o :is() en lugar de dejar la página rota. */}

@@ -162,6 +162,38 @@ export function ProblemPublishingWizard() {
     };
   }, [canWrite, draft, isLoading, profile, publishedId, saveSnapshot]);
 
+  // Los errores del paso se asocian al primer campo con problema, que recibe el foco (aria-invalid + aria-describedby).
+  useEffect(() => {
+    if (errors.length === 0) return;
+    const section = document.querySelector<HTMLElement>("section[aria-label^='Paso']");
+    const pick = (): HTMLElement | null => {
+      if (!section) return null;
+      if (step === 1) {
+        const title = section.querySelector<HTMLInputElement>("#problem-title");
+        if (title && (title.value.trim().length < 12 || title.value.trim().length > 120)) return title;
+        return section.querySelector<HTMLElement>("#problem-description");
+      }
+      if (step === 3) return section.querySelector<HTMLElement>("fieldset input");
+      if (step === 4) {
+        const unset = [...section.querySelectorAll<HTMLInputElement>("fieldset")].find((group) => !group.querySelector("input:checked"));
+        return unset?.querySelector<HTMLElement>("input") ?? section.querySelector<HTMLElement>("fieldset input");
+      }
+      return section.querySelector<HTMLElement>("input[type=checkbox][required]");
+    };
+    const target = pick();
+    if (!target) {
+      document.getElementById("wizard-errors")?.focus();
+      return;
+    }
+    target.setAttribute("aria-invalid", "true");
+    target.setAttribute("aria-describedby", "wizard-errors");
+    target.focus();
+    return () => {
+      target.removeAttribute("aria-invalid");
+      target.removeAttribute("aria-describedby");
+    };
+  }, [errors, step]);
+
   function updateDraft(change: (current: ProblemDraft) => ProblemDraft, invalidateConsent = step < 5) {
     setDraft((current) => {
       const next = change(current);
@@ -291,7 +323,7 @@ export function ProblemPublishingWizard() {
           </fieldset>
           {verificationRequired ? <div className="mt-5 rounded-xl border border-border bg-surface-raised p-4" role="alert"><p className="text-sm font-semibold">Para publicar necesitas verificar tu empresa</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Tu borrador permanece guardado.</p><ButtonLink className="verification-action mt-3" href="/app/perfil#verificacion">Verificar mi empresa</ButtonLink></div> : null}
           {errors.length > 0 ? (
-            <div className="mt-6 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+            <div className="mt-6 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" id="wizard-errors" role="alert" tabIndex={-1}>
               <ul className="space-y-1">{errors.map((issue) => <li key={issue}>{issue}</li>)}</ul>
             </div>
           ) : null}
