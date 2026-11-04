@@ -74,7 +74,7 @@ export function PasswordRecoveryExperience() {
             </div>
 
             <button
-              className="flex min-h-11 w-full cursor-not-allowed items-center justify-center rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white opacity-55"
+              className="flex min-h-11 w-full items-center justify-center rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-55"
               type="submit"
             >
               {isSubmitting ? "Enviando…" : "Enviar enlace de recuperación"}
