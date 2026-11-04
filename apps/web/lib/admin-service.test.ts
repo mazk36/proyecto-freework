@@ -25,12 +25,12 @@ describe("admin service", () => {
   });
   it("calls each authorized mutation with a trimmed reason", async () => {
     mocks.rpc.mockResolvedValue({ data: null, error: null });
-    await verify("company"); await reject("company", " Datos incompletos "); await undoVerification("company");
+    await verify("company", "2026-11-04T10:00:00.000Z"); await reject("company", "2026-11-04T10:00:00.000Z", " Datos incompletos "); await undoVerification("company");
     await setUserSuspended("user", true, " Motivo "); await setProblemSuspended("problem", false, " Resuelto ");
     await setSetting("require_company_verification_to_publish", true);
     expect(mocks.rpc.mock.calls).toEqual([
-      ["admin_verify_company", { p_company_user_id: "company" }],
-      ["admin_reject_company", { p_company_user_id: "company", p_reason: "Datos incompletos" }],
+      ["admin_verify_company", { p_company_user_id: "company", p_expected_updated_at: "2026-11-04T10:00:00.000Z" }],
+      ["admin_reject_company", { p_company_user_id: "company", p_expected_updated_at: "2026-11-04T10:00:00.000Z", p_reason: "Datos incompletos" }],
       ["admin_undo_company_verification", { p_company_user_id: "company" }],
       ["admin_set_user_suspended", { p_user_id: "user", p_suspended: true, p_reason: "Motivo" }],
       ["admin_set_problem_suspended", { p_problem_id: "problem", p_suspended: false, p_reason: "Resuelto" }],

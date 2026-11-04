@@ -51,11 +51,12 @@ export async function listVerificationRequests(options: { status?: VerificationF
   }), isVerification);
   return page(rows, limit, (row) => ({ at: row.submitted_at, id: row.company_user_id }));
 }
-export async function verify(companyUserId: string): Promise<void> {
-  await callRpc("admin_verify_company", { p_company_user_id: companyUserId });
+/** `expectedUpdatedAt` is the request version (`updated_at`) the admin reviewed; the RPC fails if the company edited it since. */
+export async function verify(companyUserId: string, expectedUpdatedAt: string): Promise<void> {
+  await callRpc("admin_verify_company", { p_company_user_id: companyUserId, p_expected_updated_at: expectedUpdatedAt });
 }
-export async function reject(companyUserId: string, reason: string): Promise<void> {
-  await callRpc("admin_reject_company", { p_company_user_id: companyUserId, p_reason: reason.trim() });
+export async function reject(companyUserId: string, expectedUpdatedAt: string, reason: string): Promise<void> {
+  await callRpc("admin_reject_company", { p_company_user_id: companyUserId, p_expected_updated_at: expectedUpdatedAt, p_reason: reason.trim() });
 }
 export async function undoVerification(companyUserId: string): Promise<void> {
   await callRpc("admin_undo_company_verification", { p_company_user_id: companyUserId });

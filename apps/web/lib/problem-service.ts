@@ -270,6 +270,8 @@ function toErrorCode(message: string): ProblemServiceErrorCode | null {
 
 export function toFriendlyError(message: string): string {
   if (/company verification required to publish/i.test(message)) return "Para publicar necesitas verificar tu empresa";
+  if (/verification request changed/i.test(message)) return "La empresa modificó su solicitud mientras la revisabas. Recarga la lista y vuelve a revisarla.";
+  if (/expected request version required/i.test(message)) return "No se pudo confirmar la versión de la solicitud. Recarga la lista e inténtalo de nuevo.";
   if (/account suspended/i.test(message)) return "Tu cuenta está suspendida. Revisa el motivo en el aviso de tu cuenta.";
   if (/problem suspended/i.test(message)) return "Este problema está suspendido y no admite nuevas propuestas ni interacciones.";
   if (/not an admin/i.test(message)) return "No tienes acceso";

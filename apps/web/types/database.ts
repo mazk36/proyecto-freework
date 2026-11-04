@@ -508,8 +508,8 @@ export type Database = {
         Args: { p_status?: string; p_after_submitted_at?: string | null; p_after_company_user_id?: string | null; p_limit?: number };
         Returns: VerificationRequestRow[];
       };
-      admin_verify_company: { Args: { p_company_user_id: string }; Returns: undefined };
-      admin_reject_company: { Args: { p_company_user_id: string; p_reason: string }; Returns: undefined };
+      admin_verify_company: { Args: { p_company_user_id: string; p_expected_updated_at: string }; Returns: undefined };
+      admin_reject_company: { Args: { p_company_user_id: string; p_expected_updated_at: string; p_reason: string }; Returns: undefined };
       admin_undo_company_verification: { Args: { p_company_user_id: string }; Returns: undefined };
       admin_list_users: {
         Args: { p_search?: string; p_role?: string; p_suspension?: string; p_before_created_at?: string | null; p_before_id?: string | null; p_limit?: number };

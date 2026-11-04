@@ -1,4 +1,8 @@
 begin;
+create function public.test_ver(p_company uuid) returns timestamptz language sql security definer set search_path = ''
+as $$ select v.updated_at from public.company_verifications v where v.company_user_id = p_company $$;
+grant execute on function public.test_ver(uuid) to anon, authenticated;
+
 select no_plan();
 
 -- BEGIN VERIFICATION TRANSITION CASES
@@ -105,11 +109,11 @@ reset role;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"a1000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 set local role authenticated;
-select throws_ok($$select public.admin_reject_company('a1000000-0000-4000-8000-000000000002', 'mal')$$,
+select throws_ok($$select public.admin_reject_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'), 'mal')$$,
   '22023', 'invalid rejection reason', 'rejection requires at least five characters');
 select is((select tax_id from public.admin_list_verification_requests('pending') where company_user_id = 'a1000000-0000-4000-8000-000000000002'), '12345678901', 'admin can read fiscal data via authorized RPC');
-select lives_ok($$select public.admin_reject_company('a1000000-0000-4000-8000-000000000002', 'Datos incompletos')$$, 'admin rejects with a reason');
-select throws_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002')$$,
+select lives_ok($$select public.admin_reject_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'), 'Datos incompletos')$$, 'admin rejects with a reason');
+select throws_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'))$$,
   '22023', 'invalid verification transition', 'admin cannot approve a rejected request before resubmission');
 reset role;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-4000-8000-000000000002', true);
@@ -122,14 +126,14 @@ reset role;
 select set_config('request.jwt.claim.sub', 'a1000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"a1000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 set local role authenticated;
-select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002')$$, 'admin verifies pending company');
-select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002')$$, 'repeated verify is idempotent');
+select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'))$$, 'admin verifies pending company');
+select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'))$$, 'repeated verify is idempotent');
 reset role;
 select is((select count(*) from public.admin_actions where action = 'verify_company' and target_id = 'a1000000-0000-4000-8000-000000000002'), 1::bigint, 'idempotent verify does not add audit noise');
 set local role authenticated;
 select lives_ok($$select public.admin_undo_company_verification('a1000000-0000-4000-8000-000000000002')$$, 'admin can immediately undo verification');
 select lives_ok($$select public.admin_undo_company_verification('a1000000-0000-4000-8000-000000000002')$$, 'repeated undo is an idempotent no-op');
-select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002')$$, 'admin can approve again after undo');
+select lives_ok($$select public.admin_verify_company('a1000000-0000-4000-8000-000000000002', public.test_ver('a1000000-0000-4000-8000-000000000002'))$$, 'admin can approve again after undo');
 reset role;
 update public.admin_actions set created_at = pg_catalog.clock_timestamp() - interval '9 seconds'
   where id = (select max(id) from public.admin_actions where action = 'verify_company');

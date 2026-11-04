@@ -1,4 +1,8 @@
 begin;
+create function public.test_ver(p_company uuid) returns timestamptz language sql security definer set search_path = ''
+as $$ select v.updated_at from public.company_verifications v where v.company_user_id = p_company $$;
+grant execute on function public.test_ver(uuid) to anon, authenticated;
+
 select no_plan();
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data) values
  ('c1000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'susp-admin@example.test', '', now(), '{}', '{"full_name":"Admin","role":"company"}'),
@@ -41,7 +45,7 @@ reset role;
 select set_config('request.jwt.claim.sub', 'c1000000-0000-4000-8000-000000000001', true);
 select set_config('request.jwt.claims', '{"sub":"c1000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
 set local role authenticated;
-select public.admin_verify_company('c1000000-0000-4000-8000-000000000002');
+select public.admin_verify_company('c1000000-0000-4000-8000-000000000002', public.test_ver('c1000000-0000-4000-8000-000000000002'));
 select set_config('test.before_problem_suspend', (select open_problems::text from public.get_public_counters()), true);
 select public.admin_set_problem_suspended('c2000000-0000-4000-8000-000000000002', true, 'En revisión');
 select is((select open_problems from public.get_public_counters()), current_setting('test.before_problem_suspend')::bigint - 1, 'suspended problem is excluded from landing');

@@ -1,4 +1,8 @@
 begin;
+create function public.test_ver(p_company uuid) returns timestamptz language sql security definer set search_path = ''
+as $$ select v.updated_at from public.company_verifications v where v.company_user_id = p_company $$;
+grant execute on function public.test_ver(uuid) to anon, authenticated;
+
 select no_plan();
 insert into auth.users (id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data) values
  ('b1000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'admin-one@example.test', '', now(), '{}', '{"full_name":"Admin Uno","role":"company"}'),
@@ -15,8 +19,8 @@ values ('b2000000-0000-4000-8000-000000000001', 'b1000000-0000-4000-8000-0000000
 create temporary table admin_calls (sql_text text) on commit drop;
 insert into admin_calls values
  ('select public.admin_list_verification_requests()'),
- ($$select public.admin_verify_company('b1000000-0000-4000-8000-000000000004')$$),
- ($$select public.admin_reject_company('b1000000-0000-4000-8000-000000000004', 'motivo válido')$$),
+ ($$select public.admin_verify_company('b1000000-0000-4000-8000-000000000004', public.test_ver('b1000000-0000-4000-8000-000000000004'))$$),
+ ($$select public.admin_reject_company('b1000000-0000-4000-8000-000000000004', public.test_ver('b1000000-0000-4000-8000-000000000004'), 'motivo válido')$$),
  ($$select public.admin_undo_company_verification('b1000000-0000-4000-8000-000000000004')$$),
  ('select public.admin_list_users()'),
  ($$select public.admin_set_user_suspended('b1000000-0000-4000-8000-000000000004', true, 'motivo')$$),
