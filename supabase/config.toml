@@ -31,3 +31,11 @@ enable_confirmations = false
 [auth.rate_limit]
 sign_in_sign_ups = 30
 token_refresh = 150
+
+# Captcha de Cloudflare Turnstile: apagado por defecto. Para probarlo en local pon enabled = true y exporta
+# TURNSTILE_SECRET (secreto de prueba de Cloudflare: 1x0000000000000000000000000000000AA) antes de iniciar el stack;
+# en la web usa NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA. En producción: GOTRUE_SECURITY_CAPTCHA_*.
+[auth.captcha]
+enabled = false
+provider = "turnstile"
+secret = "env(TURNSTILE_SECRET)"

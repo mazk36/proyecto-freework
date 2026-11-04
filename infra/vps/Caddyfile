@@ -46,7 +46,7 @@
 		Cross-Origin-Opener-Policy "same-origin"
 		# Next export inyecta scripts inline: se permite 'unsafe-inline' en script-src;
 		# connect-src permite Supabase (URL pública en el build) y su Realtime (wss).
-		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self'; connect-src 'self' {$CSP_CONNECT:https: wss:}; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; media-src 'self'; connect-src 'self' {$CSP_CONNECT:https: wss:}; frame-src https://challenges.cloudflare.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
 		-Server
 		defer
 	}

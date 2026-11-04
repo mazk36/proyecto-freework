@@ -1,5 +1,6 @@
 "use client";
 
+import { useTurnstile } from "@/components/auth/turnstile-field";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ const inputClassName =
 export function LoginExperience() {
   const router = useRouter();
   const { login, isReady, storageNotice, authIssue } = useAuth();
+  const captcha = useTurnstile();
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -42,8 +44,9 @@ export function LoginExperience() {
       return;
     }
 
-    const result = await login({ email, password });
+    const result = await login({ email, password, captchaToken: captcha.token });
     if (!result.ok) {
+      captcha.reset();
       setError(result.error);
       setIsSubmitting(false);
       return;
@@ -150,9 +153,11 @@ export function LoginExperience() {
                 </p>
               ) : null}
 
+              {captcha.field}
+
               <button
                 className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
-                disabled={!isReady || isSubmitting}
+                disabled={!isReady || isSubmitting || !captcha.ready}
                 type="submit"
               >
                 {isSubmitting ? "Ingresando…" : "Iniciar sesión"} <ArrowRight aria-hidden="true" className="size-4" />

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTurnstile } from "@/components/auth/turnstile-field";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -23,6 +24,7 @@ const registrationInputClass =
 export function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
   const { login, register, isReady, storageNotice, authIssue } = useAuth();
+  const captcha = useTurnstile();
   const [role, setRole] = useState<UserRole | "">("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -61,7 +63,8 @@ export function AuthForm({ mode }: AuthFormProps) {
         setIsSubmitting(false);
         return;
       }
-      const result = await register({ name, email, password, role, next: getIntendedDestination() });
+      const result = await register({ name, email, password, role, next: getIntendedDestination(), captchaToken: captcha.token });
+      captcha.reset();
       if (!result.ok) {
         setError(result.error);
         setIsSubmitting(false);
@@ -78,8 +81,9 @@ export function AuthForm({ mode }: AuthFormProps) {
         setIsSubmitting(false);
         return;
       }
-      const result = await login({ email, password });
+      const result = await login({ email, password, captchaToken: captcha.token });
       if (!result.ok) {
+        captcha.reset();
         setError(result.error);
         setIsSubmitting(false);
         return;
@@ -208,7 +212,9 @@ export function AuthForm({ mode }: AuthFormProps) {
                 {authIssue ? <p className="rounded-lg border border-rose-300/25 bg-rose-300/10 px-3 py-2 text-sm leading-5 text-rose-100" role="alert">{authIssue}</p> : null}
                 {storageNotice ? <p className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-sm leading-5 text-amber-100" role="status">{storageNotice}</p> : null}
 
-                <Button className="w-full rounded-xl !bg-[#7940e8] !text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px hover:!bg-[#6733ca]" disabled={!isReady || isSubmitting} size="lg" type="submit">
+                {captcha.field}
+
+                <Button className="w-full rounded-xl !bg-[#7940e8] !text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px hover:!bg-[#6733ca]" disabled={!isReady || isSubmitting || !captcha.ready} size="lg" type="submit">
                   {isSubmitting ? "Creando cuenta…" : "Crear cuenta"} <ArrowRight aria-hidden="true" className="size-4" />
                 </Button>
               </form>
@@ -301,7 +307,9 @@ export function AuthForm({ mode }: AuthFormProps) {
             {error ? <p className="text-sm text-rose-700" role="alert">{error}</p> : null}
             {storageNotice ? <p className="text-sm text-amber-800" role="status">{storageNotice}</p> : null}
 
-            <Button className="w-full" disabled={!isReady || isSubmitting} size="lg" type="submit">
+            {captcha.field}
+
+            <Button className="w-full" disabled={!isReady || isSubmitting || !captcha.ready} size="lg" type="submit">
               {isSubmitting ? "Ingresando…" : "Iniciar sesión"}
             </Button>
           </form>

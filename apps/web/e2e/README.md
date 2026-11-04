@@ -52,3 +52,7 @@ El guion deja usuarios y datos de prueba en la base local. Antes de correr pgTAP
 `E2E_PSQL=<ruta a psql> node e2e/security.mjs` crea cuatro usuarios (dos empresas, un freelancer con Match y un tercero ajeno) y ataca la API real: RPC como anon, escrituras directas por PostgREST, lectura y escritura cruzadas en chat, eventos Realtime de un tercero, topes del perfil, privacidad por rol y cuenta suspendida con sesión abierta. Espera ~30 s tras un `reset` para que Realtime esté listo (si no, S3.6 falla por tiempo).
 
 Con `E2E_IGNORE_HTTPS=1 E2E_BASE_URL=https://localhost:8443` el guion corre contra la imagen de Caddy (`infra/vps`) y comprueba que la CSP no rompe la app (consola sin avisos).
+
+## Captcha (Turnstile)
+
+Apagado salvo que exista `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build. Para probarlo: en `supabase/config.toml` pon `[auth.captcha] enabled = true`, exporta `TURNSTILE_SECRET=1x0000000000000000000000000000000AA`, reinicia el stack (`local-stack.sh stop && start`), compila la web con `NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA` y corre `node e2e/captcha.mjs`. Deja `enabled = false` para el resto del e2e (el journey no resuelve desafíos).

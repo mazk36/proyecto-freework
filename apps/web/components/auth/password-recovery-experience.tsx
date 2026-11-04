@@ -1,5 +1,6 @@
 "use client";
 
+import { useTurnstile } from "@/components/auth/turnstile-field";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 import { useState, type FormEvent } from "react";
@@ -8,6 +9,7 @@ import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 
 export function PasswordRecoveryExperience() {
   const { requestPasswordReset, isReady, storageNotice } = useAuth();
+  const captcha = useTurnstile();
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,7 +20,8 @@ export function PasswordRecoveryExperience() {
     setNotice("");
     setIsSubmitting(true);
     const values = new FormData(event.currentTarget);
-    const result = await requestPasswordReset(String(values.get("email") ?? ""));
+    const result = await requestPasswordReset(String(values.get("email") ?? ""), captcha.token);
+    captcha.reset();
     if (result.ok) {
       setNotice("Si el correo está asociado a una cuenta, recibirás un enlace para cambiar la contraseña.");
     } else {
@@ -73,8 +76,11 @@ export function PasswordRecoveryExperience() {
               </div>
             </div>
 
+            {captcha.field}
+
             <button
               className="flex min-h-11 w-full items-center justify-center rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white disabled:cursor-not-allowed disabled:opacity-55"
+              disabled={!captcha.ready}
               type="submit"
             >
               {isSubmitting ? "Enviando…" : "Enviar enlace de recuperación"}

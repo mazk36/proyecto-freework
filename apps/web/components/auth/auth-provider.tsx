@@ -1,5 +1,6 @@
 "use client";
 
+import { captchaOptions } from "@/lib/captcha";
 import {
   createContext,
   useCallback,
@@ -18,7 +19,7 @@ type AuthResult =
   | { ok: true; requiresEmailConfirmation?: boolean }
   | { ok: false; error: string };
 
-type RegisterInput = { name: string; email: string; password: string; role: UserRole; next?: string };
+type RegisterInput = { name: string; email: string; password: string; role: UserRole; next?: string; captchaToken?: string | null };
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -27,9 +28,9 @@ type AuthContextValue = {
   isLoggingOut: boolean;
   storageNotice: string;
   authIssue: string;
-  login: (input: { email: string; password: string }) => Promise<AuthResult>;
+  login: (input: { email: string; password: string; captchaToken?: string | null }) => Promise<AuthResult>;
   register: (input: RegisterInput) => Promise<AuthResult>;
-  requestPasswordReset: (email: string) => Promise<AuthResult>;
+  requestPasswordReset: (email: string, captchaToken?: string | null) => Promise<AuthResult>;
   logout: () => Promise<void>;
   finishLogout: () => void;
 };
@@ -122,14 +123,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const login = useCallback(async ({ email, password }: { email: string; password: string }): Promise<AuthResult> => {
+  const login = useCallback(async ({ email, password, captchaToken }: { email: string; password: string; captchaToken?: string | null }): Promise<AuthResult> => {
     const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
     if (!password) return { ok: false, error: "Escribe tu contraseña." };
 
     try {
-      const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password });
+      const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password, options: captchaOptions(captchaToken) });
       if (error) return { ok: false, error: authErrorMessage(error.message) };
       if (!data.user) return { ok: false, error: "No pudimos iniciar sesión con esos datos." };
       setUser(await hydrateCurrentUser(data.user));
@@ -141,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const register = useCallback(async ({ name, email, password, role, next }: RegisterInput): Promise<AuthResult> => {
+  const register = useCallback(async ({ name, email, password, role, next, captchaToken }: RegisterInput): Promise<AuthResult> => {
     const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!name.trim()) return { ok: false, error: "Escribe tu nombre." };
@@ -155,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         password,
         options: {
           data: { full_name: name.trim(), role },
+          ...captchaOptions(captchaToken),
           emailRedirectTo: getAbsoluteSiteUrl(`/auth/callback/${next && next !== "/app" ? `?next=${encodeURIComponent(next)}` : ""}`),
         },
       });
@@ -184,13 +186,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const requestPasswordReset = useCallback(async (email: string): Promise<AuthResult> => {
+  const requestPasswordReset = useCallback(async (email: string, captchaToken?: string | null): Promise<AuthResult> => {
     const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
     try {
       const { error } = await client.auth.resetPasswordForEmail(email.trim(), {
         redirectTo: getAbsoluteSiteUrl("/auth/callback/?flow=recovery"),
+        ...captchaOptions(captchaToken),
       });
       return error ? { ok: false, error: authErrorMessage(error.message) } : { ok: true };
     } catch {
