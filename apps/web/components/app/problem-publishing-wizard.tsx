@@ -245,23 +245,23 @@ export function ProblemPublishingWizard() {
   if (publishedId) return <PublishSuccess problemId={publishedId} />;
 
   if (isLoading) {
-    return <main className="mx-auto max-w-3xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Preparando tu publicación…</main>;
+    return <div className="mx-auto max-w-3xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Preparando tu publicación…</div>;
   }
 
   if (!profile) {
     return (
-      <main className="mx-auto max-w-2xl px-5 py-16 text-center">
+      <div className="mx-auto max-w-2xl px-5 py-16 text-center">
         <h1 className="text-2xl font-semibold">No se pudo abrir la publicación</h1>
         <p className="mt-3 text-sm leading-6 text-muted-foreground">{error || "Completa primero el perfil de tu empresa."}</p>
         <ButtonLink className="mt-6" href="/app/perfil">Ir al perfil</ButtonLink>
-      </main>
+      </div>
     );
   }
 
   const progress = (step / stepTitles.length) * 100;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
+    <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <Link className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
@@ -312,7 +312,7 @@ export function ProblemPublishingWizard() {
           </div>
         </form>
       </section>
-    </main>
+    </div>
   );
 
   function toggleValue(field: "impacts" | "objectives", value: string) {
@@ -514,7 +514,7 @@ function ReviewStep({
 
 function PublishSuccess({ problemId }: { problemId: string }) {
   return (
-    <main className="mx-auto grid min-h-[68vh] max-w-3xl place-items-center px-5 py-12 text-center">
+    <div className="mx-auto grid min-h-[68vh] max-w-3xl place-items-center px-5 py-12 text-center">
       <section aria-labelledby="publish-success-title" className="w-full rounded-2xl border border-border bg-surface p-7 sm:p-10">
         <div aria-hidden="true" className="mx-auto grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-800">✓</div>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight" id="publish-success-title">¡Tu problema ya está publicado!</h1>
@@ -525,7 +525,7 @@ function PublishSuccess({ problemId }: { problemId: string }) {
           <ButtonLink href="/app/problemas/nuevo" variant="quiet">Publicar otro problema</ButtonLink>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
 

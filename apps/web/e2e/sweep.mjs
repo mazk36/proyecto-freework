@@ -82,14 +82,24 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
   // --- Freelancer (móvil) ---
   await freelancer.page.goto("/app/descubrir/");
   await freelancer.page.waitForLoadState("networkidle").catch(() => {});
-  await auditScreen(freelancer, "freelancer · feed (mazo)");
-  await freelancer.page.setViewportSize({ width: 1280, height: 800 });
-  await auditFocusOrder(freelancer, "freelancer · feed (escritorio)");
-  await freelancer.page.setViewportSize({ width: 390, height: 844 });
-  const moreButton = freelancer.page.getByRole("button", { name: /Ver más/ }).first();
-  await auditDialog(freelancer, "detalle del problema en el mazo", () => moreButton.click(), moreButton);
-  const proposeButton = freelancer.page.getByRole("button", { name: /Proponer ahora/ }).first();
-  await auditDialog(freelancer, "hoja de propuesta", () => proposeButton.click(), proposeButton);
+  await sleep(1000);
+  await auditScreen(freelancer, "freelancer · feed (estado final del recorrido, ya vio los problemas)");
+  // A second, fresh freelancer still has cards to look at: audit the deck, its detail sheet, the proposal sheet and the keyboard order.
+  const freshFreelancer = await newPlayer(browser, "freelancer-nuevo", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 2 });
+  await register(freshFreelancer, "Freelancer Nuevo", "freelancer");
+  await freshFreelancer.page.goto("/app/descubrir/");
+  await freshFreelancer.page.locator("article[aria-label^='Problema:']").first().waitFor({ timeout: 20_000 });
+  await auditScreen(freshFreelancer, "freelancer nuevo · feed (mazo con tarjetas)");
+  await freshFreelancer.page.setViewportSize({ width: 1280, height: 800 });
+  await auditFocusOrder(freshFreelancer, "freelancer nuevo · feed (escritorio)");
+  await freshFreelancer.page.setViewportSize({ width: 390, height: 844 });
+  await freshFreelancer.page.getByRole("button", { name: "Cerrar tutorial" }).click({ timeout: 3000 }).catch(() => {}); // the first-time tutorial covers the card footer
+  const moreButton = freshFreelancer.page.getByRole("button", { name: /Ver más/ }).first();
+  await auditDialog(freshFreelancer, "detalle del problema en el mazo", () => moreButton.click(), moreButton);
+  const proposeButton = freshFreelancer.page.getByRole("button", { name: /Proponer ahora/ }).first();
+  await auditDialog(freshFreelancer, "hoja de propuesta", () => proposeButton.click(), proposeButton);
+  await auditReducedMotion(freshFreelancer, "feed del freelancer");
+  for (const [url, name] of [["/app/likes/", "likes vacíos"], ["/app/chats/", "chats vacíos"], ["/app/perfil/", "perfil sin completar"]]) await visit(freshFreelancer, url, `freelancer nuevo · ${name}`);
   for (const [url, name] of [["/app/perfil/", "perfil"], ["/app/explorar/", "explorar"], ["/app/likes/", "likes (Me interesan)"], ["/app/matches/", "matches"], ["/app/guardados/", "guardados"], [`/app/chats/?match=${matchId}`, "chat"], ["/app/chats/", "lista de chats"]]) await visit(freelancer, url, `freelancer · ${name}`);
   await freelancer.page.goto("/app/likes/");
   for (const tab of ["Propuestas enviadas", "Matches"]) {
@@ -97,7 +107,6 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
     await sleep(700);
     await auditScreen(freelancer, `freelancer · likes · ${tab}`);
   }
-  await auditReducedMotion(freelancer, "feed del freelancer");
   // Estado de error: sin conexión con el servidor de datos.
   const consoleBeforeOffline = freelancer.problems.length;
   await freelancer.page.route(/\/rest\/v1\/rpc\//, (route) => route.abort());
@@ -122,5 +131,5 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
   await adminP.page.getByRole("button", { name: "Suspender" }).first().waitFor({ timeout: 15_000 });
   const suspendButton = adminP.page.getByRole("button", { name: "Suspender" }).first();
   await auditDialog(adminP, "suspender usuario (admin)", () => suspendButton.click(), suspendButton);
-  return { players: [visitor, newCompany], notes };
+  return { players: [visitor, newCompany, freshFreelancer], notes };
 }

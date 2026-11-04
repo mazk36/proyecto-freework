@@ -216,7 +216,7 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
   const problemCanInteract = selectedGroup?.problem.status === "open" || selectedGroup?.problem.status === "paused";
   const canInteract = canWrite && problemCanInteract;
 
-  return <main className="company-inbox mx-auto w-full max-w-6xl px-4 pb-44 pt-8 sm:px-8 sm:pt-12">
+  return <div className="company-inbox mx-auto w-full max-w-6xl px-4 pb-44 pt-8 sm:px-8 sm:pt-12">
     <header className="flex flex-wrap items-end justify-between gap-4">
       <div className="max-w-2xl"><p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-lavender">Panel de empresa</p><h1 className="mt-3 font-display text-3xl font-semibold tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:text-4xl" id="inbox-heading" tabIndex={-1}>Propuestas recibidas</h1><p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base">Revisa las propuestas por problema y encuentra con quién te gustaría conversar.</p></div>
       {state.status === "ready" ? <Button disabled={busyIds.length > 0} onClick={retry} variant="outline"><RotateCcw aria-hidden="true" className="size-4" />Actualizar bandeja</Button> : null}
@@ -246,5 +246,5 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
     </div> : null}
     <BottomSheet description="Todos los detalles enviados por el profesional." onClose={() => setDetail(null)} open={Boolean(detail)} title="Propuesta completa">{detail ? <ProposalFullContent proposal={detail} /> : null}</BottomSheet>
     {matchId ? <MatchCelebration matchId={matchId} onClose={() => setMatchId(null)} /> : null}
-  </main>;
+  </div>;
 }

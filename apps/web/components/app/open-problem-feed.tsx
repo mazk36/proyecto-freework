@@ -37,12 +37,12 @@ export function OpenProblemFeed() {
     );
   }
 
-  if (isLoading) return <main className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando problemas disponibles…</main>;
+  if (isLoading) return <div className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando problemas disponibles…</div>;
   if (error) return <AppEmptyState action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir Explorar." />;
   if (!problems.length) return <AppEmptyState description="Cuando una empresa publique un problema, aparecerá aquí con la información que haya decidido compartir." title="Aún no hay problemas disponibles." />;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
       <header>
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Problemas disponibles</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">Conoce el contexto del negocio y explora necesidades reales que buscan resolver.</p>
@@ -68,6 +68,6 @@ export function OpenProblemFeed() {
           </article>
         ))}
       </section>
-    </main>
+    </div>
   );
 }

@@ -88,11 +88,11 @@ export function CompanyProblemDetails() {
     }
   }
 
-  if (isLoading) return <main className="mx-auto max-w-4xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando la publicación…</main>;
-  if (!problem) return <main className="mx-auto max-w-2xl px-5 py-16 text-center"><h1 className="text-2xl font-semibold">No se pudo abrir la publicación</h1><p className="mt-3 text-sm text-muted-foreground">{error}</p><ButtonLink className="mt-6" href="/app/problemas" variant="outline">Volver a mis problemas</ButtonLink></main>;
+  if (isLoading) return <div className="mx-auto max-w-4xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando la publicación…</div>;
+  if (!problem) return <div className="mx-auto max-w-2xl px-5 py-16 text-center"><h1 className="text-2xl font-semibold">No se pudo abrir la publicación</h1><p className="mt-3 text-sm text-muted-foreground">{error}</p><ButtonLink className="mt-6" href="/app/problemas" variant="outline">Volver a mis problemas</ButtonLink></div>;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
+    <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-8 sm:py-12">
       <Link className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
       <div className="mt-5 flex flex-wrap items-start justify-between gap-4">
         <div>
@@ -139,7 +139,7 @@ export function CompanyProblemDetails() {
           <div className="flex gap-2"><Button disabled={!canWrite || isWorking} onClick={() => setConfirmClose(false)} variant="outline">Volver</Button><Button disabled={!canWrite || isWorking} onClick={() => void changeState("close")}>{isWorking ? "Cerrando…" : "Confirmar cierre"}</Button></div>
         </div>
       ) : null}
-    </main>
+    </div>
   );
 }
 

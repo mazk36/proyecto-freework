@@ -229,9 +229,9 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className={`flex min-w-0 flex-col ${isChatPage ? "min-h-0" : ""}`}>
-          <div className={`min-w-0 flex-1 ${isChatPage ? "min-h-0 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : "pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0"}`} id="main-content" tabIndex={-1}>
+          <main className={`min-w-0 flex-1 ${isChatPage ? "min-h-0 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : "pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0"}`} id="main-content" tabIndex={-1}>
             {children}
-          </div>
+          </main>
           <footer className={`${isChatPage ? "hidden" : ""} border-t border-border px-4 py-4 text-center text-xs leading-5 text-muted-foreground sm:px-6`}>
             <p>Tu cuenta y tus publicaciones están protegidas por los permisos de MatchWork.</p>
             {storageNotice ? <p className="mt-1 text-amber-200" role="status">{storageNotice}</p> : null}

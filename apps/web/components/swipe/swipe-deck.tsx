@@ -53,7 +53,7 @@ export function SwipeDeck() {
 }
 
 function DeckShell({ children }: { children: React.ReactNode }) {
-  return <main className="swipe-deck mx-auto flex w-full max-w-6xl flex-col overflow-x-clip px-4 pb-2 pt-4 sm:px-8 sm:pt-6">{children}</main>;
+  return <div className="swipe-deck mx-auto flex w-full max-w-6xl flex-col overflow-x-clip px-4 pb-2 pt-4 sm:px-8 sm:pt-6">{children}</div>;
 }
 
 function DeckHeading() {

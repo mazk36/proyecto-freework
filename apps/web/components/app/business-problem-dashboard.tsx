@@ -40,7 +40,7 @@ export function BusinessProblemDashboard() {
 
   useEffect(() => { void loadProblems(); }, [loadProblems]);
 
-  if (isLoading) return <main className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando tus publicaciones…</main>;
+  if (isLoading) return <div className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando tus publicaciones…</div>;
   if (error) {
     return <AppEmptyState action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir esta sección." />;
   }
@@ -51,7 +51,7 @@ export function BusinessProblemDashboard() {
   const closed = problems.filter((problem) => problem.status === "closed").length;
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
+    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-8 sm:py-12">
       <header className="flex flex-wrap items-end justify-between gap-5">
         <div>
           <p className="text-sm font-medium text-muted-foreground">{profile?.companyName || "Área empresarial"}</p>
@@ -83,7 +83,7 @@ export function BusinessProblemDashboard() {
         <p className="mt-2 text-sm leading-6 text-muted-foreground">Consulta y compara las propuestas enviadas para cada problema.</p>
         <ButtonLink className="mt-4" href="/app/propuestas" variant="outline">Ir a propuestas</ButtonLink>
       </section>
-    </main>
+    </div>
   );
 }
 
