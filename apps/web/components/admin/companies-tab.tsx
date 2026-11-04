@@ -112,7 +112,7 @@ export function CompaniesTab({ api, filter, onFilterChange, onChanged }: { api: 
                     <div className="min-w-0"><p className="truncate font-semibold text-foreground">{row.company_name}</p><p className="truncate text-sm text-muted-foreground">{row.legal_name}</p></div>
                     <Badge tone={statusBadge[row.status].tone}>{statusBadge[row.status].label}</Badge>
                   </div>
-                  <dl className="mt-3 grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-1.5 text-sm [&_dd]:min-w-0 [&_dd]:break-words">
+                  <dl className="mt-3 grid grid-cols-1 gap-y-0.5 text-sm sm:grid-cols-[auto_minmax(0,1fr)] sm:gap-x-4 sm:gap-y-1.5 [&_dd]:mb-2 [&_dd]:min-w-0 [&_dd]:break-words sm:[&_dd]:mb-0">
                     <dt className="text-muted-foreground">País</dt><dd>{row.country_code}</dd>
                     <dt className="text-muted-foreground">Identificación</dt><dd className="flex flex-wrap items-center gap-1.5 font-mono text-xs">{row.tax_id}<button aria-label={`Copiar identificación fiscal de ${row.company_name}`} className="grid size-11 place-items-center rounded-lg text-muted-foreground hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => copy(row.tax_id)} type="button"><Copy aria-hidden="true" className="size-4" /></button></dd>
                     <dt className="text-muted-foreground">Web o correo</dt><dd className="break-words">{contactOf(row)}</dd>
