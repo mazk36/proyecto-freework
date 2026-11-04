@@ -1,0 +1,44 @@
+# Pruebas de extremo a extremo (recorrido completo + accesibilidad)
+
+`journey.mjs` recorre la **app real** (el export estático servido por HTTP) contra un **Supabase local real**, con varios
+navegadores a la vez (empresa y freelancer, este último en móvil 390×844 con táctil real por CDP). Cubre el camino
+feliz de punta a punta y, al final, una pasada de accesibilidad y responsive (`sweep.mjs`, con axe-core) sobre todas las
+pantallas reales y sus estados (vacío, error, éxito, diálogos). No está en CI todavía.
+
+## Qué prueba
+1. Empresa: registro → perfil → solicitud de verificación → el admin la verifica desde el panel (alta con `supabase/scripts/grant-admin.sh`).
+2. Empresa verificada publica 3 problemas en PEN; una empresa de EE. UU. publica uno en USD.
+3. Freelancer: registro y perfil público.
+4. Feed: swipe táctil a la derecha e izquierda, botón, teclado (escritorio) y «Deshacer».
+5. Hoja de propuesta: errores en línea, límite de caracteres y propuesta enviada.
+6. Bandeja de la empresa: ve dos propuestas (PEN y USD), compara y marca «Me interesa» hasta el Match.
+7. Chat en tiempo real, aviso suave de contacto (descartable; email, teléfono y enlaces pasan sin tocar) y no leídos.
+8. La franja «En vivo» de la landing coincide con los contadores de la base.
+9. Cuota anti-spam: baja una política con `UPDATE` y comprueba el mensaje con el tiempo de espera.
+10. Cerrar sesión, volver a entrar y recargar (F5) en cada ruta profunda; sin sesión redirige; cuenta suspendida con aviso y sin poder escribir.
+- Accesibilidad (`sweep.mjs` + `a11y-lib.mjs`): axe-core (sin violaciones serias/críticas), scroll horizontal y objetivos
+  táctiles de 44 px en 360/390/768/1280/1536, texto al 200 %, foco atrapado/Escape/retorno del foco en los diálogos y
+  `prefers-reduced-motion`. Las violaciones moderadas/menores se imprimen como notas.
+
+## Cómo correrla
+```bash
+# 1) Supabase local de MatchWork en puertos alternativos (55421-55429; no toca otro Supabase en 54321)
+supabase/scripts/local-stack.sh start      # Realtime necesita ~30 s tras arrancar
+supabase/scripts/local-stack.sh reset      # opcional: base limpia (los contadores serán exactos)
+
+# 2) Export estático apuntando a ese Supabase, servido con compresión
+NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:55421 \
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=<publishable key que imprime `local-stack.sh start`> \
+NEXT_PUBLIC_SITE_URL=http://localhost:4173 pnpm build
+(cd apps/web && npx serve@14 out -l 4173 --no-clipboard) &
+
+# 3) Recorrido (usa el Chrome del sistema; E2E_CHROMIUM_PATH para otro binario)
+cd apps/web
+E2E_PSQL=/opt/homebrew/opt/libpq/bin/psql node e2e/journey.mjs
+```
+Variables: `E2E_BASE_URL` (def. `http://localhost:4173`), `E2E_SUPABASE_URL` (`http://127.0.0.1:55421`),
+`E2E_SUPABASE_KEY`, `E2E_DB_URL` (`postgresql://postgres:postgres@127.0.0.1:55422/postgres`), `E2E_PSQL` (ruta de `psql`),
+`E2E_SKIP_A11Y=1` para saltar la pasada de accesibilidad. Sale con código distinto de 0 si falla alguna comprobación.
+
+Cada ejecución crea usuarios nuevos (correo con marca de tiempo) y deja sus datos en la base; usa `local-stack.sh reset`
+para empezar limpio. Reconstruye el export antes de correr si cambiaste código de la app.
