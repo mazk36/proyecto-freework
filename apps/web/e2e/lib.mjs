@@ -1,6 +1,6 @@
 // Shared helpers for the end-to-end journey and the accessibility sweep.
 import { execFileSync } from "node:child_process";
-import { chromium } from "playwright";
+import { chromium, webkit } from "playwright";
 
 export const BASE_URL = process.env.E2E_BASE_URL ?? "http://localhost:4173";
 export const SUPABASE_URL = process.env.E2E_SUPABASE_URL ?? "http://127.0.0.1:55421";
@@ -28,6 +28,8 @@ export function sql(statement) {
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export async function launch() {
+  // E2E_ENGINE=webkit usa WebKit (Safari). Sin descarga: acepta una compilación ya instalada con E2E_WEBKIT_PATH.
+  if (process.env.E2E_ENGINE === "webkit") return webkit.launch(process.env.E2E_WEBKIT_PATH ? { executablePath: process.env.E2E_WEBKIT_PATH } : {});
   // Uses the system Chrome so no browser download is needed; set E2E_CHROMIUM_PATH to use another binary.
   return chromium.launch(process.env.E2E_CHROMIUM_PATH ? { executablePath: process.env.E2E_CHROMIUM_PATH } : { channel: "chrome" });
 }

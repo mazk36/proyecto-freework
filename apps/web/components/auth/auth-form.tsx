@@ -279,7 +279,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   }
 
   return (
-    <main className="grid min-h-screen place-items-center px-5 py-10 sm:px-8">
+    <main className="grid min-h-dvh place-items-center px-5 py-10 sm:px-8">
       <div className="w-full max-w-md">
         <Link aria-label="MatchWork, ir al inicio" className="inline-flex min-h-11 items-center rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">
           <MatchWorkLogoLockup preload />

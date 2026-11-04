@@ -92,7 +92,7 @@ export function LandingPage() {
   const publicBasePath = process.env.PAGES_BASE_PATH ?? "";
 
   return (
-    <div className="public-landing flex min-h-screen flex-col bg-background text-foreground">
+    <div className="public-landing flex min-h-dvh flex-col bg-background text-foreground">
       <PublicHeader />
       <LandingMotion>
         <main className="flex-1">

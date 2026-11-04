@@ -51,7 +51,7 @@ export function PublicFreelancerProfilePage() {
   } : null;
 
   return (
-    <main className="public-landing min-h-screen">
+    <main className="public-landing min-h-dvh">
       <header className="border-b border-border">
         <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-5 sm:min-h-[72px] sm:px-8">
           <Link aria-label="MatchWork, ir al inicio" className="rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/">

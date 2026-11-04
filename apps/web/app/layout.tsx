@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import type { ReactNode } from "react";
 import { AuthBoundary } from "@/components/auth/auth-boundary";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ToastProvider } from "@/components/ui/toast";
+import { browserSupportScript } from "@/lib/browser-support";
 import { publicPageMetadata, siteBaseUrl } from "@/lib/site-metadata";
 import "./globals.css";
 
@@ -30,6 +31,13 @@ const monoFont = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
+// viewport-fit=cover hace que env(safe-area-inset-*) valga algo en iPhone (muesca, barra de inicio); las barras fijas ya lo usan.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
   metadataBase: siteBaseUrl,
   ...publicPageMetadata(
@@ -47,6 +55,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       lang="es"
     >
       <body>
+        {/* Constante propia (sin contenido de usuario): avisa a navegadores sin color-mix() o :is() en lugar de dejar la página rota. */}
+        <script dangerouslySetInnerHTML={{ __html: browserSupportScript }} />
         <AuthProvider>
           <ToastProvider>
             <AuthBoundary>{children}</AuthBoundary>

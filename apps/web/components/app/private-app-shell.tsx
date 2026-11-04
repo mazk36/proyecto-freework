@@ -170,7 +170,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AccountStatusContext.Provider value={accountStatus}><div className={`private-app-shell flex flex-col bg-background text-foreground ${isChatPage ? "h-dvh overflow-hidden" : "min-h-screen"}`}>
+    <AccountStatusContext.Provider value={accountStatus}><div className={`private-app-shell flex flex-col bg-background text-foreground ${isChatPage ? "h-dvh overflow-hidden" : "min-h-dvh"}`}>
       <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-3 focus:text-foreground" href="#main-content">
         Saltar al contenido
       </a>

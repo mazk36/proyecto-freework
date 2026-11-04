@@ -49,7 +49,7 @@ export function AuthBoundary({ children }: { children: ReactNode }) {
 
   if (changingRoute) {
     return (
-      <main className="grid min-h-screen place-items-center px-5 text-center">
+      <main className="grid min-h-dvh place-items-center px-5 text-center">
         <p aria-live="polite" className="text-sm text-muted-foreground">
           {isReady ? "Abriendo MatchWork…" : "Comprobando la sesión…"}
         </p>
