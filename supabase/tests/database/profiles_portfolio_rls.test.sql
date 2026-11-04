@@ -72,10 +72,7 @@ values
   ('portfolio-media', '00000000-0000-4000-8000-000000000002/20000000-0000-4000-8000-000000000004/40000000-0000-4000-8000-000000000004.webp', '{"mimetype":"image/webp","size":123}'::jsonb);
 
 select is((select public from storage.buckets where id = 'avatars'), true, 'the avatar bucket is configured as public');
-select is((select file_size_limit from storage.buckets where id = 'avatars'), 2097152::bigint, 'avatar size is limited to 2 MB');
-select is((select allowed_mime_types from storage.buckets where id = 'avatars'), array['image/jpeg', 'image/png', 'image/webp']::text[], 'avatar bucket allows only image MIME types');
 select is((select public from storage.buckets where id = 'portfolio-media'), false, 'the portfolio bucket stays private');
-select is((select file_size_limit from storage.buckets where id = 'portfolio-media'), 5242880::bigint, 'portfolio images are limited to 5 MB');
 
 set local role anon;
 select set_config('request.jwt.claim.sub', '', true);
@@ -106,6 +103,12 @@ select throws_ok(
   '42501', null, 'anonymous users cannot change profile publication'
 );
 reset role;
+select is((select file_size_limit from storage.buckets where id = 'avatars'), 2097152::bigint, 'avatar size is limited to 2 MB');
+select is((select allowed_mime_types from storage.buckets where id = 'avatars'), array['image/jpeg', 'image/png', 'image/webp']::text[], 'avatar bucket allows only image MIME types');
+select is((select file_size_limit from storage.buckets where id = 'portfolio-media'), 5242880::bigint, 'portfolio images are limited to 5 MB');
+select is((select allowed_mime_types from storage.buckets where id = 'avatars'), array['image/jpeg','image/png','image/webp'], 'el bucket avatars solo admite JPEG, PNG y WebP (lo impone storage-api)');
+select is((select file_size_limit from storage.buckets where id = 'avatars'), 2097152::bigint, 'el bucket avatars limita a 2 MiB (lo impone storage-api)');
+select is((select file_size_limit from storage.buckets where id = 'portfolio-media'), 5242880::bigint, 'el bucket portfolio-media limita a 5 MiB (lo impone storage-api)');
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-4000-8000-000000000003', true);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
@@ -238,24 +241,12 @@ select throws_ok(
   $$insert into storage.objects (bucket_id, name, metadata) values ('avatars', '00000000-0000-4000-8000-000000000001/private.txt', '{"mimetype":"text/plain","size":10}'::jsonb)$$,
   '42501', null, 'avatar paths reject non-image extensions'
 );
-select throws_ok(
-  $$insert into storage.objects (bucket_id, name, metadata) values ('avatars', '00000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000098.webp', '{"mimetype":"application/octet-stream","size":10}'::jsonb)$$,
-  '42501', null, 'avatar uploads reject disallowed MIME types'
-);
-select throws_ok(
-  $$insert into storage.objects (bucket_id, name, metadata) values ('avatars', '00000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000097.webp', '{"mimetype":"image/webp","size":2097153}'::jsonb)$$,
-  '42501', null, 'avatar uploads reject files over 2 MB'
-);
 insert into storage.objects (bucket_id, name, metadata)
 values ('portfolio-media', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000099.webp', '{"mimetype":"image/webp","size":10}'::jsonb);
 select is((select count(*)::integer from storage.objects where bucket_id = 'portfolio-media' and name like '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/%'), 2, 'a user can upload into their own portfolio project');
 select throws_ok(
   $$insert into storage.objects (bucket_id, name, metadata) values ('portfolio-media', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000004/40000000-0000-4000-8000-000000000099.webp', '{"mimetype":"image/webp","size":10}'::jsonb)$$,
   '42501', null, 'a user cannot upload into another user project'
-);
-select throws_ok(
-  $$insert into storage.objects (bucket_id, name, metadata) values ('portfolio-media', '00000000-0000-4000-8000-000000000001/20000000-0000-4000-8000-000000000001/40000000-0000-4000-8000-000000000096.webp', '{"mimetype":"image/webp","size":5242881}'::jsonb)$$,
-  '42501', null, 'portfolio uploads reject files over 5 MB'
 );
 update storage.objects
 set metadata = '{"mimetype":"image/webp","size":123,"marker":"owner-change"}'::jsonb

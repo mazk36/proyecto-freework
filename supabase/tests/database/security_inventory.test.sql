@@ -34,8 +34,8 @@ select is(
   (select coalesce(string_agg(p.proname, ', ' order by p.proname), '')
    from pg_proc p
    where p.pronamespace = 'public'::regnamespace and pg_catalog.has_function_privilege('anon', p.oid, 'EXECUTE')
-     and p.proname not in ('get_public_counters', 'is_allowed_profile_image')),
-  '', 'anon solo ejecuta get_public_counters e is_allowed_profile_image');
+     and p.proname <> 'get_public_counters'),
+  '', 'anon solo ejecuta get_public_counters');
 
 select is(
   (select coalesce(string_agg(table_name || '.' || privilege_type, ', ' order by table_name, privilege_type), '')
