@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccountStatusContext, SuspensionNotice, type AccountStatus } from "@/components/app/account-status";
 import { isAdmin as checkIsAdmin } from "@/lib/admin-service";
+import { ProblemServiceError } from "@/lib/problem-service";
 import { getMyAccountStatus } from "@/lib/company-verification-service";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
@@ -85,7 +86,10 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
       const current = ++request;
       void unreadTotal().then((total) => {
         if (active && current === request) setUnreadCount(total);
-      }).catch(() => console.error("No se pudo actualizar el contador de mensajes."));
+      }).catch((error: unknown) => {
+        // The session can end (sign-out in another tab, expiry) between two polls; that is not worth a console error.
+        if (!(error instanceof ProblemServiceError && /sesión/i.test(error.message))) console.error("No se pudo actualizar el contador de mensajes.");
+      });
     };
     const scheduleRefresh = () => {
       window.clearTimeout(debounce);
