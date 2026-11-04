@@ -9,7 +9,7 @@ export type RegisteredProfile = {
 
 export async function getRegisteredProfile(user: SupabaseUser): Promise<RegisteredProfile> {
   const client = await loadSupabaseClient();
-  if (!client) throw new Error("La conexión con Supabase no está configurada.");
+  if (!client) throw new Error("No pudimos conectar con MatchWork. Inténtalo de nuevo más tarde.");
 
   const { data, error } = await client
     .from("app_users")
@@ -18,7 +18,7 @@ export async function getRegisteredProfile(user: SupabaseUser): Promise<Register
     .maybeSingle();
 
   if (error || !data) {
-    throw new Error("No pudimos cargar los permisos de tu cuenta. Revisa la configuración de Supabase.");
+    throw new Error("No pudimos cargar los permisos de tu cuenta. Inténtalo de nuevo más tarde.");
   }
   return { id: data.id, fullName: data.full_name, role: data.role };
 }

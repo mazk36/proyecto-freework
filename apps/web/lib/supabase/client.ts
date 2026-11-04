@@ -6,8 +6,9 @@ import type { Database } from "@/types/database";
 let browserClient: SupabaseClient<Database> | null = null;
 let loading: Promise<SupabaseClient<Database> | null> | null = null;
 
+// Mensaje para personas usuarias; la causa (faltan NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) se explica en infra/vps/README.md.
 export const SUPABASE_CONFIGURATION_MESSAGE =
-  "Falta conectar MatchWork con el proyecto Supabase. Configura NEXT_PUBLIC_SUPABASE_URL y NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY para habilitar cuentas y publicaciones.";
+  "No pudimos conectar con MatchWork. Inténtalo de nuevo más tarde.";
 
 function readConfiguration(): { url: string; key: string } | null {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();

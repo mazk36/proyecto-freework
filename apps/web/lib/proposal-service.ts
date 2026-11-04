@@ -23,7 +23,7 @@ export async function withdrawProposal(id: string): Promise<string> {
 
 export async function listMyProposals(): Promise<Proposal[]> {
   const client = await loadSupabaseClient();
-  if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
+  if (!client) throw new ProblemServiceError("No pudimos conectar con MatchWork. Inténtalo de nuevo más tarde.");
   const { data: authData, error: authError } = await client.auth.getUser();
   if (authError) throw new ProblemServiceError(toFriendlyError(authError.message));
   if (!authData.user) throw new ProblemServiceError("Inicia sesión para continuar.");

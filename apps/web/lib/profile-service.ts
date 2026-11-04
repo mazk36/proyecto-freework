@@ -52,7 +52,7 @@ type SupabaseError = { code?: string; message?: string; hint?: string | null };
 
 async function getClient() {
   const client = await loadSupabaseClient();
-  if (!client) throw new Error("Supabase no está configurado. Revisa las variables de la aplicación.");
+  if (!client) throw new Error("No pudimos conectar con MatchWork. Inténtalo de nuevo más tarde.");
   return client;
 }
 
