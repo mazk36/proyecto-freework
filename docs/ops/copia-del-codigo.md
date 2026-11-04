@@ -1,6 +1,9 @@
 # Copia de seguridad del código
 
-Todo el trabajo reciente vive en ramas locales que no están en GitHub. Una copia completa del repositorio (todas las ramas y etiquetas) se guarda con `git bundle`, un único archivo que contiene todo el historial.
+El código tiene dos copias:
+
+1. **GitHub (`mazk36/proyecto-freework`, repositorio público).** Desde el 2026-11-04 se suben allí las ramas de trabajo al cerrar cada bloque. Como el repositorio es público, antes de subir se escanea el contenido (claves privadas, tokens, JWT, archivos `.env`, bundles y archivos grandes). Nunca se hace `push` a `chore/project-scaffold` (dispara el despliegue del sitio actual en GitHub Pages), ni `force-push`, ni se tocan los workflows; `main` queda como está.
+2. **Bundle local.** Una copia completa del repositorio (todas las ramas y etiquetas) con `git bundle`, un único archivo con todo el historial. Es la copia que no depende de GitHub.
 
 ## Crear la copia
 
@@ -27,7 +30,7 @@ git checkout -b feat/journey-qa origin/feat/journey-qa
 
 Para recuperar todas las ramas como locales: `for b in $(git branch -r | grep -v HEAD | sed 's#origin/##'); do git branch --track "$b" "origin/$b" 2>/dev/null; done`.
 
-Para volver a conectarlo con GitHub: `git remote set-url origin <url del repositorio>` y, solo cuando se decida publicar, `git push`.
+Para volver a conectarlo con GitHub: `git remote set-url origin <url del repositorio>` y sigue las reglas de arriba para subir.
 
 ## Qué no incluye
 
