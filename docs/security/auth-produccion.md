@@ -12,6 +12,7 @@ Los valores locales de `supabase/config.toml` son de desarrollo. En producción 
 | `GOTRUE_RATE_LIMIT_EMAIL_SENT` | p. ej. `10`/hora | Limita correos de recuperación y confirmación. |
 | `GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED` | `true` | Rotación de tokens. |
 | `GOTRUE_JWT_EXP` | `3600` | Vida corta del token de acceso. |
+| `GOTRUE_SECURITY_UPDATE_PASSWORD_REQUIRE_REAUTHENTICATION` | `true` | Cambiar la contraseña con una sesión de más de 24 h exige un código enviado al correo (la web lo pide en Perfil → Contraseña). Hay que cargar también `GOTRUE_MAILER_TEMPLATES_REAUTHENTICATION` y `GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION` con `supabase/templates/reauthentication.html`. |
 | `GOTRUE_EXTERNAL_GOOGLE_*` | solo si se mantiene el botón de Google | Redirección autorizada solo al dominio final. |
 
 El frontend ya valida `next` con `safeAppDestination` (solo rutas `/app/...`, sin `//` ni `\`), de modo que no hay redirección abierta desde el inicio de sesión.

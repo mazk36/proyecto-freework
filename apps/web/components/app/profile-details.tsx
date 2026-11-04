@@ -5,6 +5,7 @@ import { CompanyVerificationCard } from "@/components/app/company-verification-c
 import { useAuth } from "@/components/auth/auth-provider";
 import { CompanyProfileForm } from "@/components/app/company-profile-form";
 import { CompanyProfilePublications } from "@/components/app/company-profile-publications";
+import { ChangePasswordSection } from "@/components/app/change-password-section";
 import { FreelancerProfileForm } from "@/components/app/freelancer-profile-form";
 
 export function ProfileDetails() {
@@ -12,7 +13,7 @@ export function ProfileDetails() {
   const [profileVersion, setProfileVersion] = useState(0);
   if (!user) return null;
 
-  if (user.role === "freelancer") return <FreelancerProfileForm userId={user.id} />;
+  if (user.role === "freelancer") return <><FreelancerProfileForm userId={user.id} /><div className="mx-auto w-full max-w-5xl px-5 pb-12 sm:px-8"><ChangePasswordSection /></div></>;
 
   return (
     <section aria-labelledby="profile-title" className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12">
@@ -36,6 +37,7 @@ export function ProfileDetails() {
       <CompanyVerificationCard refreshKey={profileVersion} />
       <CompanyProfileForm onProfileSaved={() => setProfileVersion((value) => value + 1)} userId={user.id} />
       <CompanyProfilePublications />
+      <ChangePasswordSection />
     </section>
   );
 }

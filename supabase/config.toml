@@ -26,6 +26,8 @@ refresh_token_reuse_interval = 10
 # En producción debe estar ACTIVA (ver docs/security/auth-produccion.md).
 enable_signup = true
 double_confirm_changes = true
+# Cambiar la contraseña exige un código enviado al correo (GOTRUE_SECURITY_UPDATE_PASSWORD_REQUIRE_REAUTHENTICATION).
+secure_password_change = true
 # GoTrue exige este intervalo entre envíos a un mismo usuario; coincide con el cooldown de 60 s de la web.
 max_frequency = "1m0s"
 enable_confirmations = false
@@ -33,6 +35,10 @@ enable_confirmations = false
 [auth.email.template.confirmation]
 subject = "Confirma tu cuenta en Matchwork"
 content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.reauthentication]
+subject = "Tu código de seguridad de Matchwork"
+content_path = "./supabase/templates/reauthentication.html"
 
 [auth.email.template.recovery]
 subject = "Crea una contraseña nueva en Matchwork"
