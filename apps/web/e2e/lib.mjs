@@ -33,7 +33,7 @@ export async function launch() {
 }
 
 export async function newPlayer(browser, label, options = {}) {
-  const context = await browser.newContext({ baseURL: BASE_URL, locale: "es-PE", ...options });
+  const context = await browser.newContext({ baseURL: BASE_URL, locale: "es-PE", ignoreHTTPSErrors: process.env.E2E_IGNORE_HTTPS === "1", ...options });
   const page = await context.newPage();
   const problems = [];
   page.on("response", (response) => { if (response.status() === 401) problems.push(`[${label}] HTTP 401 ${response.request().method()} ${response.url().replace(/^https?:\/\/[^/]+/, "").slice(0, 80)}`); });

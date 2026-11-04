@@ -4,7 +4,7 @@ Sirve el export estático de `apps/web` con Caddy 2.11.7. No hay despliegue: tod
 
 ## Levantar
 
-Desde la raíz del repo:
+Desde la raíz del repo (las variables `NEXT_PUBLIC_*` deben estar exportadas al construir; sin ellas la web se compila sin Supabase):
 
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:55421 \

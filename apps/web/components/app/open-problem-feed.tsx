@@ -47,9 +47,9 @@ export function OpenProblemFeed() {
         <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">Problemas disponibles</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">Conoce el contexto del negocio y explora necesidades reales que buscan resolver.</p>
       </header>
-      <section aria-label="Problemas publicados" className="mt-7 grid gap-4 lg:grid-cols-2">
+      <section aria-label="Problemas publicados" className="mt-7 grid grid-cols-1 gap-4 lg:grid-cols-2">
         {problems.map((problem) => (
-          <article className="rounded-2xl border border-border bg-surface p-5 sm:p-6" key={problem.id}>
+          <article className="min-w-0 rounded-2xl border border-border bg-surface p-5 sm:p-6" key={problem.id}>
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-xs font-medium text-muted-foreground">{problem.industrySnapshot || "Sector empresarial"}{problem.companyName ? ` · ${problem.companyName}` : " · Empresa reservada"}</p>
               <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Abierto</span>
