@@ -1,5 +1,5 @@
 // Accessibility / responsive sweep over every real screen and its states. Called by journey.mjs with live users.
-import { auditDialog, auditReducedMotion, auditScreen, notes } from "./a11y-lib.mjs";
+import { auditDialog, auditFocusOrder, auditReducedMotion, auditScreen, notes } from "./a11y-lib.mjs";
 import { forgetNetworkErrors, newPlayer, register, sleep, sql, stamp } from "./lib.mjs";
 
 export async function runSweep({ browser, desktop, companyA, freelancer, adminP, matchId, problemId }) {
@@ -20,9 +20,19 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
   forgetNetworkErrors(visitor, consoleBefore404); // the browser logs the intended HTTP 404
   await visitor.page.goto("/");
   await auditReducedMotion(visitor, "landing");
+  for (const [url, name] of [["/", "landing"], ["/registro/", "registro"], ["/iniciar-sesion/", "iniciar sesión"]]) {
+    await visitor.page.goto(url);
+    await sleep(800);
+    await auditFocusOrder(visitor, `público · ${name}`);
+  }
 
   // --- Empresa verificada ---
   for (const [url, name] of [["/app/", "inicio"], ["/app/perfil/", "perfil + verificación (verificada)"], ["/app/problemas/", "mis problemas"], [`/app/problemas/detalle/?id=${problemId}`, "detalle del problema"], ["/app/explorar/", "explorar"], ["/app/likes/", "likes"], ["/app/matches/", "matches"], ["/app/guardados/", "guardados"], ["/app/propuestas/", "bandeja (sin problema elegido)"], [`/app/chats/?match=${matchId}`, "chat"], ["/app/chats/", "chats (lista)"]]) await visit(companyA, url, `empresa · ${name}`);
+  for (const [url, name] of [["/app/", "inicio"], ["/app/perfil/", "perfil"], ["/app/propuestas/", "bandeja"]]) {
+    await companyA.page.goto(url);
+    await sleep(1200);
+    await auditFocusOrder(companyA, `empresa · ${name}`);
+  }
   // Bandeja con un problema elegido, ficha completa y comparación.
   await companyA.page.goto("/app/propuestas/");
   const select = companyA.page.getByLabel("Problema");
@@ -73,6 +83,9 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
   await freelancer.page.goto("/app/descubrir/");
   await freelancer.page.waitForLoadState("networkidle").catch(() => {});
   await auditScreen(freelancer, "freelancer · feed (mazo)");
+  await freelancer.page.setViewportSize({ width: 1280, height: 800 });
+  await auditFocusOrder(freelancer, "freelancer · feed (escritorio)");
+  await freelancer.page.setViewportSize({ width: 390, height: 844 });
   const moreButton = freelancer.page.getByRole("button", { name: /Ver más/ }).first();
   await auditDialog(freelancer, "detalle del problema en el mazo", () => moreButton.click(), moreButton);
   const proposeButton = freelancer.page.getByRole("button", { name: /Proponer ahora/ }).first();
@@ -97,6 +110,8 @@ export async function runSweep({ browser, desktop, companyA, freelancer, adminP,
   // --- Admin ---
   for (const [tab, name] of [["empresas", "empresas"], ["usuarios", "usuarios"], ["problemas", "problemas"], ["ajustes", "ajustes"]]) await visit(adminP, `/app/admin/?tab=${tab}`, `admin · ${name}`);
   await adminP.page.goto("/app/admin/?tab=empresas");
+  await sleep(1500);
+  await auditFocusOrder(adminP, "admin · empresas");
   await adminP.page.getByRole("row", { name: new RegExp(newName) }).waitFor({ timeout: 15_000 });
   const rejectButton = adminP.page.getByRole("row", { name: new RegExp(newName) }).getByRole("button", { name: /Rechazar/ });
   await auditDialog(adminP, "rechazar solicitud (admin)", () => rejectButton.click(), rejectButton);

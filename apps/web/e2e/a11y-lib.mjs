@@ -121,3 +121,37 @@ export async function auditReducedMotion(player, name) {
   await page.emulateMedia({ reducedMotion: "no-preference" });
   check(`MOVIMIENTO REDUCIDO ${name}`, moving.length === 0, moving.slice(0, 4).join(", "));
 }
+
+/** Keyboard pass: every Tab stop is visible, has a visible focus style and follows document order (no positive tabindex). */
+export async function auditFocusOrder(player, name, stops = 28) {
+  const { page } = player;
+  await page.evaluate(() => { document.activeElement?.blur?.(); document.querySelectorAll("[data-e2e-first]").forEach((node) => node.removeAttribute("data-e2e-first")); window.scrollTo(0, 0); });
+  const problems = [];
+  let previous = null;
+  for (let i = 0; i < stops; i += 1) {
+    await page.keyboard.press("Tab");
+    const info = await page.evaluate((prev) => {
+      const element = document.activeElement;
+      if (!element || element === document.body) return { body: true };
+      const style = getComputedStyle(element);
+      const box = element.getBoundingClientRect();
+      const outline = parseFloat(style.outlineWidth) > 0 && style.outlineStyle !== "none";
+      const ring = style.boxShadow !== "none" && style.boxShadow !== "";
+      const marker = "e2e-prev";
+      if (element.hasAttribute("data-e2e-first")) return { body: true }; // the cycle closed: focus is back at the first stop
+      if (!prev) element.setAttribute("data-e2e-first", "1");
+      const before = prev ? document.querySelector(`[data-${marker}]`) : null;
+      const inOrder = !before || Boolean(before.compareDocumentPosition(element) & Node.DOCUMENT_POSITION_FOLLOWING) || element.closest("[role=dialog]") !== null;
+      document.querySelectorAll(`[data-${marker}]`).forEach((node) => node.removeAttribute(`data-${marker}`));
+      element.setAttribute(`data-${marker}`, "1");
+      return { label: `${element.tagName.toLowerCase()}${element.getAttribute("aria-label") ? `[${element.getAttribute("aria-label")}]` : ""} «${(element.textContent ?? "").trim().slice(0, 18)}»`, visible: box.width > 0 && box.height > 0, focusStyle: outline || ring, positiveTabindex: element.tabIndex > 0, inOrder };
+    }, previous !== null);
+    if (info.body) break; // reached the end of the page and wrapped to the browser UI
+    if (!info.visible) problems.push(`parada de foco invisible: ${info.label}`);
+    if (!info.focusStyle) problems.push(`sin indicador de foco: ${info.label}`);
+    if (info.positiveTabindex) problems.push(`tabindex positivo: ${info.label}`);
+    if (!info.inOrder) problems.push(`orden de tabulación fuera del orden del documento: ${info.label}`);
+    previous = info.label;
+  }
+  check(`TECLADO ${name}`, problems.length === 0, [...new Set(problems)].slice(0, 5).join(" || "));
+}

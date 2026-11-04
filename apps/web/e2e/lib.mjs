@@ -36,6 +36,7 @@ export async function newPlayer(browser, label, options = {}) {
   const context = await browser.newContext({ baseURL: BASE_URL, locale: "es-PE", ...options });
   const page = await context.newPage();
   const problems = [];
+  page.on("response", (response) => { if (response.status() === 401) problems.push(`[${label}] HTTP 401 ${response.request().method()} ${response.url().replace(/^https?:\/\/[^/]+/, "").slice(0, 80)}`); });
   page.on("pageerror", (error) => problems.push(`[${label}] pageerror: ${String(error).slice(0, 200)}`));
   page.on("console", (message) => {
     if (["error", "warning"].includes(message.type())) problems.push(`[${label}] console.${message.type()}: ${message.text().slice(0, 200)}`);
@@ -45,7 +46,7 @@ export async function newPlayer(browser, label, options = {}) {
 
 /** Drops browser-logged network failures that are the intended effect of a step (sign-out, quota, offline). */
 export function forgetNetworkErrors(player, sinceIndex) {
-  const kept = player.problems.slice(sinceIndex).filter((line) => !/Failed to load resource|No se pudo actualizar el contador/.test(line));
+  const kept = player.problems.slice(sinceIndex).filter((line) => !/Failed to load resource|HTTP 401|No se pudo actualizar el contador/.test(line));
   player.problems.splice(sinceIndex, player.problems.length, ...kept);
 }
 

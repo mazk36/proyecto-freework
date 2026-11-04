@@ -286,6 +286,7 @@ try {
   const consoleBeforeLogout = companyA.problems.length;
   await logout(companyA);
   await companyA.page.waitForURL(/iniciar-sesion|\/$/, { timeout: 15_000 }).catch(() => {});
+  await sleep(2500); // let in-flight polls finish and fail
   forgetNetworkErrors(companyA, consoleBeforeLogout); // in-flight requests rejected with 401 right after sign-out are expected
   check("10.1 cerrar sesión borra la sesión y saca de la app", /iniciar-sesion|\/$/.test(companyA.page.url()));
   await login(companyA);
