@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { MatchWorkLogo } from "@/components/brand/matchwork-logo";
+import { LandingReveal } from "@/components/landing/landing-motion";
 
 type FeatureMediaPanelProps = {
   title: string;
@@ -211,7 +212,7 @@ function FeatureMediaPanel({
           {href ? (
             <Link
               aria-label={`Encuentra tu Match: ${title}`}
-              className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground transition-colors hover:border-brand-lavender hover:text-brand-lavender focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+              className="mt-0.5 inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface-raised text-foreground transition-colors hover:border-brand-lavender hover:text-brand-lavender focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
               href={href}
             >
               <ArrowUpRight aria-hidden="true" className="size-5" />
@@ -268,44 +269,52 @@ export function LandingEditorialSections() {
     <>
       <section aria-labelledby="retos-negocio-title" className="py-20 sm:py-28 lg:py-32">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="mb-8 max-w-2xl sm:mb-10">
-            <h2 className="text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="retos-negocio-title">
-              Encuentra <span className="text-brand-purple">soluciones</span> para los{" "}
-              <span className="text-brand-lavender">retos de tu negocio</span>
-            </h2>
-          </div>
-          <div className="grid items-stretch gap-5 lg:grid-cols-2 lg:gap-3">
-            <FeatureMediaPanel
-              mediaOnly
-              themeVariant="night"
-              title="Del problema a una solución que hace Match"
-            />
-            <CategoryImageGrid categories={businessCategories} />
-          </div>
+          <LandingReveal>
+            <div className="mb-8 max-w-2xl sm:mb-10">
+              <h2 className="text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="retos-negocio-title">
+                Encuentra <span className="text-brand-purple">soluciones</span> para los{" "}
+                <span className="text-brand-lavender">retos de tu negocio</span>
+              </h2>
+            </div>
+          </LandingReveal>
+          <LandingReveal delay={0.075}>
+            <div className="grid items-stretch gap-5 lg:grid-cols-2 lg:gap-3">
+              <FeatureMediaPanel
+                mediaOnly
+                themeVariant="night"
+                title="Del problema a una solución que hace Match"
+              />
+              <CategoryImageGrid categories={businessCategories} />
+            </div>
+          </LandingReveal>
         </div>
       </section>
 
       <section aria-labelledby="proyectos-especializados-title" className="border-y border-border bg-surface/70 py-20 sm:py-28 lg:py-32">
         <div className="mx-auto max-w-6xl px-5 sm:px-8">
-          <div className="mb-8 max-w-2xl sm:mb-10">
-            <h2 className="text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="proyectos-especializados-title">
-              También para <span className="text-brand-lavender">proyectos especializados</span>
-            </h2>
-          </div>
-          <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-10">
-            <FeatureMediaPanel
-              align="right"
-              className="lg:col-start-2 lg:row-start-1"
-              description="Encuentra el talento ideal y convierte una necesidad especializada en un nuevo Match."
-              href="/registro"
-              themeVariant="violet"
-              title="Haz Match con talento especializado"
-              titleHighlight="Match"
-            />
-            <div className="lg:col-start-1 lg:row-start-1">
-              <CategoryImageGrid categories={specializedCategories} />
+          <LandingReveal>
+            <div className="mb-8 max-w-2xl sm:mb-10">
+              <h2 className="text-balance font-display text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl lg:text-5xl" id="proyectos-especializados-title">
+                También para <span className="text-brand-lavender">proyectos especializados</span>
+              </h2>
             </div>
-          </div>
+          </LandingReveal>
+          <LandingReveal delay={0.075}>
+            <div className="grid items-stretch gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-10">
+              <FeatureMediaPanel
+                align="right"
+                className="lg:col-start-2 lg:row-start-1"
+                description="Encuentra el talento ideal y convierte una necesidad especializada en un nuevo Match."
+                href="/registro"
+                themeVariant="violet"
+                title="Haz Match con talento especializado"
+                titleHighlight="Match"
+              />
+              <div className="lg:col-start-1 lg:row-start-1">
+                <CategoryImageGrid categories={specializedCategories} />
+              </div>
+            </div>
+          </LandingReveal>
         </div>
       </section>
     </>

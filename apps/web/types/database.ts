@@ -455,6 +455,10 @@ export type Database = {
     };
     Views: Record<string, never>;
     Functions: {
+      get_public_counters: {
+        Args: Record<string, never>;
+        Returns: { open_problems: number; companies_published: number; freelancers_active: number; proposals_submitted: number }[];
+      };
       ensure_my_profile: { Args: Record<string, never>; Returns: Json };
       save_my_profile: { Args: { p_profile: Json }; Returns: Json };
       get_company_profile: { Args: Record<string, never>; Returns: Json };

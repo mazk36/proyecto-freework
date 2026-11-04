@@ -7,7 +7,7 @@ export function PublicFooter() {
         <MatchWorkLogoLockup variant="reversed" />
         <span className="text-muted-foreground">
           Problemas, <span className="text-brand-lavender">propuestas</span> y el{" "}
-          <span className="font-medium text-brand-purple">Match correcto.</span>
+          <span className="font-medium text-brand-lavender">Match correcto.</span>
         </span>
       </div>
     </footer>

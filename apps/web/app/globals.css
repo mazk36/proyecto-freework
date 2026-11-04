@@ -128,6 +128,24 @@ body:has(.private-app-shell) {
   color: var(--brand-white);
 }
 
+html:has(.public-landing) {
+  --scrollbar-thumb: #9eacbc;
+  --scrollbar-thumb-hover: #d8c4ff;
+}
+
+@keyframes live-pulse {
+  50% { opacity: 0.45; }
+}
+
+.live-indicator {
+  animation: live-pulse 2s ease-in-out infinite;
+}
+
+.landing-reveal:focus-within {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 h1,
 h2,
 h3 {
@@ -420,6 +438,7 @@ html:has(.proposals-preview) {
 
 @supports (scrollbar-color: auto) {
   .ui-scrollbar,
+  html:has(.public-landing),
   html:has(.ui-kit),
   html:has(.freelancer-likes),
   html:has(.company-inbox),
@@ -430,6 +449,7 @@ html:has(.proposals-preview) {
   }
 
   .ui-scrollbar:hover,
+  html:has(.public-landing):hover,
   html:has(.ui-kit):hover,
   html:has(.freelancer-likes):hover,
   html:has(.company-inbox):hover,
@@ -441,6 +461,7 @@ html:has(.proposals-preview) {
 
 @supports not (scrollbar-color: auto) {
   .ui-scrollbar::-webkit-scrollbar,
+  html:has(.public-landing)::-webkit-scrollbar,
   html:has(.ui-kit)::-webkit-scrollbar,
   html:has(.freelancer-likes)::-webkit-scrollbar,
   html:has(.company-inbox)::-webkit-scrollbar,
@@ -451,6 +472,7 @@ html:has(.proposals-preview) {
   }
 
   .ui-scrollbar::-webkit-scrollbar-thumb,
+  html:has(.public-landing)::-webkit-scrollbar-thumb,
   html:has(.ui-kit)::-webkit-scrollbar-thumb,
   html:has(.freelancer-likes)::-webkit-scrollbar-thumb,
   html:has(.company-inbox)::-webkit-scrollbar-thumb,
@@ -462,6 +484,7 @@ html:has(.proposals-preview) {
   }
 
   .ui-scrollbar::-webkit-scrollbar-thumb:hover,
+  html:has(.public-landing)::-webkit-scrollbar-thumb:hover,
   html:has(.ui-kit)::-webkit-scrollbar-thumb:hover,
   html:has(.freelancer-likes)::-webkit-scrollbar-thumb:hover,
   html:has(.company-inbox)::-webkit-scrollbar-thumb:hover,
@@ -535,6 +558,7 @@ html:has(.proposals-preview) {
 
 @media (forced-colors: active) {
   .ui-scrollbar,
+  html:has(.public-landing),
   html:has(.ui-kit),
   html:has(.freelancer-likes),
   html:has(.company-inbox),

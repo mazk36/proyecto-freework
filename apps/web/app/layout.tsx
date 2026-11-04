@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { AuthBoundary } from "@/components/auth/auth-boundary";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { ToastProvider } from "@/components/ui/toast";
+import { publicPageMetadata, siteBaseUrl } from "@/lib/site-metadata";
 import "./globals.css";
 
 const bodyFont = Inter({
@@ -25,9 +26,12 @@ const monoFont = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MatchWork",
-  description:
-    "Publica un problema, encuentra propuestas de talento y haz Match con quien puede resolverlo.",
+  metadataBase: siteBaseUrl,
+  ...publicPageMetadata(
+    "MatchWork | Problemas que encuentran solución",
+    "Publica un problema, descubre propuestas de profesionales y haz Match para continuar la conversación.",
+    "",
+  ),
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
