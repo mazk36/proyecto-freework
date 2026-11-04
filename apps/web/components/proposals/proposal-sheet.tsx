@@ -50,6 +50,8 @@ export function ProposalSheet({
     error: "Hay cambios que aún no se han guardado.",
   }[state.saveStatus];
 
+  const anyOverLimit = proposalTextLimits.some(([name, limit]) => Array.from(state.draft[name]).length > limit);
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (await submit() === "invalid") {
@@ -63,13 +65,14 @@ export function ProposalSheet({
     const length = Array.from(value).length;
     const limit = proposalTextLimits.find(([name]) => name === field.field)?.[1] ?? 0;
     const showCounter = length >= limit * 0.9;
-    const error = state.fieldErrors[field.field];
+    const overLimit = length > limit;
+    const error = overLimit ? proposalTextLimits.find(([name]) => name === field.field)?.[2] : state.fieldErrors[field.field];
     const describedBy = [`${controlId}-hint`, showCounter ? `${controlId}-count` : "", error ? `${controlId}-error` : ""].filter(Boolean).join(" ");
     return <div key={field.field}>
       <label className="block text-sm font-semibold" htmlFor={controlId}>{field.label} <span className="font-normal text-muted-foreground">{field.required ? "· Obligatorio" : "· Opcional"}</span></label>
       <p className="mt-1 text-sm leading-5 text-muted-foreground" id={`${controlId}-hint`}>{field.hint}</p>
       <textarea aria-describedby={describedBy} aria-invalid={Boolean(error)} aria-required={field.required || undefined} className={inputClass} id={controlId} onChange={(event) => dispatch({ type: "edit-text", field: field.field, value: event.target.value })} rows={field.rows} value={value} />
-      {showCounter ? <p className="mt-1 text-right text-xs text-muted-foreground" id={`${controlId}-count`}>{length} / {limit} caracteres</p> : null}
+      {showCounter ? <p className={`mt-1 text-right text-xs ${overLimit ? "font-semibold text-danger" : "text-muted-foreground"}`} id={`${controlId}-count`}>{length} / {limit} caracteres</p> : null}
       {error ? <p className="mt-2 text-sm leading-5 text-danger" id={`${controlId}-error`}>{error}</p> : null}
     </div>;
   }
@@ -101,7 +104,7 @@ export function ProposalSheet({
         {state.saveStatus === "error" && state.revision > state.savedRevision ? <div className="mt-3">
           {confirmDiscard ? <div aria-label="Confirmar cierre sin guardar" className="rounded-xl border border-warning/40 bg-warning-soft p-4" role="group"><p className="text-sm leading-6 text-warning">Si cierras ahora, perderás los cambios que aún no se guardaron.</p><div className="mt-3 flex flex-wrap gap-2"><Button disabled={Boolean(busy)} id={`${id}-cancel-discard`} onClick={() => setConfirmDiscard(false)} variant="outline">Seguir editando</Button><Button disabled={Boolean(busy)} onClick={onClose} variant="outline">Sí, cerrar sin guardar</Button></div></div> : <Button disabled={Boolean(busy)} onClick={() => setConfirmDiscard(true)} variant="quiet">Cerrar sin guardar cambios</Button>}
         </div> : null}
-        <div className="mt-4 grid gap-3"><Button disabled={!canWrite || Boolean(busy)} type="submit">Enviar propuesta <Send aria-hidden="true" className="size-4" /></Button><Button disabled={!canWrite || Boolean(busy)} onClick={() => { void saveAndClose(); }} variant="outline"><FilePenLine aria-hidden="true" className="size-4" />Guardar borrador para después</Button></div>
+        <div className="mt-4 grid gap-3"><Button disabled={!canWrite || Boolean(busy) || anyOverLimit} type="submit">Enviar propuesta <Send aria-hidden="true" className="size-4" /></Button><Button disabled={!canWrite || Boolean(busy)} onClick={() => { void saveAndClose(); }} variant="outline"><FilePenLine aria-hidden="true" className="size-4" />Guardar borrador para después</Button></div>
       </div>
     </form> : null}
   </BottomSheet></MotionConfig>;

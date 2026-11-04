@@ -166,6 +166,8 @@ try {
   const typed = (await diagnosis.inputValue()).length;
   const tooLong = await sheet.getByText(/no pueden superar|no puede superar|5000/).count();
   check("5.2 el límite de 5000 caracteres se aplica (campo recortado o error visible)", typed <= 5000 || tooLong > 0, `largo=${typed}, avisos=${tooLong}`);
+  check("5.2b con más de 5000 caracteres «Enviar propuesta» queda desactivado y el contador avisa", await sheet.getByRole("button", { name: /Enviar propuesta/ }).isDisabled() && (await sheet.getByText(/5001 \/ 5000 caracteres/).count()) === 1);
+  check("5.2c la base impone el límite de 5000 caracteres (restricciones diagnóstico, solución y entregables)", sql(`select count(*) from pg_constraint where conrelid = 'public.proposals'::regclass and conname in ('proposals_diagnosis_length_check','proposals_solution_length_check','proposals_deliverables_length_check')`) === "3");
   await diagnosis.fill("Entiendo que el equipo pierde visibilidad del seguimiento entre varios canales de atención.");
   await sheet.getByLabel(/^Solución propuesta/).fill("Centralizar las solicitudes en una bandeja compartida con estados claros.");
   await sheet.getByLabel(/^Entregables/).fill("Mapa del proceso, bandeja compartida y guía de uso.");
