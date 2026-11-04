@@ -243,7 +243,7 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
       <div aria-live="polite" className="min-w-0"><p className="flex items-center gap-2 text-sm font-semibold"><Columns3 aria-hidden="true" className="size-4 text-brand-lavender" />Comparar ({selected.length}/3)</p>{!availability.canOpen ? <p className="mt-1 text-xs text-muted-foreground">Elige al menos 2 propuestas.</p> : null}</div>
       <Button disabled={!availability.canOpen} onClick={() => setComparing(true)}>Ver comparación</Button>
     </div> : null}
-    <BottomSheet description="Todos los detalles enviados por el profesional." onClose={() => setDetail(null)} open={Boolean(detail)} title="Propuesta completa">{detail ? <ProposalFullContent proposal={detail} /> : null}</BottomSheet>
+    <BottomSheet description="Todos los detalles enviados por el freelancer." onClose={() => setDetail(null)} open={Boolean(detail)} title="Propuesta completa">{detail ? <ProposalFullContent proposal={detail} /> : null}</BottomSheet>
     {matchId ? <MatchCelebration matchId={matchId} onClose={() => setMatchId(null)} /> : null}
   </div>;
 }

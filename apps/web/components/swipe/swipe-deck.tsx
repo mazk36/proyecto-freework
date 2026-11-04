@@ -46,7 +46,7 @@ export function SwipeDeck() {
   }, [attempt, role, userId]);
 
   if (!user) return null;
-  if (user.role !== "freelancer") return <DeckShell><EmptyState description="Este espacio está disponible para profesionales independientes." icon={Sparkles} title="Descubre problemas" /></DeckShell>;
+  if (user.role !== "freelancer") return <DeckShell><EmptyState description="Este espacio está disponible para cuentas de freelancer." icon={Sparkles} title="Descubre problemas" /></DeckShell>;
   if (data.status === "loading" || data.userId !== user.id) return <DeckShell><DeckLoading /></DeckShell>;
   if (data.status === "error") return <DeckShell><DeckHeading /><div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface"><EmptyState action={<Button onClick={() => { setData({ status: "loading" }); setAttempt((value) => value + 1); }}>Reintentar</Button>} description={data.message} icon={RotateCcw} title="No pudimos cargar los problemas" tone="warning" /></div></DeckShell>;
   return <DeckExperience initialInteractions={data.interactions} problems={data.problems} saveInteraction={setProblemInteraction} />;

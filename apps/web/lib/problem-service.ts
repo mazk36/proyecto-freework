@@ -147,7 +147,7 @@ export async function callRpc<Name extends keyof import("@/types/database").Data
   args: import("@/types/database").Database["public"]["Functions"][Name]["Args"],
 ): Promise<import("@/types/database").Database["public"]["Functions"][Name]["Returns"]> {
   const client = await loadSupabaseClient();
-  if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
+  if (!client) throw new ProblemServiceError("No pudimos conectar con MatchWork. Inténtalo de nuevo más tarde.");
   const { data, error } = await client.rpc(name, args);
   if (error) throw new ProblemServiceError(toFriendlyError(error.message, error.hint), toErrorCode(error.message));
   return data as import("@/types/database").Database["public"]["Functions"][Name]["Returns"];
@@ -294,7 +294,7 @@ export function toFriendlyError(message: string, hint?: string | null): string {
   if (/cannot suspend an admin/i.test(message)) return "No puedes suspender una cuenta de administración.";
   if (/verification undo expired/i.test(message)) return "Ya no se puede deshacer esta verificación.";
   if (/not authenticated/i.test(message)) return "Inicia sesión para continuar.";
-  if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
+  if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de freelancer.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
   if (/account required/i.test(message)) return "No encontramos una cuenta de MatchWork vinculada a tu sesión.";
   if (/message rate limit|rate limit exceeded/i.test(message)) {
@@ -310,7 +310,7 @@ export function toFriendlyError(message: string, hint?: string | null): string {
   if (/invalid message page size/i.test(message)) return "La cantidad de mensajes solicitada no es válida.";
   if (/proposal not found/i.test(message)) return "No encontramos esta propuesta o ya no tienes acceso.";
   if (/proposal already matched/i.test(message)) return "Esta propuesta ya tiene un Match y no puede retirarse.";
-  if (/proposal withdrawn/i.test(message)) return "El profesional retiró esta propuesta y ya no está disponible.";
+  if (/proposal withdrawn/i.test(message)) return "El freelancer retiró esta propuesta y ya no está disponible.";
   if (/submitted proposal required/i.test(message)) return "Esta acción requiere una propuesta enviada.";
   if (/invalid proposal interaction state/i.test(message)) return "La acción seleccionada para esta propuesta no es válida.";
   if (/open or paused problem required for interaction/i.test(message)) return "Este problema debe estar abierto o pausado para revisar sus propuestas.";

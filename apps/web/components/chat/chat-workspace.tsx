@@ -108,7 +108,7 @@ export function ChatWorkspace({
         <div className="ui-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain" tabIndex={0} aria-label="Lista de conversaciones">
           {listState === "loading" ? <ConversationSkeleton /> : null}
           {listState === "error" ? <EmptyState action={<Button onClick={() => void loadConversations()} variant="outline">Reintentar</Button>} compact description={listError} icon={AlertCircle} title="No pudimos cargar tus chats" tone="warning" /> : null}
-          {listState === "ready" && conversations.length === 0 ? <EmptyState compact description="Cuando una empresa y un profesional hagan Match, podrán conversar aquí" icon={MessageCircle} title="Aún no tienes conversaciones" /> : null}
+          {listState === "ready" && conversations.length === 0 ? <EmptyState compact description="Cuando una empresa y un freelancer hagan Match, podrán conversar aquí" icon={MessageCircle} title="Aún no tienes conversaciones" /> : null}
           {listState === "ready" && conversations.length > 0 ? <ul className="divide-y divide-border/60">
             {conversations.map((conversation) => <li key={conversation.matchId}>
               <button
