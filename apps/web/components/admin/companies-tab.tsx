@@ -1,5 +1,6 @@
 "use client";
 
+import { safeExternalUrl, userLinkRel } from "@/lib/external-url";
 import { Check, Copy, ExternalLink, X } from "lucide-react";
 import { useCallback, useState } from "react";
 import type { AdminApi } from "@/components/admin/admin-api";
@@ -96,7 +97,7 @@ export function CompaniesTab({ api, filter, onFilterChange, onChanged }: { api: 
                       <td className="px-3 py-3">{row.country_code}</td>
                       <td className="px-3 py-3"><span className="inline-flex items-center gap-1.5 font-mono text-xs">{row.tax_id}<button aria-label={`Copiar identificación fiscal de ${row.company_name}`} className="grid size-11 place-items-center rounded-lg text-muted-foreground hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => copy(row.tax_id)} type="button"><Copy aria-hidden="true" className="size-4" /></button></span></td>
                       <td className="max-w-56 break-words px-3 py-3 text-muted-foreground">{contactOf(row)}</td>
-                      <td className="px-3 py-3">{row.linkedin_url ? <a className="inline-flex min-h-11 items-center gap-1 text-foreground underline underline-offset-4" href={row.linkedin_url} rel="noopener noreferrer" target="_blank">Abrir<ExternalLink aria-hidden="true" className="size-3.5" /></a> : "—"}</td>
+                      <td className="px-3 py-3">{row.linkedin_url ? <a className="inline-flex min-h-11 items-center gap-1 text-foreground underline underline-offset-4" href={safeExternalUrl(row.linkedin_url) ?? undefined} rel={userLinkRel} target="_blank">Abrir<ExternalLink aria-hidden="true" className="size-3.5" /></a> : "—"}</td>
                       <td className="whitespace-nowrap px-3 py-3 text-muted-foreground">{formatRelativeDate(row.submitted_at, now)}</td>
                       <td className="px-3 py-3"><Badge tone={statusBadge[row.status].tone}>{statusBadge[row.status].label}</Badge>{row.rejection_reason ? <p className="mt-1 max-w-48 text-xs text-muted-foreground">{row.rejection_reason}</p> : null}</td>
                       <td className="px-3 py-3">{row.status === "pending" ? <div className="flex gap-2"><Button className="whitespace-nowrap" onClick={() => void verify(row)} size="md"><Check aria-hidden="true" className="size-4" />Verificar</Button><Button className="whitespace-nowrap" onClick={() => setRejecting(row)} variant="outline"><X aria-hidden="true" className="size-4" />Rechazar</Button></div> : null}</td>
@@ -116,7 +117,7 @@ export function CompaniesTab({ api, filter, onFilterChange, onChanged }: { api: 
                     <dt className="text-muted-foreground">País</dt><dd>{row.country_code}</dd>
                     <dt className="text-muted-foreground">Identificación</dt><dd className="flex flex-wrap items-center gap-1.5 font-mono text-xs">{row.tax_id}<button aria-label={`Copiar identificación fiscal de ${row.company_name}`} className="grid size-11 place-items-center rounded-lg text-muted-foreground hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => copy(row.tax_id)} type="button"><Copy aria-hidden="true" className="size-4" /></button></dd>
                     <dt className="text-muted-foreground">Web o correo</dt><dd className="break-words">{contactOf(row)}</dd>
-                    <dt className="text-muted-foreground">LinkedIn</dt><dd>{row.linkedin_url ? <a className="inline-flex min-h-11 items-center gap-1 underline underline-offset-4" href={row.linkedin_url} rel="noopener noreferrer" target="_blank">Abrir<ExternalLink aria-hidden="true" className="size-3.5" /></a> : "—"}</dd>
+                    <dt className="text-muted-foreground">LinkedIn</dt><dd>{row.linkedin_url ? <a className="inline-flex min-h-11 items-center gap-1 underline underline-offset-4" href={safeExternalUrl(row.linkedin_url) ?? undefined} rel={userLinkRel} target="_blank">Abrir<ExternalLink aria-hidden="true" className="size-3.5" /></a> : "—"}</dd>
                     <dt className="text-muted-foreground">Enviada</dt><dd>{formatRelativeDate(row.submitted_at, now)}</dd>
                     {row.rejection_reason ? <><dt className="text-muted-foreground">Motivo</dt><dd>{row.rejection_reason}</dd></> : null}
                   </dl>

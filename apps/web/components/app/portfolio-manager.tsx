@@ -1,5 +1,6 @@
 "use client";
 
+import { safeExternalUrl, userLinkRel } from "@/lib/external-url";
 import Image from "next/image";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
@@ -283,7 +284,7 @@ export function PortfolioManager({ userId, projects, onChanged }: Props) {
                 {project.description ? <p className="mt-3 line-clamp-4 text-sm leading-6 text-muted-foreground">{project.description}</p> : null}
                 {project.skills_used.length ? <ul aria-label={`Habilidades utilizadas en ${project.title}`} className="mt-3 flex flex-wrap gap-1.5">{project.skills_used.map((skill) => <li className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground" key={skill}>{skill}</li>)}</ul> : null}
                 {project.project_period ? <p className="mt-3 text-xs text-muted-foreground">{project.project_period}</p> : null}
-                {project.external_url ? <a className="mt-3 inline-flex text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href={project.external_url} rel="noreferrer" target="_blank">Abrir enlace del proyecto</a> : null}
+                {project.external_url ? <a className="mt-3 inline-flex text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href={safeExternalUrl(project.external_url) ?? undefined} rel={userLinkRel} target="_blank">Abrir enlace del proyecto</a> : null}
                 <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-4">
                   <Button className={secondaryButtonClass} disabled={busyProjectId === project.id} onClick={() => openEditProject(project)} size="sm" variant="outline">Editar</Button>
                   <Button className={secondaryButtonClass} disabled={busyProjectId === project.id} onClick={() => void handleVisibility(project)} size="sm" variant="outline">
