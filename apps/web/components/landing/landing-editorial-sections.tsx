@@ -69,7 +69,7 @@ const specializedCategories: CategoryImageItem[] = [
   {
     title: "DISEÑO E IMPLEMENTACIÓN ROBÓTICA",
     imageSrc: `${publicBasePath}/images/categories/automatizar-procesos.webp`,
-    imageAlt: "Operario con exotraje robótico levantando maquinaria pesada en una fábrica.",
+    imageAlt: "Operario con exoesqueleto robótico levantando maquinaria pesada en una fábrica.",
     href: "/registro",
     showTitle: true,
     sizes: specializedImageSizes,
