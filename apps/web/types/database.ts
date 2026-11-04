@@ -535,6 +535,8 @@ export type Database = {
       get_my_company_problems: { Args: Record<string, never>; Returns: Json };
       get_my_company_problem: { Args: { p_problem_id: string }; Returns: Json };
       list_open_business_problems: { Args: Record<string, never>; Returns: Json };
+      list_open_problems_page: { Args: { p_limit?: number; p_before_published_at?: string | null; p_before_id?: string | null; p_exclude_interacted?: boolean }; Returns: Json };
+      list_open_problems_by_ids: { Args: { p_ids: string[] }; Returns: Json };
       save_business_problem_draft: { Args: { p_problem_id: string | null; p_data: Json }; Returns: string };
       publish_business_problem: { Args: { p_problem_id: string }; Returns: string };
       begin_business_problem_edit: { Args: { p_problem_id: string }; Returns: string };

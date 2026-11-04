@@ -2,7 +2,7 @@
 
 import { ArrowLeft, ArrowRight, ArrowUpRight, Heart, Network, RotateCcw, Sparkles, X } from "lucide-react";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useCanWrite } from "@/components/app/account-status";
 import { useAuth } from "@/components/auth/auth-provider";
 import { ProposalSheet } from "@/components/proposals/proposal-sheet";
@@ -15,7 +15,7 @@ import { selectDeckProblems } from "@/lib/deck";
 import { persistDeckInteraction, type DeckInteractionWriter } from "@/lib/deck-interactions";
 import { listMyProblemInteractions, setProblemInteraction } from "@/lib/interaction-service";
 import type { PublicProblem } from "@/lib/problem-domain";
-import { listOpenBusinessProblems, ProblemServiceError } from "@/lib/problem-service";
+import { listOpenProblemsByIds, listOpenProblemsPage, PROBLEM_PAGE_SIZE, ProblemServiceError, type ProblemPageCursor } from "@/lib/problem-service";
 import type { ProposalServices } from "@/lib/proposal-service";
 import type { FreelancerProblemInteraction } from "@/types/domain";
 import { DeckDetail } from "./deck-detail";
@@ -32,12 +32,30 @@ export function SwipeDeck() {
   const [data, setData] = useState<LoadState>({ status: "loading" });
   const userId = user?.id;
   const role = user?.role;
+  const cursor = useRef<ProblemPageCursor | null>(null);
+  const exhausted = useRef(false);
+  const loadingMore = useRef(false);
+
+  const cursorOf = (items: PublicProblem[]): ProblemPageCursor | null => {
+    const last = items.at(-1);
+    return last?.publishedAt ? { publishedAt: last.publishedAt, id: last.id } : null;
+  };
 
   useEffect(() => {
     if (!userId || role !== "freelancer") return;
     let active = true;
-    Promise.all([listOpenBusinessProblems(), listMyProblemInteractions()]).then(([problems, entries]) => {
+    cursor.current = null;
+    exhausted.current = false;
+    loadingMore.current = false;
+    // Primera página de problemas sin ver + datos de los ya decididos (para «Deshacer» y «Revisar descartados»).
+    Promise.all([listOpenProblemsPage(), listMyProblemInteractions()]).then(async ([page, entries]) => {
+      const decided = entries.filter((entry) => entry.state === "dismissed" || entry.state === "saved").slice(0, 100).map((entry) => entry.problemId);
+      const revisit = decided.length ? await listOpenProblemsByIds(decided) : [];
       if (!active) return;
+      cursor.current = cursorOf(page);
+      exhausted.current = page.length < PROBLEM_PAGE_SIZE;
+      const seen = new Set<string>();
+      const problems = [...page, ...revisit].filter((problem) => !seen.has(problem.id) && seen.add(problem.id));
       setData({ status: "ready", userId, problems, interactions: Object.fromEntries(entries.map((entry) => [entry.problemId, entry.state])) });
     }).catch((error: unknown) => {
       if (active) setData({ status: "error", userId, message: error instanceof ProblemServiceError ? error.message : "No pudimos cargar los problemas." });
@@ -45,11 +63,26 @@ export function SwipeDeck() {
     return () => { active = false; };
   }, [attempt, role, userId]);
 
+  // Se pide la página siguiente cuando quedan pocas tarjetas, sin duplicar problemas ya cargados.
+  const loadMore = useCallback(() => {
+    if (!userId || exhausted.current || loadingMore.current || !cursor.current) return;
+    loadingMore.current = true;
+    listOpenProblemsPage({ before: cursor.current }).then((page) => {
+      cursor.current = cursorOf(page) ?? cursor.current;
+      if (page.length < PROBLEM_PAGE_SIZE) exhausted.current = true;
+      setData((current) => {
+        if (current.status !== "ready" || current.userId !== userId) return current;
+        const known = new Set(current.problems.map((problem) => problem.id));
+        return { ...current, problems: [...current.problems, ...page.filter((problem) => !known.has(problem.id))] };
+      });
+    }).catch(() => { /* se reintenta en la siguiente decisión */ }).finally(() => { loadingMore.current = false; });
+  }, [userId]);
+
   if (!user) return null;
   if (user.role !== "freelancer") return <DeckShell><EmptyState description="Este espacio está disponible para cuentas de freelancer." icon={Sparkles} title="Descubre problemas" /></DeckShell>;
   if (data.status === "loading" || data.userId !== user.id) return <DeckShell><DeckLoading /></DeckShell>;
   if (data.status === "error") return <DeckShell><DeckHeading /><div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface"><EmptyState action={<Button onClick={() => { setData({ status: "loading" }); setAttempt((value) => value + 1); }}>Reintentar</Button>} description={data.message} icon={RotateCcw} title="No pudimos cargar los problemas" tone="warning" /></div></DeckShell>;
-  return <DeckExperience initialInteractions={data.interactions} problems={data.problems} saveInteraction={setProblemInteraction} />;
+  return <DeckExperience initialInteractions={data.interactions} onNeedMore={loadMore} problems={data.problems} saveInteraction={setProblemInteraction} />;
 }
 
 function DeckShell({ children }: { children: React.ReactNode }) {
@@ -67,13 +100,15 @@ function DeckLoading() {
 }
 
 export function DeckExperience({
-  problems, initialInteractions, saveInteraction, tutorialStorageKey = "matchwork.swipe-tutorial.v1", proposalServices,
+  problems, initialInteractions, saveInteraction, tutorialStorageKey = "matchwork.swipe-tutorial.v1", proposalServices, onNeedMore,
 }: {
   problems: PublicProblem[];
   initialInteractions: InteractionMap;
   saveInteraction: DeckInteractionWriter;
   tutorialStorageKey?: string;
   proposalServices?: ProposalServices;
+  /** Se llama cuando quedan pocas tarjetas para que quien carga los datos pida más. */
+  onNeedMore?: () => void;
 }) {
   const { toast, dismiss } = useToast();
   const canWrite = useCanWrite();
@@ -94,6 +129,7 @@ export function DeckExperience({
   const submittedIds = useRef(new Set<string>());
   const cards = useMemo(() => selectDeckProblems(problems, interactions), [problems, interactions]);
   const current = cards[0];
+  useEffect(() => { if (cards.length <= 8) onNeedMore?.(); }, [cards.length, onNeedMore]);
   const displayedProblem = current ?? lastExiting;
   const dismissedIds = Object.keys(interactions).filter((id) => interactions[id] === "dismissed");
 

@@ -69,6 +69,36 @@ export async function getMyCompanyProblem(id: string): Promise<CompanyProblem | 
   return parseCompanyProblem(data);
 }
 
+export type ProblemPageCursor = { publishedAt: string; id: string };
+export const PROBLEM_PAGE_SIZE = 40;
+
+function parsePublicProblems(data: unknown): PublicProblem[] {
+  return Array.isArray(data) ? data.flatMap((item) => {
+    const problem = parsePublicProblem(item);
+    return problem ? [problem] : [];
+  }) : [];
+}
+
+/** Página de problemas abiertos por cursor (más recientes primero). Por defecto excluye los que la persona ya vio. */
+export async function listOpenProblemsPage({ limit = PROBLEM_PAGE_SIZE, before = null, excludeInteracted = true }: { limit?: number; before?: ProblemPageCursor | null; excludeInteracted?: boolean } = {}): Promise<PublicProblem[]> {
+  const data = await callRpc("list_open_problems_page", {
+    p_limit: limit,
+    p_before_published_at: before?.publishedAt ?? null,
+    p_before_id: before?.id ?? null,
+    p_exclude_interacted: excludeInteracted,
+  });
+  return parsePublicProblems(data);
+}
+
+/** Problemas abiertos por identificador (máximo 100 por llamada; se parte en lotes). Los cerrados o suspendidos no aparecen. */
+export async function listOpenProblemsByIds(ids: readonly string[]): Promise<PublicProblem[]> {
+  const unique = [...new Set(ids)];
+  const batches: string[][] = [];
+  for (let index = 0; index < unique.length; index += 100) batches.push(unique.slice(index, index + 100));
+  const results = await Promise.all(batches.map((batch) => callRpc("list_open_problems_by_ids", { p_ids: batch })));
+  return results.flatMap(parsePublicProblems);
+}
+
 export async function listOpenBusinessProblems(): Promise<PublicProblem[]> {
   const data = await callRpc("list_open_business_problems", {});
   return Array.isArray(data) ? data.flatMap((item) => {

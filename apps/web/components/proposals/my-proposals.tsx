@@ -11,7 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
 import type { PublicProblem } from "@/lib/problem-domain";
-import { listOpenBusinessProblems, ProblemServiceError } from "@/lib/problem-service";
+import { listOpenProblemsByIds, ProblemServiceError } from "@/lib/problem-service";
 import { formatProposalPrice, type Proposal } from "@/lib/proposal-domain";
 import { groupProposalsByStatus, resolveProposalProblem } from "@/lib/proposal-form";
 import { listMyProposalCompanyTrust, proposalServices, type ProposalServices } from "@/lib/proposal-service";
@@ -24,9 +24,9 @@ function formatDate(value: string): string {
   return Number.isNaN(date.valueOf()) ? "Fecha no disponible" : new Intl.DateTimeFormat("es-PE", { dateStyle: "medium", timeZone: "America/Lima" }).format(date);
 }
 
-export function MyProposals({ services = proposalServices, loadProblems = listOpenBusinessProblems, loadTrust = listMyProposalCompanyTrust }: {
+export function MyProposals({ services = proposalServices, loadProblems = listOpenProblemsByIds, loadTrust = listMyProposalCompanyTrust }: {
   services?: ProposalServices;
-  loadProblems?: () => Promise<PublicProblem[]>;
+  loadProblems?: (ids: string[]) => Promise<PublicProblem[]>;
   loadTrust?: typeof listMyProposalCompanyTrust;
 }) {
   const { toast } = useToast();
@@ -43,7 +43,7 @@ export function MyProposals({ services = proposalServices, loadProblems = listOp
 
   useEffect(() => {
     let active = true;
-    Promise.all([services.list(), loadProblems().catch(() => null), loadTrust().catch(() => null)]).then(([proposals, problems, trust]) => {
+    Promise.all([services.list().then(async (proposals) => ({ proposals, problems: await loadProblems([...new Set(proposals.map((proposal) => proposal.problemId))]).catch(() => null) })), loadTrust().catch(() => null)]).then(([{ proposals, problems }, trust]) => {
       if (active) setState({ status: "ready", proposals, problems: problems ?? [], trust: Object.fromEntries((trust ?? []).map((item) => [item.proposalId, item.companyVerified])), trustError: trust === null });
     }).catch((error: unknown) => {
       if (active) setState({ status: "error", message: error instanceof ProblemServiceError ? error.message : "Revisa tu conexión e inténtalo de nuevo." });

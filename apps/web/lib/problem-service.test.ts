@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { sendMessage } from "@/lib/chat-service";
 import { setProposalInteraction } from "@/lib/company-inbox-service";
 import { setProblemInteraction } from "@/lib/interaction-service";
-import { listOpenBusinessProblems, publishBusinessProblem, retryAfterSeconds, toFriendlyError } from "@/lib/problem-service";
+import { listOpenBusinessProblems, listOpenProblemsByIds, listOpenProblemsPage, publishBusinessProblem, retryAfterSeconds, toFriendlyError } from "@/lib/problem-service";
 import { createEmptyProposalDraft } from "@/lib/proposal-domain";
 import { saveProposalDraft } from "@/lib/proposal-service";
 
@@ -15,6 +15,43 @@ describe("public problem listing", () => {
     await expect(listOpenBusinessProblems()).resolves.toEqual([
       expect.objectContaining({ id: "p", companyVerified: true, successCriteria: "Reducir el tiempo de atención" }),
     ]);
+  });
+});
+
+describe("paged public problem listing", () => {
+  const row = (id: string) => ({ id, title: `Problema ${id}`, company_verified: false, published_at: "2026-11-01T10:00:00Z" });
+
+  it("asks for a page with the cursor and excludes interacted problems by default", async () => {
+    mocks.rpc.mockReset();
+    mocks.rpc.mockResolvedValue({ data: [row("a")], error: null });
+    const page = await listOpenProblemsPage({ before: { publishedAt: "2026-11-02T00:00:00Z", id: "z" } });
+    expect(page).toEqual([expect.objectContaining({ id: "a" })]);
+    expect(mocks.rpc).toHaveBeenCalledWith("list_open_problems_page", {
+      p_limit: 40, p_before_published_at: "2026-11-02T00:00:00Z", p_before_id: "z", p_exclude_interacted: true,
+    });
+  });
+
+  it("can include interacted problems for the explore page", async () => {
+    mocks.rpc.mockReset();
+    mocks.rpc.mockResolvedValue({ data: [], error: null });
+    await listOpenProblemsPage({ excludeInteracted: false, limit: 20 });
+    expect(mocks.rpc).toHaveBeenCalledWith("list_open_problems_page", { p_limit: 20, p_before_published_at: null, p_before_id: null, p_exclude_interacted: false });
+  });
+
+  it("splits id lookups in batches of 100 and removes duplicates", async () => {
+    mocks.rpc.mockReset();
+    mocks.rpc.mockImplementation(async (_name: string, args: { p_ids: string[] }) => ({ data: args.p_ids.map(row), error: null }));
+    const ids = Array.from({ length: 230 }, (_, index) => `id-${index}`);
+    const result = await listOpenProblemsByIds([...ids, "id-1", "id-2"]);
+    expect(mocks.rpc).toHaveBeenCalledTimes(3);
+    expect(result).toHaveLength(230);
+    expect(mocks.rpc.mock.calls.map((call) => call[1].p_ids.length)).toEqual([100, 100, 30]);
+  });
+
+  it("does not call the server when there are no ids", async () => {
+    mocks.rpc.mockReset();
+    await expect(listOpenProblemsByIds([])).resolves.toEqual([]);
+    expect(mocks.rpc).not.toHaveBeenCalled();
   });
 });
 

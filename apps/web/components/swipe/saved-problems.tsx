@@ -14,7 +14,7 @@ import { useToast } from "@/components/ui/toast";
 import { selectDeckProblems } from "@/lib/deck";
 import { listMyProblemInteractions, setProblemInteraction } from "@/lib/interaction-service";
 import { formatProblemBudget, type PublicProblem } from "@/lib/problem-domain";
-import { listOpenBusinessProblems, ProblemServiceError } from "@/lib/problem-service";
+import { listOpenProblemsByIds, ProblemServiceError } from "@/lib/problem-service";
 import { DeckDetail } from "./deck-detail";
 
 type State = { status: "loading" } | { status: "error" } | { status: "ready"; problems: PublicProblem[] };
@@ -36,10 +36,10 @@ export function SavedProblems() {
 
   useEffect(() => {
     let active = true;
-    Promise.all([listOpenBusinessProblems(), listMyProblemInteractions()]).then(([problems, interactions]) => {
+    // Solo se piden los problemas guardados (los 100 más recientes), no todo el catálogo abierto.
+    listMyProblemInteractions().then((interactions) => listOpenProblemsByIds(interactions.filter((item) => item.state === "saved").slice(0, 100).map((item) => item.problemId))).then((problems) => {
       if (!active) return;
-      const saved = new Set(interactions.filter((item) => item.state === "saved").map((item) => item.problemId));
-      setState({ status: "ready", problems: selectDeckProblems(problems.filter((problem) => saved.has(problem.id)), {}) });
+      setState({ status: "ready", problems: selectDeckProblems(problems, {}) });
     }).catch(() => { if (active) setState({ status: "error" }); });
     return () => { active = false; };
   }, [attempt]);

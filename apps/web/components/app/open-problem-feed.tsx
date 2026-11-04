@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CompanyTrustChip } from "@/components/ui/company-trust-chip";
 import { AppEmptyState } from "@/components/app/app-empty-state";
-import { ButtonLink } from "@/components/ui/button";
-import { listOpenBusinessProblems, budgetLabel, deadlineLabel, objectiveLabels, impactLabels } from "@/lib/problem-service";
+import { Button, ButtonLink } from "@/components/ui/button";
+import { listOpenProblemsPage, PROBLEM_PAGE_SIZE, budgetLabel, deadlineLabel, objectiveLabels, impactLabels } from "@/lib/problem-service";
 import type { PublicProblem } from "@/lib/problem-domain";
 
 export function OpenProblemFeed() {
@@ -13,12 +13,17 @@ export function OpenProblemFeed() {
   const [problems, setProblems] = useState<PublicProblem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [moreError, setMoreError] = useState("");
 
   useEffect(() => {
     if (!user || user.role !== "freelancer") return;
     let active = true;
-    void listOpenBusinessProblems().then((items) => {
-      if (active) setProblems(items);
+    void listOpenProblemsPage({ excludeInteracted: false }).then((items) => {
+      if (!active) return;
+      setProblems(items);
+      setHasMore(items.length >= PROBLEM_PAGE_SIZE);
     }).catch((loadError: unknown) => {
       if (active) setError(loadError instanceof Error ? loadError.message : "No pudimos cargar los problemas disponibles.");
     }).finally(() => {
@@ -26,6 +31,22 @@ export function OpenProblemFeed() {
     });
     return () => { active = false; };
   }, [user]);
+
+  async function loadMore() {
+    const last = problems.at(-1);
+    if (!last?.publishedAt || loadingMore) return;
+    setLoadingMore(true);
+    setMoreError("");
+    try {
+      const page = await listOpenProblemsPage({ excludeInteracted: false, before: { publishedAt: last.publishedAt, id: last.id } });
+      setProblems((current) => { const known = new Set(current.map((problem) => problem.id)); return [...current, ...page.filter((problem) => !known.has(problem.id))]; });
+      setHasMore(page.length >= PROBLEM_PAGE_SIZE);
+    } catch {
+      setMoreError("No pudimos cargar más problemas. Inténtalo de nuevo.");
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   if (!user) return null;
   if (user.role === "company") {
@@ -68,6 +89,10 @@ export function OpenProblemFeed() {
           </article>
         ))}
       </section>
+      {hasMore ? <div className="mt-8 flex flex-col items-center gap-2">
+        <Button disabled={loadingMore} onClick={() => { void loadMore(); }} variant="outline">{loadingMore ? "Cargando…" : "Cargar más problemas"}</Button>
+        {moreError ? <p className="text-sm text-danger" role="alert">{moreError}</p> : null}
+      </div> : null}
     </div>
   );
 }
