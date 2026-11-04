@@ -189,7 +189,7 @@ export function CompanyProfileForm({ userId, onProfileSaved }: Props) {
                 <h3 className="font-semibold">Logotipo</h3>
                 <p className="mt-1 text-sm leading-6 text-muted-foreground">Sube una imagen JPEG, PNG o WebP de hasta 2 MiB.</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <label className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium transition hover:bg-surface-raised focus-within:ring-2 focus-within:ring-accent">
+                  <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium transition hover:bg-surface-raised focus-within:ring-2 focus-within:ring-accent">
                     <ImagePlus aria-hidden="true" className="size-4" />{logoFile ? "Cambiar selección" : logoPath ? "Cambiar logotipo" : "Subir logotipo"}
                     <input accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => { handleLogoFile(event.currentTarget.files?.[0]); event.currentTarget.value = ""; }} type="file" />
                   </label>

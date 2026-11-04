@@ -235,6 +235,7 @@ services:
         NEXT_PUBLIC_SITE_URL: ${SITE_URL}
         NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
         NEXT_PUBLIC_GOOGLE_AUTH_ENABLED: ${GOOGLE_AUTH_ENABLED:-false}
+        MATCHWORK_RELEASE: ${MATCHWORK_RELEASE:-1}
     image: matchwork-web:prod
     <<: *restart
     logging: *logging

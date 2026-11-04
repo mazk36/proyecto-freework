@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -63,7 +64,7 @@ function initials(name: string): string {
   return name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "").join("") || "MW";
 }
 
-export function FreelancerProfileForm({ userId }: Props) {
+export function FreelancerProfileForm({ userId, footer }: Props & { footer?: ReactNode }) {
   const canWrite = useCanWrite();
   const [data, setData] = useState<FreelancerProfileData | null>(null);
   const [draft, setDraft] = useState<FreelancerProfileDraft>(emptyDraft);
@@ -370,7 +371,7 @@ export function FreelancerProfileForm({ userId }: Props) {
                   </span>
                 </div>
                 <div className="mt-5 flex flex-wrap gap-2">
-                  <label className="inline-flex min-h-10 cursor-pointer items-center rounded-lg border border-border px-3 text-sm font-medium transition hover:bg-surface-raised focus-within:ring-2 focus-within:ring-accent">
+                  <label className="inline-flex min-h-11 cursor-pointer items-center rounded-lg border border-border px-3 text-sm font-medium transition hover:bg-surface-raised focus-within:ring-2 focus-within:ring-accent">
                     {avatarFile ? "Cambiar selección" : data.profile.avatar_path ? "Cambiar fotografía" : "Subir fotografía"}
                     <input accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => { handleAvatarFile(event.currentTarget.files?.[0]); event.currentTarget.value = ""; }} type="file" />
                   </label>
@@ -552,6 +553,7 @@ export function FreelancerProfileForm({ userId }: Props) {
           </section>
         </fieldset>
       )}
+      {footer}
     </section>
   );
 }

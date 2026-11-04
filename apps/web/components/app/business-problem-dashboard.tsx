@@ -42,7 +42,7 @@ export function BusinessProblemDashboard() {
 
   if (isLoading) return <div className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando tus publicaciones…</div>;
   if (error) {
-    return <AppEmptyState action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir esta sección." />;
+    return <AppEmptyState tone="danger" action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir esta sección." />;
   }
 
   const published = problems.filter((problem) => problem.status === "open").length;
@@ -70,7 +70,7 @@ export function BusinessProblemDashboard() {
 
       {problems.length === 0 ? (
         <div className="mt-7 rounded-2xl border border-border bg-surface">
-          <AppEmptyState action={<ButtonLink href="/app/problemas/nuevo">Publicar un problema</ButtonLink>} description="Describe una necesidad de tu negocio y guarda el avance como borrador cuando lo necesites." title="Aún no has publicado ningún problema." />
+          <AppEmptyState embedded action={<ButtonLink href="/app/problemas/nuevo">Publicar un problema</ButtonLink>} description="Describe una necesidad de tu negocio y guarda el avance como borrador cuando lo necesites." title="Aún no has publicado ningún problema." />
         </div>
       ) : (
         <section aria-label="Publicaciones de la empresa" className="mt-7 space-y-4">
@@ -112,7 +112,7 @@ function ProblemCard({ problem, currency }: { problem: CompanyProblem; currency:
           {problem.status === "open" ? "Visible para freelancers" : problem.status === "paused" ? "No recibe nuevas propuestas" : problem.status === "draft" ? "Solo tú puedes ver este borrador" : "Publicación cerrada"}
         </p>
         <div className="flex flex-wrap gap-2">
-          {problem.status === "draft" ? <Link className="inline-flex min-h-10 items-center rounded-lg bg-accent px-3.5 text-sm font-semibold text-accent-foreground hover:bg-accent-hover" href={`/app/problemas/nuevo/?id=${encodeURIComponent(problem.id)}`}>Continuar borrador</Link> : null}
+          {problem.status === "draft" ? <Link className="inline-flex min-h-11 items-center rounded-lg bg-accent px-3.5 text-sm font-semibold text-accent-foreground hover:bg-accent-hover" href={`/app/problemas/nuevo/?id=${encodeURIComponent(problem.id)}`}>Continuar borrador</Link> : null}
           {problem.status !== "draft" ? <Link className="inline-flex min-h-11 items-center rounded-lg border border-border px-3.5 text-sm font-semibold hover:bg-background" href={`/app/problemas/detalle/?id=${encodeURIComponent(problem.id)}`}>Ver detalles</Link> : null}
         </div>
       </div>

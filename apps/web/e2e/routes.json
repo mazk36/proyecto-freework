@@ -1,0 +1,178 @@
+{
+  "comentario": "Inventario de rutas de la app (carpeta app/, sin ui-kit, que el build elimina). lib/routes-inventory.test.ts falla si aparece una página que no esté aquí. «roles»: quién la ve; «reads»: lee datos (se prueban cargando, vacío, error y éxito).",
+  "routes": [
+    {
+      "path": "/",
+      "group": "publica",
+      "roles": []
+    },
+    {
+      "path": "/registro/",
+      "group": "publica",
+      "roles": []
+    },
+    {
+      "path": "/registro/revisa-tu-correo/",
+      "group": "publica",
+      "roles": []
+    },
+    {
+      "path": "/iniciar-sesion/",
+      "group": "publica",
+      "roles": []
+    },
+    {
+      "path": "/recuperar-contrasena/",
+      "group": "publica",
+      "roles": []
+    },
+    {
+      "path": "/auth/callback/?flow=signup",
+      "group": "publica",
+      "roles": [],
+      "file": "/auth/callback"
+    },
+    {
+      "path": "/profesionales/?slug={slug}",
+      "group": "publica",
+      "roles": [],
+      "file": "/profesionales",
+      "reads": true
+    },
+    {
+      "path": "/ruta-que-no-existe/",
+      "group": "404",
+      "roles": [],
+      "file": null
+    },
+    {
+      "path": "/app/",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "file": "/app"
+    },
+    {
+      "path": "/app/perfil/",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/problemas/",
+      "group": "empresa",
+      "roles": [
+        "company"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/problemas/nuevo/",
+      "group": "empresa",
+      "roles": [
+        "company"
+      ]
+    },
+    {
+      "path": "/app/problemas/detalle/?id={problemId}",
+      "group": "empresa",
+      "roles": [
+        "company"
+      ],
+      "file": "/app/problemas/detalle",
+      "reads": true
+    },
+    {
+      "path": "/app/propuestas/",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/matches/",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/chats/",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/chats/?match={matchId}",
+      "group": "empresa-freelancer",
+      "roles": [
+        "company",
+        "freelancer"
+      ],
+      "file": "/app/chats",
+      "reads": true
+    },
+    {
+      "path": "/app/descubrir/",
+      "group": "freelancer",
+      "roles": [
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/explorar/",
+      "group": "freelancer",
+      "roles": [
+        "freelancer"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/likes/",
+      "group": "freelancer",
+      "roles": [
+        "freelancer",
+        "company"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/guardados/",
+      "group": "freelancer",
+      "roles": [
+        "freelancer",
+        "company"
+      ],
+      "reads": true
+    },
+    {
+      "path": "/app/admin/",
+      "group": "admin",
+      "roles": [
+        "admin"
+      ],
+      "reads": true
+    }
+  ],
+  "dialogos": [
+    "Hoja de propuesta (freelancer)",
+    "Asistente de 5 pasos (empresa)",
+    "Hilo de chat",
+    "Detalle del problema (mazo)",
+    "Celebración de Match",
+    "Diálogos del admin"
+  ]
+}

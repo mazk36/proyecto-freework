@@ -67,9 +67,15 @@ export function CheckEmailExperience() {
             />
             <button className="flex min-h-11 w-full items-center justify-center rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117]" type="submit">Continuar</button>
           </form>
-        ) : null}
+        ) : (
+          // Mientras se lee el correo guardado se reserva el mismo espacio que ocupará el texto (evita saltos de diseño).
+          <div aria-hidden="true" className="invisible">
+            <p className="mt-3 text-center text-base leading-6">Te enviamos un enlace de confirmación a <strong className="break-all font-medium">correo@ejemplo.com</strong>. Ábrelo para activar tu cuenta.</p>
+            <p className="mt-3 text-center text-sm leading-5">Puede tardar un par de minutos. Mira también en spam o correo no deseado.</p>
+          </div>
+        )}
 
-        {email ? <ResendEmail className="mt-5" email={email} kind="signup" /> : null}
+        {email ? <ResendEmail className="mt-5" email={email} kind="signup" /> : email === null ? <div aria-hidden="true" className="mt-5 h-[4.5rem]" /> : null}
 
         <div className="mt-3 flex flex-col items-start gap-1">
           <Link className={linkClass} href="/registro/#correo-nuevo">Usar otro correo</Link>

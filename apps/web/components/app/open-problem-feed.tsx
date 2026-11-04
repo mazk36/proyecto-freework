@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CompanyTrustChip } from "@/components/ui/company-trust-chip";
@@ -10,6 +11,10 @@ import type { PublicProblem } from "@/lib/problem-domain";
 
 export function OpenProblemFeed() {
   const { user } = useAuth();
+  const router = useRouter();
+  const isCompany = user?.role === "company";
+  // Explorar talento aún no existe: una empresa que llega aquí va a su bandeja de propuestas en vez de a una pantalla vacía.
+  useEffect(() => { if (isCompany) router.replace("/app/propuestas/"); }, [isCompany, router]);
   const [problems, setProblems] = useState<PublicProblem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -49,17 +54,10 @@ export function OpenProblemFeed() {
   }
 
   if (!user) return null;
-  if (user.role === "company") {
-    return (
-      <AppEmptyState
-        description="La búsqueda de perfiles de freelancers aún no está disponible. No mostramos perfiles de ejemplo."
-        title="Explora talento profesional"
-      />
-    );
-  }
+  if (user.role === "company") return <p className="px-5 py-10 text-center text-sm text-muted-foreground" role="status">Abriendo tus propuestas…</p>;
 
   if (isLoading) return <div className="mx-auto max-w-5xl px-5 py-16 text-center text-sm text-muted-foreground" role="status">Cargando problemas disponibles…</div>;
-  if (error) return <AppEmptyState action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir Explorar." />;
+  if (error) return <AppEmptyState tone="danger" action={<ButtonLink href="/app">Volver al inicio</ButtonLink>} description={error} title="No pudimos abrir Explorar." />;
   if (!problems.length) return <AppEmptyState description="Cuando una empresa publique un problema, aparecerá aquí con la información que haya decidido compartir." title="Aún no hay problemas disponibles." />;
 
   return (

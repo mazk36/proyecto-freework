@@ -13,7 +13,7 @@ export function ProfileDetails() {
   const [profileVersion, setProfileVersion] = useState(0);
   if (!user) return null;
 
-  if (user.role === "freelancer") return <><FreelancerProfileForm userId={user.id} /><div className="mx-auto w-full max-w-5xl px-5 pb-12 sm:px-8"><ChangePasswordSection /></div></>;
+  if (user.role === "freelancer") return <FreelancerProfileForm footer={<ChangePasswordSection />} userId={user.id} />;
 
   return (
     <section aria-labelledby="profile-title" className="mx-auto w-full max-w-5xl px-5 py-8 sm:px-8 sm:py-12">

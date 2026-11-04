@@ -1,3 +1,5 @@
+import { formatMoney } from "@/lib/money";
+
 export type ProposalCurrency = "PEN" | "USD";
 export type ProposalStatus = "draft" | "submitted" | "withdrawn";
 
@@ -106,12 +108,7 @@ export function validateProposalForSubmit(input: ProposalDraftInput): string[] {
 }
 
 export function formatProposalPrice(amount: number, currency: ProposalCurrency): string {
-  const hasCents = Math.round(amount * 100) % 100 !== 0;
-  const formatted = new Intl.NumberFormat("es-PE", {
-    minimumFractionDigits: hasCents ? 2 : 0,
-    maximumFractionDigits: hasCents ? 2 : 0,
-  }).format(amount);
-  return `${currency === "PEN" ? "S/" : "US$"} ${formatted}`;
+  return formatMoney(amount, currency);
 }
 
 export function toRpcPayload(input: ProposalDraftInput) {

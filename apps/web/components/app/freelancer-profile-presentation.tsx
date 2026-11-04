@@ -79,7 +79,7 @@ export function FreelancerProfilePresentation({ profile }: { profile: Freelancer
             <ul className="mt-3 flex flex-wrap gap-3">
               {links.map(([label, href]) => (
                 <li key={label}>
-                  <a className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-accent-soft transition hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href={safeExternalUrl(href) ?? undefined} rel={userLinkRel} target="_blank">
+                  <a className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-accent-soft transition hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href={safeExternalUrl(href) ?? undefined} rel={userLinkRel} target="_blank">
                     <ExternalLink aria-hidden="true" className="size-4" />{label}
                   </a>
                 </li>

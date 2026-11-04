@@ -4,6 +4,7 @@ import {
   CircleUserRound,
   Compass,
   Heart,
+  Inbox,
   Layers3,
   MessagesSquare,
   ShieldCheck,
@@ -23,7 +24,7 @@ import { subscribeToAllMessages, unreadTotal } from "@/lib/chat-service";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 
 type NavigationItem = {
-  id: "swipe" | "explore" | "likes" | "chats" | "profile";
+  id: "swipe" | "proposals" | "explore" | "likes" | "chats" | "profile";
   label: string;
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
@@ -38,8 +39,7 @@ const navigationByRole: Record<UserRole, NavigationItem[]> = {
     { id: "profile", label: "Perfil", href: "/app/perfil", icon: CircleUserRound },
   ],
   company: [
-    { id: "swipe", label: "Swipe", href: "/app/propuestas", icon: Layers3 },
-    { id: "explore", label: "Explorar", href: "/app/explorar", icon: Compass },
+    { id: "proposals", label: "Propuestas", href: "/app/propuestas", icon: Inbox },
     { id: "likes", label: "Likes", href: "/app/likes", icon: Heart },
     { id: "chats", label: "Chats", href: "/app/chats", icon: MessagesSquare },
     { id: "profile", label: "Perfil", href: "/app/perfil", icon: CircleUserRound },
@@ -208,7 +208,8 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
 
       {accountStatus.state === "suspended" ? <div className="mx-auto w-full max-w-[1720px] px-4 py-3 sm:px-6 lg:px-8"><SuspensionNotice onLogout={handleLogout} reason={accountStatus.reason} /></div> : null}
       {accountStatus.state === "error" ? <div className="mx-auto w-full max-w-[1720px] px-4 py-3 text-sm text-muted-foreground" role="status">No pudimos consultar el estado de tu cuenta. Las acciones de escritura están pausadas. <button className="min-h-11 rounded px-2 font-semibold text-foreground underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => setStatusAttempt((value) => value + 1)} type="button">Reintentar</button></div> : null}
-      {accountStatus.state === "loading" ? <p className="px-4 py-2 text-sm text-muted-foreground" role="status">Comprobando el estado de tu cuenta…</p> : null}
+      {/* Solo para lectores de pantalla: un renglón visible que aparece y desaparece desplazaba toda la página (CLS). */}
+      {accountStatus.state === "loading" ? <p className="sr-only" role="status">Comprobando el estado de tu cuenta…</p> : null}
 
       <div className={`mx-auto grid w-full max-w-[1720px] flex-1 grid-cols-1 md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)] ${isChatPage ? "min-h-0" : ""}`}>
         <aside className="hidden border-r border-border px-3 py-7 md:block lg:px-5">
@@ -229,7 +230,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         </aside>
 
         <div className={`flex min-w-0 flex-col ${isChatPage ? "min-h-0" : ""}`}>
-          <main className={`min-w-0 flex-1 ${isChatPage ? "min-h-0 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : "pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0"}`} id="main-content" tabIndex={-1}>
+          <main className={`min-w-0 flex-1 ${isChatPage ? "min-h-0 pb-[calc(4.5rem+env(safe-area-inset-bottom))] md:pb-0" : "min-h-dvh pb-[calc(5.25rem+env(safe-area-inset-bottom))] md:pb-0"}`} id="main-content" tabIndex={-1}>
             {children}
           </main>
           <footer className={`${isChatPage ? "hidden" : ""} border-t border-border px-4 py-4 text-center text-xs leading-5 text-muted-foreground sm:px-6`}>

@@ -1,3 +1,4 @@
+import { budgetRangeLabel } from "@/lib/money";
 export const impactOptions = [
   { value: "time", label: "Pérdida de tiempo" },
   { value: "errors", label: "Errores frecuentes" },
@@ -190,19 +191,7 @@ export function getOptionLabel<T extends string>(
 }
 
 export function formatProblemBudget(choice: string, currency = "PEN"): string {
-  if (choice === "unknown") return "Todavía no lo sé";
-  const ranges: Record<string, [number, number | null]> = {
-    under_1000: [0, 1000], "1000_3000": [1000, 3000], "3000_5000": [3000, 5000],
-    "5000_10000": [5000, 10000], over_10000: [10000, null],
-  };
-  const range = ranges[choice];
-  if (!range) return "Sin definir";
-  const symbols: Record<string, string> = { ARS: "AR$", BRL: "R$", CLP: "$", COP: "COL$", EUR: "€", MXN: "MX$", PEN: "S/", USD: "US$" };
-  const unit = symbols[currency] ?? currency;
-  const amount = (value: number) => new Intl.NumberFormat("es-PE", { maximumFractionDigits: 0 }).format(value);
-  if (range[1] === null) return `Más de ${unit} ${amount(range[0])}`;
-  if (range[0] === 0) return `Menos de ${unit} ${amount(range[1])}`;
-  return `${unit} ${amount(range[0])} – ${unit} ${amount(range[1])}`;
+  return budgetRangeLabel(choice, currency);
 }
 
 export function formatProblemDeadline(choice: string): string {
