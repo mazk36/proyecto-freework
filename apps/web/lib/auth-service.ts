@@ -1,5 +1,5 @@
 import type { User as SupabaseUser } from "@supabase/supabase-js";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { loadSupabaseClient } from "@/lib/supabase/client";
 
 export type RegisteredProfile = {
   id: string;
@@ -8,7 +8,7 @@ export type RegisteredProfile = {
 };
 
 export async function getRegisteredProfile(user: SupabaseUser): Promise<RegisteredProfile> {
-  const client = getSupabaseClient();
+  const client = await loadSupabaseClient();
   if (!client) throw new Error("La conexión con Supabase no está configurada.");
 
   const { data, error } = await client

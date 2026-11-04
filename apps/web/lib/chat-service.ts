@@ -1,5 +1,5 @@
 import { callRpc, ProblemServiceError } from "@/lib/problem-service";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { isSupabaseConfigured, loadSupabaseClient } from "@/lib/supabase/client";
 import type { ChatMessage } from "@/lib/chat";
 import type { ChatConversationRow, ChatMessageRow } from "@/types/database";
 
@@ -93,27 +93,39 @@ function subscribeToMessageInserts(
   onMessage: (message: ChatMessage) => void,
   onStatus?: (status: ChatRealtimeStatus) => void,
 ): () => void {
-  const client = getSupabaseClient();
-  if (!client) {
+  if (!isSupabaseConfigured()) {
     onStatus?.("unavailable");
     return () => {};
   }
   onStatus?.("connecting");
-  const channel = client.channel(`match-messages:${matchId ?? "all"}:${++subscriptionSequence}`)
-    .on("postgres_changes", {
-      event: "INSERT", schema: "public", table: "messages", ...(matchId ? { filter: `match_id=eq.${matchId}` } : {}),
-    }, (payload) => {
-      if (!isMessageRow(payload.new) || (matchId !== null && payload.new.match_id !== matchId)) {
-        console.error("Se recibió un mensaje de Realtime inválido.");
-        return;
-      }
-      onMessage(mapMessage(payload.new));
-    }).subscribe((status) => {
-      if (status === "SUBSCRIBED") onStatus?.("connected");
-      else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") onStatus?.("unavailable");
-    });
+  let cancelled = false;
+  let cleanup: (() => void) | null = null;
+  void loadSupabaseClient().then((client) => {
+    if (cancelled) return;
+    if (!client) {
+      onStatus?.("unavailable");
+      return;
+    }
+    const channel = client.channel(`match-messages:${matchId ?? "all"}:${++subscriptionSequence}`)
+      .on("postgres_changes", {
+        event: "INSERT", schema: "public", table: "messages", ...(matchId ? { filter: `match_id=eq.${matchId}` } : {}),
+      }, (payload) => {
+        if (!isMessageRow(payload.new) || (matchId !== null && payload.new.match_id !== matchId)) {
+          console.error("Se recibió un mensaje de Realtime inválido.");
+          return;
+        }
+        onMessage(mapMessage(payload.new));
+      }).subscribe((status) => {
+        if (status === "SUBSCRIBED") onStatus?.("connected");
+        else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") onStatus?.("unavailable");
+      });
+    cleanup = () => {
+      void client.removeChannel(channel).catch(() => console.error("No se pudo cerrar la suscripción de mensajes."));
+    };
+  });
   return () => {
-    void client.removeChannel(channel).catch(() => console.error("No se pudo cerrar la suscripción de mensajes."));
+    cancelled = true;
+    cleanup?.();
   };
 }
 

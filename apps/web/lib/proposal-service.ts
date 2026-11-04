@@ -1,6 +1,6 @@
 import { callRpc, ProblemServiceError, toFriendlyError } from "@/lib/problem-service";
 import { toRpcPayload, type Proposal, type ProposalDraftInput } from "@/lib/proposal-domain";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { loadSupabaseClient } from "@/lib/supabase/client";
 import type { Database } from "@/types/database";
 
 export async function saveProposalDraft(problemId: string, input: ProposalDraftInput): Promise<string> {
@@ -22,7 +22,7 @@ export async function withdrawProposal(id: string): Promise<string> {
 }
 
 export async function listMyProposals(): Promise<Proposal[]> {
-  const client = getSupabaseClient();
+  const client = await loadSupabaseClient();
   if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
   const { data: authData, error: authError } = await client.auth.getUser();
   if (authError) throw new ProblemServiceError(toFriendlyError(authError.message));

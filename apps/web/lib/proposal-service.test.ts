@@ -12,7 +12,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/supabase/client", () => ({
-  getSupabaseClient: () => ({ rpc: mocks.rpc, auth: { getUser: mocks.getUser }, from: mocks.from }),
+  getSupabaseClient: () => ({ rpc: mocks.rpc, auth: { getUser: mocks.getUser }, from: mocks.from }), loadSupabaseClient: async () => ({ rpc: mocks.rpc, auth: { getUser: mocks.getUser }, from: mocks.from }),
 }));
 
 beforeEach(() => {

@@ -5,7 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-provider";
 import { ButtonLink } from "@/components/ui/button";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { loadSupabaseClient } from "@/lib/supabase/client";
 
 export function AuthCallbackExperience() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export function AuthCallbackExperience() {
       setPasswordError("Las contraseñas no coinciden.");
       return;
     }
-    const client = getSupabaseClient();
+    const client = await loadSupabaseClient();
     if (!client) {
       setPasswordError(storageNotice);
       return;

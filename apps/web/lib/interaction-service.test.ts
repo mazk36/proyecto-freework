@@ -7,7 +7,7 @@ import {
 
 const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
 vi.mock("@/lib/supabase/client", () => ({
-  getSupabaseClient: () => ({ rpc: mocks.rpc }),
+  getSupabaseClient: () => ({ rpc: mocks.rpc }), loadSupabaseClient: async () => ({ rpc: mocks.rpc }),
 }));
 
 beforeEach(() => {

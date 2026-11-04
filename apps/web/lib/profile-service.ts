@@ -1,6 +1,6 @@
 import type { Database } from "@/types/database";
 import { AVATAR_MAX_BYTES, getImageExtension, PORTFOLIO_IMAGE_MAX_BYTES, validateImageFile } from "@/lib/profile-domain";
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { loadSupabaseClient } from "@/lib/supabase/client";
 
 type ProfileRow = Database["public"]["Tables"]["profiles"]["Row"];
 type FreelancerProfileRow = Database["public"]["Tables"]["freelancer_profiles"]["Row"];
@@ -49,8 +49,8 @@ export type PortfolioProjectInput = {
 
 type SupabaseError = { code?: string; message?: string };
 
-function getClient() {
-  const client = getSupabaseClient();
+async function getClient() {
+  const client = await loadSupabaseClient();
   if (!client) throw new Error("Supabase no está configurado. Revisa las variables de la aplicación.");
   return client;
 }
@@ -64,7 +64,7 @@ function operationError(error: SupabaseError, action: string): Error {
 }
 
 async function requireAccountSession(expectedUserId: string, expectedRole: "company" | "freelancer") {
-  const client = getClient();
+  const client = await getClient();
   const { data: authData, error: authError } = await client.auth.getUser();
   if (authError || !authData.user || authData.user.id !== expectedUserId) {
     throw new Error("La sesión expiró o cambió. Inicia sesión de nuevo.");
@@ -88,13 +88,13 @@ async function requireFreelancerSession(expectedUserId: string) {
   return requireAccountSession(expectedUserId, "freelancer");
 }
 
-function getAvatarUrl(client: ReturnType<typeof getClient>, path: string | null): string | null {
+function getAvatarUrl(client: Awaited<ReturnType<typeof getClient>>, path: string | null): string | null {
   if (!path) return null;
   return client.storage.from("avatars").getPublicUrl(path).data.publicUrl;
 }
 
 async function getProjectImageUrl(
-  client: ReturnType<typeof getClient>,
+  client: Awaited<ReturnType<typeof getClient>>,
   path: string | null,
 ): Promise<string | null> {
   if (!path) return null;
@@ -103,7 +103,7 @@ async function getProjectImageUrl(
 }
 
 async function withSignedProjectImages(
-  client: ReturnType<typeof getClient>,
+  client: Awaited<ReturnType<typeof getClient>>,
   projects: PortfolioProjectRow[],
 ): Promise<PortfolioProject[]> {
   return Promise.all(projects.map(async (project) => ({
@@ -185,7 +185,7 @@ export async function loadMyFreelancerProfile(userId: string): Promise<Freelance
 }
 
 export async function loadPublicFreelancerProfile(slug: string): Promise<PublicFreelancerProfile | null> {
-  const client = getClient();
+  const client = await getClient();
   const normalizedSlug = slug.trim();
   if (!normalizedSlug) return null;
 

@@ -1,8 +1,6 @@
 "use client";
 
-import { callRpc } from "@/lib/problem-service";
 import { parsePublicCounters, type PublicCounters } from "@/lib/public-counters";
-import { getSupabaseClient } from "@/lib/supabase/client";
 
 const CACHE_DURATION_MS = 60_000;
 const CACHE_KEY = `matchwork-public-counters:${process.env.NEXT_PUBLIC_SUPABASE_URL ?? ""}`;
@@ -37,8 +35,22 @@ function saveCache(data: PublicCounters): void {
   }
 }
 
+/** Calls the public aggregates RPC directly so the landing does not have to load supabase-js. */
+async function fetchPublicCounters(): Promise<unknown> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim().replace(/\/$/, "");
+  const key = (process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)?.trim();
+  if (!url || !key) throw new Error("not configured");
+  const response = await fetch(`${url}/rest/v1/rpc/get_public_counters`, {
+    method: "POST",
+    headers: { apikey: key, authorization: `Bearer ${key}`, "content-type": "application/json" },
+    body: "{}",
+  });
+  if (!response.ok) throw new Error(`counters request failed: ${response.status}`);
+  return response.json() as Promise<unknown>;
+}
+
 export async function getPublicCounters(): Promise<PublicCounters | null> {
-  if (!getSupabaseClient()) return null;
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL?.trim()) return null;
   const cached = validCache(memoryCache) ?? readSessionCache();
   if (cached) {
     memoryCache = cached;
@@ -48,7 +60,7 @@ export async function getPublicCounters(): Promise<PublicCounters | null> {
 
   pendingRequest = (async () => {
     try {
-      const rows = await callRpc("get_public_counters", {});
+      const rows = await fetchPublicCounters();
       const counters = Array.isArray(rows) && rows.length === 1 ? parsePublicCounters(rows[0]) : null;
       if (counters) saveCache(counters);
       return counters;

@@ -11,7 +11,7 @@ import {
 } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { isValidEmail, type AuthUser, type UserRole } from "@/lib/auth";
-import { getAbsoluteSiteUrl, getSupabaseClient, SUPABASE_CONFIGURATION_MESSAGE } from "@/lib/supabase/client";
+import { getAbsoluteSiteUrl, isSupabaseConfigured, loadSupabaseClient, SUPABASE_CONFIGURATION_MESSAGE } from "@/lib/supabase/client";
 import { getRegisteredProfile } from "@/lib/auth-service";
 
 type AuthResult =
@@ -41,15 +41,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [authIssue, setAuthIssue] = useState("");
-  const storageNotice = getSupabaseClient() ? "" : SUPABASE_CONFIGURATION_MESSAGE;
+  const storageNotice = isSupabaseConfigured() ? "" : SUPABASE_CONFIGURATION_MESSAGE;
 
   useEffect(() => {
-    const client = getSupabaseClient();
-    if (!client) {
+    if (!isSupabaseConfigured()) {
       setIsReady(true);
       return;
     }
+    let stopped = false;
+    let teardown: (() => void) | undefined;
+    // supabase-js loads after first paint; public pages render immediately and auth state fills in when it arrives.
+    void loadSupabaseClient().then((client) => {
+      if (stopped) return;
+      if (!client) {
+        setIsReady(true);
+        return;
+      }
+      teardown = startAuthSession(client);
+    });
+    return () => {
+      stopped = true;
+      teardown?.();
+    };
 
+    function startAuthSession(client: NonNullable<Awaited<ReturnType<typeof loadSupabaseClient>>>): () => void {
     let active = true;
     let requestSequence = 0;
 
@@ -104,10 +119,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       active = false;
       listener.subscription.unsubscribe();
     };
+    }
   }, []);
 
   const login = useCallback(async ({ email, password }: { email: string; password: string }): Promise<AuthResult> => {
-    const client = getSupabaseClient();
+    const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
     if (!password) return { ok: false, error: "Escribe tu contraseña." };
@@ -126,7 +142,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const register = useCallback(async ({ name, email, password, role, next }: RegisterInput): Promise<AuthResult> => {
-    const client = getSupabaseClient();
+    const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!name.trim()) return { ok: false, error: "Escribe tu nombre." };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
@@ -154,7 +170,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const logout = useCallback(async () => {
-    const client = getSupabaseClient();
+    const client = await loadSupabaseClient();
     if (!client) return;
     setIsLoggingOut(true);
     try {
@@ -169,7 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const requestPasswordReset = useCallback(async (email: string): Promise<AuthResult> => {
-    const client = getSupabaseClient();
+    const client = await loadSupabaseClient();
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
     try {

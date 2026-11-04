@@ -7,19 +7,24 @@ import { ToastProvider } from "@/components/ui/toast";
 import { publicPageMetadata, siteBaseUrl } from "@/lib/site-metadata";
 import "./globals.css";
 
+// Fonts are not preloaded: preload requests compete with the render-blocking stylesheet on slow connections.
+// next/font ships size-adjusted fallbacks, so the swap does not shift the layout.
 const bodyFont = Inter({
+  preload: false,
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   variable: "--font-inter",
 });
 
 const displayFont = Sora({
+  preload: false,
   subsets: ["latin"],
   weight: ["600", "700"],
   variable: "--font-sora",
 });
 
 const monoFont = JetBrains_Mono({
+  preload: false, // monospace figures are secondary; avoid preloading them on the critical path of public pages
   subsets: ["latin"],
   weight: ["400", "500"],
   variable: "--font-jetbrains-mono",

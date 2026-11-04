@@ -4,11 +4,12 @@ import { listConversations, listMessages, markConversationRead, sendMessage, sub
 const mocks = vi.hoisted(() => ({
   rpc: vi.fn(), on: vi.fn(), subscribe: vi.fn(), channel: vi.fn(), removeChannel: vi.fn(), configured: true,
 }));
-vi.mock("@/lib/supabase/client", () => ({
-  getSupabaseClient: () => mocks.configured ? {
+vi.mock("@/lib/supabase/client", () => {
+  const client = () => mocks.configured ? {
     rpc: mocks.rpc, channel: mocks.channel, removeChannel: mocks.removeChannel,
-  } : null,
-}));
+  } : null;
+  return { getSupabaseClient: client, loadSupabaseClient: async () => client(), isSupabaseConfigured: () => mocks.configured };
+});
 
 const row = {
   id: "message", match_id: "match", sender_id: "sender", body: "Hola",
@@ -88,10 +89,11 @@ describe("chat service", () => {
     await expect(sendMessage("match", "Hola")).rejects.toThrow(expected);
   });
 
-  it("subscribes only to inserts for the match, validates events and cleans up", () => {
+  it("subscribes only to inserts for the match, validates events and cleans up", async () => {
     const onMessage = vi.fn();
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     const cleanup = subscribeToMessages("match", onMessage);
+    await vi.waitFor(() => expect(mocks.on).toHaveBeenCalled());
     expect(mocks.on).toHaveBeenCalledWith("postgres_changes", {
       event: "INSERT", schema: "public", table: "messages", filter: "match_id=eq.match",
     }, expect.any(Function));
@@ -112,10 +114,11 @@ describe("chat service", () => {
     expect(mocks.channel).not.toHaveBeenCalled();
   });
 
-  it("reports connection failures and subscribes globally through the RLS-protected table", () => {
+  it("reports connection failures and subscribes globally through the RLS-protected table", async () => {
     const onStatus = vi.fn();
     const onMessage = vi.fn();
     const cleanup = subscribeToMessages("match", onMessage, onStatus);
+    await vi.waitFor(() => expect(mocks.subscribe).toHaveBeenCalled());
     const status = mocks.subscribe.mock.calls[0][0] as (value: string) => void;
     status("SUBSCRIBED");
     status("CHANNEL_ERROR");
@@ -123,6 +126,7 @@ describe("chat service", () => {
     cleanup();
 
     subscribeToAllMessages(onMessage);
+    await vi.waitFor(() => expect(mocks.on).toHaveBeenCalledTimes(2));
     expect(mocks.on).toHaveBeenLastCalledWith("postgres_changes", {
       event: "INSERT", schema: "public", table: "messages",
     }, expect.any(Function));

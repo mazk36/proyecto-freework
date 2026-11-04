@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getAdminSummary, getSettings, isAdmin, listProblems, listUsers, listVerificationRequests, reject,
   setProblemSuspended, setSetting, setUserSuspended, undoVerification, verify } from "@/lib/admin-service";
 const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
-vi.mock("@/lib/supabase/client", () => ({ getSupabaseClient: () => ({ rpc: mocks.rpc }) }));
+vi.mock("@/lib/supabase/client", () => ({ getSupabaseClient: () => ({ rpc: mocks.rpc }), loadSupabaseClient: async () => ({ rpc: mocks.rpc }) }));
 const verification = { company_user_id: "company", company_name: "Empresa", legal_name: "Empresa SAC", country_code: "PE",
   tax_id: "12345678901", website_url: "https://example.com", corporate_email: null, linkedin_url: null, status: "pending",
   rejection_reason: null, submitted_at: "2026-11-04T00:00:00.000001Z", verified_at: null, updated_at: "2026-11-04T00:00:00Z" };

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getMine, getMyAccountStatus, submit } from "@/lib/company-verification-service";
 import { publishBusinessProblem, toFriendlyError } from "@/lib/problem-service";
 const mocks = vi.hoisted(() => ({ rpc: vi.fn() }));
-vi.mock("@/lib/supabase/client", () => ({ getSupabaseClient: () => ({ rpc: mocks.rpc }) }));
+vi.mock("@/lib/supabase/client", () => ({ getSupabaseClient: () => ({ rpc: mocks.rpc }), loadSupabaseClient: async () => ({ rpc: mocks.rpc }) }));
 
 const row = { status: "pending", legal_name: "Acme", country_code: "PE", tax_id: "12345678901", website_url: null,
   corporate_email: "info@acme.example", linkedin_url: null, rejection_reason: null, submitted_at: "2026-11-04T00:00:00Z", verified_at: null, updated_at: "2026-11-04T00:00:00Z" };

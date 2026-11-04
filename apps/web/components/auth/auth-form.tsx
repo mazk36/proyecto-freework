@@ -10,7 +10,7 @@ import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import { Button } from "@/components/ui/button";
 import type { UserRole } from "@/lib/auth";
 import { authContinuationHref, safeAppDestination } from "@/lib/auth-routing";
-import reversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
+import reversedWordmark from "@/public/optimized/wordmark-reversed-480.webp";
 
 type AuthFormProps = { mode: "login" | "register" };
 

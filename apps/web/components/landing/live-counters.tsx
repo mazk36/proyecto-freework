@@ -1,8 +1,8 @@
 "use client";
 
-import { useInView, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useInViewOnce, usePrefersReducedMotion } from "@/lib/use-in-view-once";
 import { getPublicCounters } from "@/lib/public-counters-service";
 import { COUNTER_DURATION_MS, formatCounterNumber, formatPublicCounter, interpolateCounter, type PublicCounters } from "@/lib/public-counters";
 
@@ -20,8 +20,8 @@ export function LiveCounters() {
   const [elapsed, setElapsed] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
-  const inView = useInView(sectionRef, { once: true });
-  const reducedMotion = useReducedMotion();
+  const inView = useInViewOnce(sectionRef);
+  const reducedMotion = usePrefersReducedMotion();
   const data = state.status === "ready" ? state.data : null;
   const hasData = data !== null;
 

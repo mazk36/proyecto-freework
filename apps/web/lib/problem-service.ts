@@ -1,4 +1,4 @@
-import { getSupabaseClient } from "@/lib/supabase/client";
+import { loadSupabaseClient } from "@/lib/supabase/client";
 import {
   budgetOptions,
   deadlineOptions,
@@ -146,7 +146,7 @@ export async function callRpc<Name extends keyof import("@/types/database").Data
   name: Name,
   args: import("@/types/database").Database["public"]["Functions"][Name]["Args"],
 ): Promise<import("@/types/database").Database["public"]["Functions"][Name]["Returns"]> {
-  const client = getSupabaseClient();
+  const client = await loadSupabaseClient();
   if (!client) throw new ProblemServiceError("La conexión con Supabase no está configurada.");
   const { data, error } = await client.rpc(name, args);
   if (error) throw new ProblemServiceError(toFriendlyError(error.message), toErrorCode(error.message));
