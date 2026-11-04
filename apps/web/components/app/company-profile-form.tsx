@@ -169,7 +169,7 @@ export function CompanyProfileForm({ userId, onProfileSaved }: Props) {
           <span className="grid size-10 place-items-center rounded-xl bg-accent/15 text-accent-soft"><Building2 aria-hidden="true" className="size-5" /></span>
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent-soft">Identidad de empresa</p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight" id="company-profile-title">Perfil de empresa</h2>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight" id="company-profile-title">Datos de la empresa</h2>
           </div>
         </div>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Actualiza la información que MatchWork usa como contexto al publicar tus problemas.</p>

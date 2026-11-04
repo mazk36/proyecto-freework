@@ -42,3 +42,7 @@ Variables: `E2E_BASE_URL` (def. `http://localhost:4173`), `E2E_SUPABASE_URL` (`h
 
 Cada ejecución crea usuarios nuevos (correo con marca de tiempo) y deja sus datos en la base; usa `local-stack.sh reset`
 para empezar limpio. Reconstruye el export antes de correr si cambiaste código de la app.
+
+## Después del e2e
+
+El guion deja usuarios y datos de prueba en la base local. Antes de correr pgTAP (`local-stack.sh test`) haz `local-stack.sh reset`; sin reset fallan 2 pruebas que cuentan filas globales (contadores públicos).
