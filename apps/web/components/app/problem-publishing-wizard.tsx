@@ -276,7 +276,7 @@ export function ProblemPublishingWizard() {
           <p className="text-sm font-semibold">Paso {step} de 5 <span className="ml-2 font-normal text-muted-foreground">{stepTitles[step - 1]}</span></p>
           <span className="text-xs font-medium tabular-nums text-muted-foreground">{Math.round(progress)}%</span>
         </div>
-        <div aria-valuemax={100} aria-valuemin={0} aria-valuenow={progress} className="mt-3 h-2 overflow-hidden rounded-full bg-accent-soft" role="progressbar">
+        <div aria-label={`Progreso de la publicación, paso ${step} de 5`} aria-valuemax={100} aria-valuemin={0} aria-valuenow={progress} className="mt-3 h-2 overflow-hidden rounded-full bg-accent-soft" role="progressbar">
           <div className="h-full rounded-full bg-accent transition-[width]" style={{ width: `${progress}%` }} />
         </div>
 
