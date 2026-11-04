@@ -3,6 +3,7 @@
 import { Check, FilePenLine, RotateCcw, Send } from "lucide-react";
 import { motion, MotionConfig, useReducedMotion } from "motion/react";
 import { useEffect, useId, useState, type FormEvent } from "react";
+import { useCanWrite } from "@/components/app/account-status";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -35,12 +36,13 @@ export function ProposalSheet({
   problemUnavailable?: boolean;
 }) {
   const id = useId();
+  const canWrite = useCanWrite();
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   const reducedMotion = useReducedMotion();
   const { state, busy, dispatch, retry, close, saveAndClose, submit } = useProposalForm(problem.id, services, onClose, onSubmitted);
   useEffect(() => { if (confirmDiscard) document.getElementById(`${id}-cancel-discard`)?.focus(); }, [confirmDiscard, id]);
   useEffect(() => { if (state.saveStatus !== "error") setConfirmDiscard(false); }, [state.saveStatus]);
-  const statusText = busy === "submitting" ? "Enviando propuesta…" : busy === "saving" ? "Guardando borrador…" : {
+  const statusText = !canWrite ? "Puedes consultar el borrador; las acciones de escritura no están disponibles." : busy === "submitting" ? "Enviando propuesta…" : busy === "saving" ? "Guardando borrador…" : {
     idle: "Tu borrador se guardará automáticamente.",
     dirty: "Cambios pendientes de guardar.",
     saving: "Guardando…",
@@ -85,7 +87,7 @@ export function ProposalSheet({
     {state.phase === "ready" ? <form className="space-y-6" id={`${id}-form`} noValidate onSubmit={(event) => { void handleSubmit(event); }}>
       <div className="rounded-2xl border border-border bg-background p-4"><p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-lavender">Problema</p><p className="mt-2 break-words font-display text-base font-semibold">{problem.title}</p><p className="mt-1 text-sm text-muted-foreground">{problem.companyName || "Empresa reservada"}</p></div>
       {problemUnavailable ? <p className="rounded-xl border border-warning/40 bg-warning-soft p-4 text-sm leading-6 text-warning">La información pública de este problema no está disponible. Solo podrás guardar o enviar el borrador si el problema está abierto.</p> : null}
-      <fieldset className="space-y-6" disabled={Boolean(busy)}>
+      <fieldset className="space-y-6" disabled={!canWrite || Boolean(busy)}>
         {textFields.slice(0, 4).map(textField)}
         <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div><label className="block text-sm font-semibold" htmlFor={`${id}-price`}>Precio <span className="font-normal text-muted-foreground">· Obligatorio</span></label><p className="mt-1 text-sm leading-5 text-muted-foreground" id={`${id}-price-hint`}>Precio total de tu propuesta.</p><input aria-describedby={`${id}-price-hint${state.fieldErrors.price ? ` ${id}-price-error` : ""}`} aria-invalid={Boolean(state.fieldErrors.price)} aria-required="true" className={inputClass} id={`${id}-price`} inputMode="decimal" onChange={(event) => dispatch({ type: "edit-price", value: event.target.value })} placeholder="0.00" type="text" value={state.priceText} />{state.fieldErrors.price ? <p className="mt-2 text-sm leading-5 text-danger" id={`${id}-price-error`}>{state.fieldErrors.price}</p> : null}</div>
@@ -99,7 +101,7 @@ export function ProposalSheet({
         {state.saveStatus === "error" && state.revision > state.savedRevision ? <div className="mt-3">
           {confirmDiscard ? <div aria-label="Confirmar cierre sin guardar" className="rounded-xl border border-warning/40 bg-warning-soft p-4" role="group"><p className="text-sm leading-6 text-warning">Si cierras ahora, perderás los cambios que aún no se guardaron.</p><div className="mt-3 flex flex-wrap gap-2"><Button disabled={Boolean(busy)} id={`${id}-cancel-discard`} onClick={() => setConfirmDiscard(false)} variant="outline">Seguir editando</Button><Button disabled={Boolean(busy)} onClick={onClose} variant="outline">Sí, cerrar sin guardar</Button></div></div> : <Button disabled={Boolean(busy)} onClick={() => setConfirmDiscard(true)} variant="quiet">Cerrar sin guardar cambios</Button>}
         </div> : null}
-        <div className="mt-4 grid gap-3"><Button disabled={Boolean(busy)} type="submit">Enviar propuesta <Send aria-hidden="true" className="size-4" /></Button><Button disabled={Boolean(busy)} onClick={() => { void saveAndClose(); }} variant="outline"><FilePenLine aria-hidden="true" className="size-4" />Guardar borrador para después</Button></div>
+        <div className="mt-4 grid gap-3"><Button disabled={!canWrite || Boolean(busy)} type="submit">Enviar propuesta <Send aria-hidden="true" className="size-4" /></Button><Button disabled={!canWrite || Boolean(busy)} onClick={() => { void saveAndClose(); }} variant="outline"><FilePenLine aria-hidden="true" className="size-4" />Guardar borrador para después</Button></div>
       </div>
     </form> : null}
   </BottomSheet></MotionConfig>;

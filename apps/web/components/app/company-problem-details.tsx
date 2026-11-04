@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { useCanWrite } from "@/components/app/account-status";
 import { Button, ButtonLink } from "@/components/ui/button";
 import type { CompanyProblem } from "@/lib/problem-domain";
 import {
@@ -21,6 +22,7 @@ import {
 const statusLabel = { draft: "Borrador", open: "Publicado", paused: "En pausa", closed: "Cerrado" } as const;
 
 export function CompanyProblemDetails() {
+  const canWrite = useCanWrite();
   const router = useRouter();
   const { user } = useAuth();
   const [problem, setProblem] = useState<CompanyProblem | null>(null);
@@ -126,15 +128,15 @@ export function CompanyProblemDetails() {
 
       <div className="mt-6 flex flex-wrap gap-3">
         {problem.status === "draft" ? <ButtonLink href={`/app/problemas/nuevo/?id=${encodeURIComponent(problem.id)}`}>Continuar borrador</ButtonLink> : null}
-        {(problem.status === "open" || problem.status === "paused") ? <Button disabled={isWorking} onClick={() => void editProblem()} variant="outline">Editar publicación</Button> : null}
-        {problem.status === "open" ? <Button disabled={isWorking} onClick={() => void changeState("pause")} variant="outline">Pausar publicación</Button> : null}
-        {problem.status === "paused" ? <Button disabled={isWorking} onClick={() => void changeState("resume")} variant="outline">Reanudar publicación</Button> : null}
-        {(problem.status === "open" || problem.status === "paused") && !confirmClose ? <Button disabled={isWorking} onClick={() => setConfirmClose(true)} variant="quiet">Cerrar sin adjudicar</Button> : null}
+        {(problem.status === "open" || problem.status === "paused") ? <Button disabled={!canWrite || isWorking} onClick={() => void editProblem()} variant="outline">Editar publicación</Button> : null}
+        {problem.status === "open" ? <Button disabled={!canWrite || isWorking} onClick={() => void changeState("pause")} variant="outline">Pausar publicación</Button> : null}
+        {problem.status === "paused" ? <Button disabled={!canWrite || isWorking} onClick={() => void changeState("resume")} variant="outline">Reanudar publicación</Button> : null}
+        {(problem.status === "open" || problem.status === "paused") && !confirmClose ? <Button disabled={!canWrite || isWorking} onClick={() => setConfirmClose(true)} variant="quiet">Cerrar sin adjudicar</Button> : null}
       </div>
       {confirmClose ? (
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4">
           <p className="text-sm text-amber-950">Al cerrar, ya no se podrá reanudar esta publicación. ¿Quieres continuar?</p>
-          <div className="flex gap-2"><Button disabled={isWorking} onClick={() => setConfirmClose(false)} variant="outline">Volver</Button><Button disabled={isWorking} onClick={() => void changeState("close")}>{isWorking ? "Cerrando…" : "Confirmar cierre"}</Button></div>
+          <div className="flex gap-2"><Button disabled={!canWrite || isWorking} onClick={() => setConfirmClose(false)} variant="outline">Volver</Button><Button disabled={!canWrite || isWorking} onClick={() => void changeState("close")}>{isWorking ? "Cerrando…" : "Confirmar cierre"}</Button></div>
         </div>
       ) : null}
     </main>

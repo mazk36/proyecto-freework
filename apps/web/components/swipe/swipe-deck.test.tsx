@@ -1,5 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
+import { AccountStatusContext } from "@/components/app/account-status";
 import { ToastProvider } from "@/components/ui/toast";
 import type { PublicProblem } from "@/lib/problem-domain";
 import { DeckExperience } from "./swipe-deck";
@@ -26,6 +27,18 @@ describe("SwipeDeck rendering", () => {
     expect(html).toContain('aria-label="No me interesa"');
     expect(html).toContain('aria-label="Me interesa"');
     expect(html).toContain('aria-live="polite"');
+  });
+
+  it("mantiene el detalle legible y deshabilita las decisiones de una cuenta suspendida", () => {
+    const html = renderToStaticMarkup(<ToastProvider><AccountStatusContext.Provider value={{ state: "suspended", reason: "Revisión" }}><DeckExperience
+      initialInteractions={{}}
+      problems={[{ ...problem, companyVerified: false }]}
+      saveInteraction={async (_id, state) => state ?? "unseen"}
+    /></AccountStatusContext.Provider></ToastProvider>);
+    expect(html).toContain("Ordenar la atención");
+    expect(html).toContain("Empresa sin verificar");
+    expect(html).toMatch(/aria-label="No me interesa"[^>]*disabled=""/);
+    expect(html).toMatch(/disabled=""[^>]*>Proponer ahora/);
   });
 
   it("shows the recovery actions when there are no unseen problems", () => {

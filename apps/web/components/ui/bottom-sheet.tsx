@@ -39,12 +39,14 @@ export function BottomSheet({
   title,
   description,
   children,
+  centered = false,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
   description?: string;
   children: ReactNode;
+  centered?: boolean;
 }) {
   const titleId = useId();
   const descriptionId = useId();
@@ -86,6 +88,14 @@ export function BottomSheet({
     function handleKeyDown(event: KeyboardEvent) {
       if (!panel) return;
       if (event.key === "Escape") {
+        const popover = panel.querySelector<HTMLElement>(":popover-open");
+        if (popover) {
+          event.preventDefault();
+          event.stopPropagation();
+          popover.hidePopover();
+          panel.querySelector<HTMLElement>(`[aria-controls="${CSS.escape(popover.id)}"]`)?.focus();
+          return;
+        }
         event.preventDefault();
         event.stopPropagation();
         onCloseRef.current();
@@ -172,7 +182,7 @@ export function BottomSheet({
   if (!open || !mounted) return null;
 
   return createPortal(
-    <MotionConfig reducedMotion="user"><div className="ui-portal ui-sheet-layer">
+    <MotionConfig reducedMotion="user"><div className={`ui-portal ui-sheet-layer${centered ? " ui-sheet-layer--centered" : ""}`}>
       <div aria-hidden="true" className="ui-sheet-backdrop" onClick={() => onCloseRef.current()} />
       <motion.section
         aria-describedby={description ? descriptionId : undefined}

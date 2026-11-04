@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuth } from "@/components/auth/auth-provider";
+import { CompanyTrustChip } from "@/components/ui/company-trust-chip";
 import { AppEmptyState } from "@/components/app/app-empty-state";
 import { ButtonLink } from "@/components/ui/button";
 import { listOpenBusinessProblems, budgetLabel, deadlineLabel, objectiveLabels, impactLabels } from "@/lib/problem-service";
@@ -53,7 +54,8 @@ export function OpenProblemFeed() {
               <p className="text-xs font-medium text-muted-foreground">{problem.industrySnapshot || "Sector empresarial"}{problem.companyName ? ` · ${problem.companyName}` : " · Empresa reservada"}</p>
               <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-semibold text-emerald-800">Abierto</span>
             </div>
-            <h2 className="mt-3 text-lg font-semibold">{problem.title}</h2>
+            <CompanyTrustChip verified={problem.companyVerified} />
+            <h2 className="mt-3 break-words text-lg font-semibold">{problem.title}</h2>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{problem.description}</p>
             {problem.impacts.length ? <p className="mt-4 text-xs leading-5 text-muted-foreground">Impacto: {impactLabels(problem.impacts).join(", ")}</p> : null}
             <div className="mt-5 flex flex-wrap gap-2">

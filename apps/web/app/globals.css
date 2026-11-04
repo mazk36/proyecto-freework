@@ -527,6 +527,42 @@ html:has(.proposals-preview) {
   }
 }
 
+@media (min-width: 48rem) {
+  .ui-sheet-layer--centered {
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .ui-sheet-layer--centered .ui-sheet-panel {
+    width: min(40rem, 100%);
+    max-height: min(90dvh, 56rem);
+    border-width: 1px;
+    border-radius: 1.5rem;
+    box-shadow: 0 16px 50px rgb(0 0 0 / 25%);
+    animation-name: ui-fade-in;
+  }
+}
+
+/* Las acciones nuevas mantienen el acento de marca con contraste para texto pequeño. */
+.verification-action {
+  background-color: color-mix(in srgb, var(--accent) 85%, var(--brand-navy));
+  color: var(--accent-foreground);
+}
+
+.verification-action:hover {
+  background-color: color-mix(in srgb, var(--accent) 75%, var(--brand-navy));
+}
+
+.ui-trust-popover:popover-open {
+  position: fixed;
+  inset: auto auto max(1rem, env(safe-area-inset-bottom)) 50%;
+  width: min(24rem, calc(100% - 2rem));
+  max-width: none;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
 @keyframes ui-panel-enter {
   from { opacity: 0; transform: translateX(2rem); }
   to { opacity: 1; transform: translateX(0); }

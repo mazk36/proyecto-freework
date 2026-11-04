@@ -3,6 +3,7 @@
 import { ArrowLeft, ArrowRight, ArrowUpRight, Heart, Network, RotateCcw, Sparkles, X } from "lucide-react";
 import { AnimatePresence, motion, MotionConfig } from "motion/react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useCanWrite } from "@/components/app/account-status";
 import { useAuth } from "@/components/auth/auth-provider";
 import { ProposalSheet } from "@/components/proposals/proposal-sheet";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
@@ -75,6 +76,7 @@ export function DeckExperience({
   proposalServices?: ProposalServices;
 }) {
   const { toast, dismiss } = useToast();
+  const canWrite = useCanWrite();
   const [interactions, setInteractions] = useState(initialInteractions);
   const [pending, setPending] = useState<Set<string>>(() => new Set());
   const [resetting, setResetting] = useState(false);
@@ -117,7 +119,7 @@ export function DeckExperience({
   }
 
   async function undo(entry: UndoEntry) {
-    if (latestUndo.current !== entry || entry.undoing) return;
+    if (!canWrite || latestUndo.current !== entry || entry.undoing) return;
     latestUndo.current = null;
     entry.undoing = true;
     dismiss(entry.toastId);
@@ -136,7 +138,7 @@ export function DeckExperience({
   }
 
   function decide(direction: "like" | "dismiss", width = activeCard.current?.getBoundingClientRect().width ?? 0) {
-    if (!current || resetting || pending.has(current.id) || decisionLock.current === current.id) return;
+    if (!canWrite || !current || resetting || pending.has(current.id) || decisionLock.current === current.id) return;
     decisionLock.current = current.id;
     if (latestUndo.current) { dismiss(latestUndo.current.toastId); latestUndo.current = null; }
     const state = direction === "like" ? "saved" : "dismissed";
@@ -176,7 +178,7 @@ export function DeckExperience({
   }
 
   async function reviewDismissed() {
-    if (!dismissedIds.length || resetting || pending.size > 0) return;
+    if (!canWrite || !dismissedIds.length || resetting || pending.size > 0) return;
     if (latestUndo.current) { dismiss(latestUndo.current.toastId); latestUndo.current = null; }
     setResetting(true);
     shouldFocusCard.current = true;
@@ -213,7 +215,7 @@ export function DeckExperience({
       if (event.key === "ArrowLeft" && current) { event.preventDefault(); decide("dismiss"); }
       else if (event.key === "ArrowRight" && current) { event.preventDefault(); decide("like"); }
       else if (event.key === "Enter" && current && (!target || target === document.body || target === activeCard.current)) { event.preventDefault(); openDetail(); }
-      else if (event.key.toLowerCase() === "p" && current) { event.preventDefault(); setProposalProblem(current); }
+      else if (event.key.toLowerCase() === "p" && current && canWrite) { event.preventDefault(); setProposalProblem(current); }
       else if (event.key.toLowerCase() === "z" && latestUndo.current) { event.preventDefault(); void undo(latestUndo.current); }
     }
     window.addEventListener("keydown", onKeyDown);
@@ -228,22 +230,22 @@ export function DeckExperience({
         {displayedProblem ? <div className="grid min-h-0 flex-1 gap-8 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)] lg:gap-10">
           <div className="mx-auto flex h-full min-h-0 w-full max-w-md flex-col lg:mx-0">
             <div className="relative min-h-80 w-full max-h-[40rem] flex-1 sm:min-h-[22rem]">
-              <AnimatePresence custom={exitDirection} initial={false} onExitComplete={() => setLastExiting(null)}>{cards.slice(0, 3).map((problem, position) => <SwipeCard activeRef={activeCard} disabled={resetting || pending.has(problem.id)} key={problem.id} onDecision={decide} onOpenDetail={openDetail} position={position} problem={problem} />)}</AnimatePresence>
+              <AnimatePresence custom={exitDirection} initial={false} onExitComplete={() => setLastExiting(null)}>{cards.slice(0, 3).map((problem, position) => <SwipeCard activeRef={activeCard} disabled={resetting || pending.has(problem.id)} key={problem.id} readOnly={!canWrite} onDecision={decide} onOpenDetail={openDetail} position={position} problem={problem} />)}</AnimatePresence>
               <DeckTutorial storageKey={tutorialStorageKey} />
             </div>
             <div className="swipe-actions relative z-10 mt-3 shrink-0">
               <div className="swipe-actions__bar mx-auto flex w-full max-w-md items-center justify-center gap-3">
-                <button aria-label="No me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-border bg-surface text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("dismiss")} type="button"><X aria-hidden="true" className="size-6" /></button>
-                <Button className="min-h-14 min-w-0 flex-1" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => setProposalProblem(displayedProblem)}>Proponer ahora <ArrowUpRight aria-hidden="true" className="size-4" /></Button>
-                <button aria-label="Me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-accent/40 bg-accent/15 text-brand-lavender transition-colors hover:bg-accent/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("like")} type="button"><Heart aria-hidden="true" className="size-6" /></button>
+                <button aria-label="No me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-border bg-surface text-muted-foreground transition-colors hover:bg-surface-raised hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!canWrite || !current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("dismiss")} type="button"><X aria-hidden="true" className="size-6" /></button>
+                <Button className="min-h-14 min-w-0 flex-1" disabled={!canWrite || !current || resetting || pending.has(displayedProblem.id)} onClick={() => setProposalProblem(displayedProblem)}>Proponer ahora <ArrowUpRight aria-hidden="true" className="size-4" /></Button>
+                <button aria-label="Me interesa" className="grid size-14 shrink-0 place-items-center rounded-2xl border border-accent/40 bg-accent/15 text-brand-lavender transition-colors hover:bg-accent/25 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50" disabled={!canWrite || !current || resetting || pending.has(displayedProblem.id)} onClick={() => decide("like")} type="button"><Heart aria-hidden="true" className="size-6" /></button>
               </div>
             </div>
-            <p className="mt-2 hidden shrink-0 items-center justify-center gap-2 text-xs text-muted-foreground lg:flex"><ArrowLeft aria-hidden="true" className="size-3.5" /> descartar <ArrowRight aria-hidden="true" className="ml-2 size-3.5" /> me interesa <span className="ml-2">Enter detalle · P proponer · Z deshacer</span></p>
+            {canWrite ? <p className="mt-2 hidden shrink-0 items-center justify-center gap-2 text-xs text-muted-foreground lg:flex"><ArrowLeft aria-hidden="true" className="size-3.5" /> descartar <ArrowRight aria-hidden="true" className="ml-2 size-3.5" /> me interesa <span className="ml-2">Enter detalle · P proponer · Z deshacer</span></p> : null}
           </div>
           <div aria-label="Detalle del problema actual" className="ui-scrollbar hidden min-h-0 max-h-full overflow-y-auto rounded-3xl border border-border bg-surface p-7 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:block" ref={desktopDetail} tabIndex={-1}>
             <AnimatePresence initial={false} mode="wait"><motion.div animate={{ opacity: 1 }} exit={{ opacity: 0 }} initial={{ opacity: 0 }} key={displayedProblem.id} transition={{ duration: 0.15 }}><DeckDetail onPropose={() => setProposalProblem(displayedProblem)} problem={displayedProblem} /></motion.div></AnimatePresence>
           </div>
-        </div> : <div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" ref={emptyState} tabIndex={-1}><EmptyState action={<div className="flex flex-wrap justify-center gap-3"><ButtonLink href="/app/likes">Ver mis Likes</ButtonLink><Button disabled={!dismissedIds.length || resetting || pending.size > 0} onClick={() => { void reviewDismissed(); }} variant="outline">Volver a revisar descartados</Button></div>} description="Cuando haya más problemas disponibles, los encontrarás aquí." icon={Network} title="Ya viste todo por ahora" /></div>}
+        </div> : <div className="mx-auto max-w-xl rounded-3xl border border-border bg-surface focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" ref={emptyState} tabIndex={-1}><EmptyState action={<div className="flex flex-wrap justify-center gap-3"><ButtonLink href="/app/likes">Ver mis Likes</ButtonLink><Button disabled={!canWrite || !dismissedIds.length || resetting || pending.size > 0} onClick={() => { void reviewDismissed(); }} variant="outline">Volver a revisar descartados</Button></div>} description="Cuando haya más problemas disponibles, los encontrarás aquí." icon={Network} title="Ya viste todo por ahora" /></div>}
         <BottomSheet onClose={() => setDetailOpen(false)} open={detailOpen && Boolean(current)} title="Detalle del problema">{current ? <DeckDetail onPropose={() => { setDetailOpen(false); setProposalProblem(current); }} problem={current} /> : null}</BottomSheet>
         {proposalProblem ? <ProposalSheet key={proposalProblem.id} onClose={() => { setProposalProblem(null); if (submittedIds.current.has(proposalProblem.id)) window.requestAnimationFrame(() => (activeCard.current ?? emptyState.current)?.focus()); }} onSubmitted={() => {
           submittedIds.current.add(proposalProblem.id);

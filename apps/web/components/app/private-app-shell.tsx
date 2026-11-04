@@ -10,6 +10,8 @@ import {
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { AccountStatusContext, SuspensionNotice, type AccountStatus } from "@/components/app/account-status";
+import { getMyAccountStatus } from "@/lib/company-verification-service";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
 import type { UserRole } from "@/lib/auth";
@@ -45,7 +47,20 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname() ?? "/app";
   const { user, logout, storageNotice, authIssue } = useAuth();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [accountStatusResult, setAccountStatusResult] = useState<{ userId: string; status: AccountStatus } | null>(null);
+  const [statusAttempt, setStatusAttempt] = useState(0);
+  const accountStatus: AccountStatus = accountStatusResult && accountStatusResult.userId === user?.id ? accountStatusResult.status : { state: "loading" };
   const isChatPage = pathname === "/app/chats" || pathname === "/app/chats/";
+
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    setAccountStatusResult({ userId: user.id, status: { state: "loading" } });
+    void getMyAccountStatus().then((status) => {
+      if (active) setAccountStatusResult({ userId: user.id, status: status.suspended ? { state: "suspended", reason: status.reason } : { state: "active" } });
+    }).catch(() => { if (active) setAccountStatusResult({ userId: user.id, status: { state: "error" } }); });
+    return () => { active = false; };
+  }, [user?.id, statusAttempt]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -139,7 +154,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className={`private-app-shell flex flex-col bg-background text-foreground ${isChatPage ? "h-dvh overflow-hidden" : "min-h-screen"}`}>
+    <AccountStatusContext.Provider value={accountStatus}><div className={`private-app-shell flex flex-col bg-background text-foreground ${isChatPage ? "h-dvh overflow-hidden" : "min-h-screen"}`}>
       <a className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-surface-raised focus:px-4 focus:py-3 focus:text-foreground" href="#main-content">
         Saltar al contenido
       </a>
@@ -170,6 +185,10 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         </div> : null}
       </header>
 
+      {accountStatus.state === "suspended" ? <div className="mx-auto w-full max-w-[1720px] px-4 py-3 sm:px-6 lg:px-8"><SuspensionNotice onLogout={handleLogout} reason={accountStatus.reason} /></div> : null}
+      {accountStatus.state === "error" ? <div className="mx-auto w-full max-w-[1720px] px-4 py-3 text-sm text-muted-foreground" role="status">No pudimos consultar el estado de tu cuenta. Las acciones de escritura están pausadas. <button className="min-h-11 rounded px-2 font-semibold text-foreground underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => setStatusAttempt((value) => value + 1)} type="button">Reintentar</button></div> : null}
+      {accountStatus.state === "loading" ? <p className="px-4 py-2 text-sm text-muted-foreground" role="status">Comprobando el estado de tu cuenta…</p> : null}
+
       <div className={`mx-auto grid w-full max-w-[1720px] flex-1 grid-cols-1 md:grid-cols-[5rem_minmax(0,1fr)] lg:grid-cols-[15rem_minmax(0,1fr)] ${isChatPage ? "min-h-0" : ""}`}>
         <aside className="hidden border-r border-border px-3 py-7 md:block lg:px-5">
           <nav aria-label="Navegación principal" className="sticky top-6 flex flex-col gap-2">
@@ -194,6 +213,6 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
           {navigation.map((item) => renderNavigationItem(item, true))}
         </div>
       </nav>
-    </div>
+    </div></AccountStatusContext.Provider>
   );
 }

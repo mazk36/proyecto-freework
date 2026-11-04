@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { useCanWrite } from "@/components/app/account-status";
 import { PortfolioManager } from "@/components/app/portfolio-manager";
 import { FreelancerProfilePresentation } from "@/components/app/freelancer-profile-presentation";
 import {
@@ -63,6 +64,7 @@ function initials(name: string): string {
 }
 
 export function FreelancerProfileForm({ userId }: Props) {
+  const canWrite = useCanWrite();
   const [data, setData] = useState<FreelancerProfileData | null>(null);
   const [draft, setDraft] = useState<FreelancerProfileDraft>(emptyDraft);
   const [isLoading, setIsLoading] = useState(true);
@@ -347,7 +349,7 @@ export function FreelancerProfileForm({ userId }: Props) {
           <FreelancerProfilePresentation profile={profilePreview} />
         </div>
       ) : (
-        <>
+        <fieldset className="min-w-0" disabled={!canWrite}>
           <section aria-labelledby="identity-title" className="rounded-2xl border border-border bg-surface p-5 sm:p-7">
             <div className="flex flex-col gap-6 sm:flex-row sm:items-start">
               <div className="flex shrink-0 items-center gap-4 sm:block">
@@ -548,7 +550,7 @@ export function FreelancerProfileForm({ userId }: Props) {
               </div>
             </div>
           </section>
-        </>
+        </fieldset>
       )}
     </section>
   );

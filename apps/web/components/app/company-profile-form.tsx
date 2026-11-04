@@ -4,13 +4,14 @@ import Image from "next/image";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Building2, ImagePlus, Trash2 } from "lucide-react";
+import { useCanWrite } from "@/components/app/account-status";
 import { Button } from "@/components/ui/button";
 import { getCompanyProfile, saveCompanyProfile } from "@/lib/problem-service";
 import { validateCompanyProfile, type CompanyProfile } from "@/lib/problem-domain";
 import { validateImageFile, AVATAR_MAX_BYTES } from "@/lib/profile-domain";
 import { loadMyCompanyLogo, removeCompanyLogo, uploadCompanyLogo } from "@/lib/profile-service";
 
-type Props = { userId: string };
+type Props = { userId: string; onProfileSaved?: () => void };
 
 const countryOptions = [
   ["PE", "Perú"], ["AR", "Argentina"], ["CL", "Chile"], ["CO", "Colombia"],
@@ -32,8 +33,9 @@ function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "No pudimos completar el cambio. Inténtalo de nuevo.";
 }
 
-export function CompanyProfileForm({ userId }: Props) {
+export function CompanyProfileForm({ userId, onProfileSaved }: Props) {
   const router = useRouter();
+  const canWrite = useCanWrite();
   const [profile, setProfile] = useState<CompanyProfile>(emptyProfile);
   const [logoPath, setLogoPath] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
@@ -91,6 +93,7 @@ export function CompanyProfileForm({ userId }: Props) {
     try {
       const saved = await saveCompanyProfile(profile);
       setProfile({ ...emptyProfile, ...saved });
+      onProfileSaved?.();
       const next = new URLSearchParams(window.location.search).get("next");
       if (next?.startsWith("/app/") && !next.startsWith("//") && !next.includes("\\")) {
         router.replace(next);
@@ -177,7 +180,7 @@ export function CompanyProfileForm({ userId }: Props) {
             <Button className="mt-4" onClick={() => { setIsLoading(true); setLoadAttempt((attempt) => attempt + 1); }} variant="outline">Volver a intentar</Button>
           </div>
         ) : (
-          <>
+          <fieldset className="min-w-0" disabled={!canWrite}>
             <div className="mt-6 grid gap-5 border-t border-border pt-6 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center">
               <div className="grid size-24 place-items-center overflow-hidden rounded-2xl border border-border bg-background text-accent-soft sm:size-28">
                 {imageSrc ? <Image alt="Logotipo de la empresa" className="size-full object-contain p-2" height={224} src={imageSrc} unoptimized width={224} /> : <Building2 aria-hidden="true" className="size-9" />}
@@ -241,7 +244,7 @@ export function CompanyProfileForm({ userId }: Props) {
               {notice ? <p className="text-sm text-emerald-300" role="status">{notice}</p> : null}
               <Button disabled={isSaving} type="submit">{isSaving ? "Guardando…" : "Guardar perfil empresarial"}</Button>
             </form>
-          </>
+          </fieldset>
         )}
       </section>
     </>

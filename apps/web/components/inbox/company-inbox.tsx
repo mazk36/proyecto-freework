@@ -2,6 +2,7 @@
 
 import { Columns3, Inbox, RotateCcw } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { useCanWrite } from "@/components/app/account-status";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -32,6 +33,7 @@ type LoadState = { status: "loading" } | { status: "error"; message: string } | 
 
 export function CompanyInbox({ services = defaultServices, initialFilter = "all" }: { services?: CompanyInboxServices; initialFilter?: InboxFilter }) {
   const { toast } = useToast();
+  const canWrite = useCanWrite();
   const [state, setState] = useState<LoadState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
   const [selectedId, setSelectedId] = useState("");
@@ -122,7 +124,7 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
   }
 
   async function decide(proposal: InboxProposal, next: CompanyProposalInteraction, undo = false) {
-    if (busyRef.current.size > 0) return;
+    if (!canWrite || busyRef.current.size > 0) return;
     const version = (versionRef.current[proposal.id] ?? 0) + 1;
     versionRef.current[proposal.id] = version;
     const startingFocus = document.activeElement;
@@ -211,7 +213,8 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
   const visible = filterInboxProposals(proposals, filter);
   const selected = proposals.filter((proposal) => selectedForComparison.includes(proposal.id));
   const availability = comparisonAvailability(selected.length);
-  const canInteract = selectedGroup?.problem.status === "open" || selectedGroup?.problem.status === "paused";
+  const problemCanInteract = selectedGroup?.problem.status === "open" || selectedGroup?.problem.status === "paused";
+  const canInteract = canWrite && problemCanInteract;
 
   return <main className="company-inbox mx-auto w-full max-w-6xl px-4 pb-44 pt-8 sm:px-8 sm:pt-12">
     <header className="flex flex-wrap items-end justify-between gap-4">
@@ -229,7 +232,7 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
       {selectedGroup && proposals.length > 0 ? <div className="mt-8">
         {comparing ? <ProposalComparison onBack={backToInbox} proposals={selected} /> : <>
           <div className="flex flex-wrap items-end justify-between gap-3"><div><h2 className="break-words font-display text-xl font-semibold">{selectedGroup.problem.title || "Problema sin título"}</h2><p className="mt-1 text-sm text-muted-foreground">{proposals.length} {proposals.length === 1 ? "propuesta enviada" : "propuestas enviadas"}</p></div></div>
-          {!canInteract ? <p className="mt-4 rounded-xl border border-warning/30 bg-warning-soft p-3 text-sm leading-6 text-warning">Para cambiar decisiones, el problema debe estar abierto o en pausa.</p> : null}
+          {!problemCanInteract ? <p className="mt-4 rounded-xl border border-warning/30 bg-warning-soft p-3 text-sm leading-6 text-warning">Para cambiar decisiones, el problema debe estar abierto o en pausa.</p> : null}
           <div aria-label="Filtrar propuestas por estado" className="mt-5 flex flex-wrap gap-2" role="group">{filters.map((item) => <button aria-pressed={filter === item.value} className={`min-h-11 rounded-xl border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${filter === item.value ? "border-accent bg-accent/20 text-foreground" : "border-border text-muted-foreground hover:bg-surface hover:text-foreground"}`} key={item.value} onClick={() => setFilter(item.value)} type="button">{item.label}</button>)}</div>
           {busyIds.length ? <p aria-live="polite" className="mt-3 text-sm text-muted-foreground" role="status">Actualizando una decisión; podrás realizar otra acción en un momento.</p> : null}
           {visible.length ? <div className="mt-5 grid gap-4">{visible.map((proposal) => <ProposalCard busy={busyIds.length > 0} canInteract={Boolean(canInteract)} comparisonFull={availability.isFull} key={proposal.id} onCompare={() => setSelectedForComparison((current) => toggleCompare(current, proposal.id))} onDecision={(next) => { void decide(proposal, next); }} onDetail={() => setDetail(proposal)} pending={busyIds.includes(proposal.id)} proposal={proposal} selected={selectedForComparison.includes(proposal.id)} />)}</div> : <div className="mt-5 rounded-2xl border border-border bg-surface"><EmptyState action={<Button onClick={() => setFilter("all")} variant="outline">Ver todas</Button>} compact description="Prueba otro filtro para seguir revisando este problema." icon={Inbox} title="No hay propuestas en este estado" /></div>}

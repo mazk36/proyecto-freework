@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { CompanyVerificationCard } from "@/components/app/company-verification-card";
 import { useAuth } from "@/components/auth/auth-provider";
 import { CompanyProfileForm } from "@/components/app/company-profile-form";
 import { CompanyProfilePublications } from "@/components/app/company-profile-publications";
@@ -7,6 +9,7 @@ import { FreelancerProfileForm } from "@/components/app/freelancer-profile-form"
 
 export function ProfileDetails() {
   const { user } = useAuth();
+  const [profileVersion, setProfileVersion] = useState(0);
   if (!user) return null;
 
   if (user.role === "freelancer") return <FreelancerProfileForm userId={user.id} />;
@@ -30,7 +33,8 @@ export function ProfileDetails() {
           <dd className="text-sm font-medium text-foreground">Empresa</dd>
         </div>
       </dl>
-      <CompanyProfileForm userId={user.id} />
+      <CompanyVerificationCard refreshKey={profileVersion} />
+      <CompanyProfileForm onProfileSaved={() => setProfileVersion((value) => value + 1)} userId={user.id} />
       <CompanyProfilePublications />
     </section>
   );

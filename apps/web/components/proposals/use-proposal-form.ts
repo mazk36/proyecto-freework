@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useCanWrite } from "@/components/app/account-status";
 import { ProblemServiceError } from "@/lib/problem-service";
 import {
   initialProposalFormState,
@@ -17,6 +18,7 @@ function friendlyError(error: unknown, fallback: string): string {
 }
 
 export function useProposalForm(problemId: string, services: ProposalServices, onClose: () => void, onSubmitted: () => void) {
+  const canWrite = useCanWrite();
   const [state, setState] = useState(initialProposalFormState);
   const stateRef = useRef(state);
   const [attempt, setAttempt] = useState(0);
@@ -45,7 +47,7 @@ export function useProposalForm(problemId: string, services: ProposalServices, o
   }, [attempt, dispatch, problemId, services]);
 
   const persist = useCallback((force: boolean): Promise<boolean> => saveQueue.run(async () => {
-    if (!mounted.current || (!force && busyRef.current)) return false;
+    if (!canWrite || !mounted.current || (!force && busyRef.current)) return false;
     const snapshot = stateRef.current;
     if (snapshot.phase !== "ready") return false;
     if (!force && snapshot.revision <= snapshot.savedRevision) return true;
@@ -63,17 +65,18 @@ export function useProposalForm(problemId: string, services: ProposalServices, o
       dispatch({ type: "save-error", message: friendlyError(error, "No pudimos guardar el borrador. Revisa tu conexión e inténtalo de nuevo.") });
       return false;
     }
-  }), [dispatch, problemId, saveQueue, services]);
+  }), [canWrite, dispatch, problemId, saveQueue, services]);
 
   useEffect(() => {
     const delay = proposalSaveDelay(state);
-    if (delay === null || busy) return;
+    if (!canWrite || delay === null || busy) return;
     const timer = window.setTimeout(() => { void persist(false); }, delay);
     return () => window.clearTimeout(timer);
-  }, [busy, persist, state]);
+  }, [busy, canWrite, persist, state]);
 
   async function saveAndClose(force: boolean) {
     if (busyRef.current) return;
+    if (!canWrite) { onClose(); return; }
     const current = stateRef.current;
     if (current.phase !== "ready") { onClose(); return; }
     if (!force && current.revision <= current.savedRevision && !saveQueue.pending) { onClose(); return; }
@@ -86,7 +89,7 @@ export function useProposalForm(problemId: string, services: ProposalServices, o
   }
 
   async function submit(): Promise<"invalid" | "failed" | "submitted"> {
-    if (busyRef.current || stateRef.current.phase !== "ready") return "failed";
+    if (!canWrite || busyRef.current || stateRef.current.phase !== "ready") return "failed";
     const errors = proposalErrors(stateRef.current.draft);
     if (Object.keys(errors).length) {
       dispatch({ type: "validation-error", errors });

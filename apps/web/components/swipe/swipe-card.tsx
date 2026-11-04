@@ -3,6 +3,7 @@
 import { ArrowUpRight, CalendarDays, CircleDollarSign } from "lucide-react";
 import { animate, motion, useIsPresent, useMotionValue, useReducedMotion, type PanInfo } from "motion/react";
 import { useEffect, useRef, type MouseEvent as ReactMouseEvent, type RefObject } from "react";
+import { CompanyTrustChip } from "@/components/ui/company-trust-chip";
 import { Badge } from "@/components/ui/badge";
 import { formatProblemBudget, formatProblemDeadline, type PublicProblem } from "@/lib/problem-domain";
 import { objectiveLabels } from "@/lib/problem-service";
@@ -13,12 +14,13 @@ export type ExitDirection = { direction: Exclude<SwipeDecision, null>; width: nu
 const spring = { type: "spring" as const, stiffness: 300, damping: 30 };
 
 export function SwipeCard({
-  problem, position, activeRef, disabled, onDecision, onOpenDetail,
+  problem, position, activeRef, disabled, readOnly = false, onDecision, onOpenDetail,
 }: {
   problem: PublicProblem;
   position: number;
   activeRef: RefObject<HTMLElement | null>;
   disabled: boolean;
+  readOnly?: boolean;
   onDecision: (decision: Exclude<SwipeDecision, null>, width: number) => void;
   onOpenDetail: () => void;
 }) {
@@ -73,7 +75,7 @@ export function SwipeCard({
       aria-hidden={!interactive || undefined}
       aria-label={interactive ? `Problema: ${problem.title}. Pulsa Enter para ver el detalle.` : undefined}
       className={`absolute inset-0 flex min-w-0 flex-col overflow-hidden rounded-[1.5rem] border border-border bg-surface p-4 shadow-[0_20px_60px_rgba(0,0,0,0.24)] ring-1 ring-inset ring-white/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:p-6 ${interactive ? "cursor-grab active:cursor-grabbing" : "pointer-events-none"}`}
-      drag={interactive && !disabled ? "x" : false}
+      drag={interactive && !disabled && !readOnly ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={reducedMotion ? 0 : 1}
       dragMomentum={false}
@@ -101,7 +103,8 @@ export function SwipeCard({
         <div aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl border border-accent/25 bg-accent/10 font-display text-sm font-semibold text-brand-lavender">M</div>
         <div className="min-w-0 pt-0.5"><p className="truncate text-xs font-medium text-brand-lavender">{problem.industrySnapshot || "Sector empresarial"}</p><p className="mt-1 truncate text-sm text-muted-foreground">{problem.companyName || "Empresa reservada"}</p></div>
       </div>
-      <div className="mt-3 shrink-0 sm:mt-4">
+      <div className="mt-1 shrink-0"><CompanyTrustChip verified={problem.companyVerified} /></div>
+      <div className="mt-1 shrink-0 sm:mt-2">
         <p className="font-mono text-[0.625rem] font-medium uppercase tracking-[0.16em] text-muted-foreground">Un problema por resolver</p>
         <h2 className="mt-1 line-clamp-3 break-words font-display text-xl font-semibold leading-snug tracking-tight sm:text-2xl">{problem.title}</h2>
       </div>

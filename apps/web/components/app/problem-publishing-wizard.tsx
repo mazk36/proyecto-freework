@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useCanWrite } from "@/components/app/account-status";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/auth-provider";
 import {
@@ -32,6 +33,7 @@ const textAreaClass = `${inputClass} min-h-32 resize-y leading-6`;
 
 export function ProblemPublishingWizard() {
   const router = useRouter();
+  const canWrite = useCanWrite();
   const { user } = useAuth();
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [draft, setDraft] = useState<ProblemDraft>(createEmptyProblemDraft);
@@ -42,6 +44,7 @@ export function ProblemPublishingWizard() {
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [errors, setErrors] = useState<string[]>([]);
   const [error, setError] = useState("");
+  const [verificationRequired, setVerificationRequired] = useState(false);
   const [publishedId, setPublishedId] = useState<string | null>(null);
   const idRef = useRef<string | null>(null);
   const lastSavedSignature = useRef("");
@@ -145,7 +148,7 @@ export function ProblemPublishingWizard() {
   }, []);
 
   useEffect(() => {
-    if (!profile || isLoading || publishedId) return;
+    if (!canWrite || !profile || isLoading || publishedId) return;
     const signature = draftSignature(draft, profile);
     if (signature === lastSavedSignature.current || !hasDraftContent(draft)) return;
     if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
@@ -157,7 +160,7 @@ export function ProblemPublishingWizard() {
     return () => {
       if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
     };
-  }, [draft, isLoading, profile, publishedId, saveSnapshot]);
+  }, [canWrite, draft, isLoading, profile, publishedId, saveSnapshot]);
 
   function updateDraft(change: (current: ProblemDraft) => ProblemDraft, invalidateConsent = step < 5) {
     setDraft((current) => {
@@ -166,6 +169,7 @@ export function ProblemPublishingWizard() {
     });
     setErrors([]);
     setError("");
+    setVerificationRequired(false);
   }
 
   function setText(field: "title" | "description" | "currentProcess" | "currentTools" | "specialConditions" | "successCriteria") {
@@ -176,6 +180,7 @@ export function ProblemPublishingWizard() {
   }
 
   async function moveToStep(nextStep: number) {
+    if (!canWrite) { setStep(nextStep); return; }
     const issues = validateProblemStep(step, draft);
     setErrors(issues);
     setError("");
@@ -209,11 +214,13 @@ export function ProblemPublishingWizard() {
 
   async function publish(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!canWrite) return;
     const issues = validateProblemForPublishing(draft);
     setErrors(issues);
     if (issues.length || !profile) return;
     setIsPublishing(true);
     setError("");
+    setVerificationRequired(false);
     try {
       if (saveTimer.current !== null) window.clearTimeout(saveTimer.current);
       if (idRef.current) {
@@ -228,7 +235,8 @@ export function ProblemPublishingWizard() {
       const confirmedId = await publishBusinessProblem(id);
       setPublishedId(confirmedId);
     } catch (publishError) {
-      setError(publishError instanceof Error ? publishError.message : "No se pudo confirmar la publicación.");
+      if (publishError instanceof ProblemServiceError && publishError.code === "company_verification_required") setVerificationRequired(true);
+      else setError(publishError instanceof Error ? publishError.message : "No se pudo confirmar la publicación.");
     } finally {
       setIsPublishing(false);
     }
@@ -260,7 +268,7 @@ export function ProblemPublishingWizard() {
           <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Publicar un problema</h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground">Describe la necesidad de tu negocio. Los desarrolladores propondrán la tecnología.</p>
         </div>
-        <Button disabled={isSaving || isPublishing} onClick={() => void saveAndExit()} type="button" variant="outline">Guardar y salir</Button>
+        <Button disabled={!canWrite || isSaving || isPublishing} onClick={() => void saveAndExit()} type="button" variant="outline">Guardar y salir</Button>
       </header>
 
       <section aria-label={`Paso ${step} de 5`} className="mt-8 rounded-2xl border border-border bg-surface p-5 shadow-sm sm:p-8">
@@ -273,12 +281,15 @@ export function ProblemPublishingWizard() {
         </div>
 
         <form className="mt-8" onSubmit={step === 5 ? publish : (event) => { event.preventDefault(); void moveToStep(step + 1); }}>
+          <fieldset disabled={!canWrite}>
           {step === 1 ? <ProblemDescriptionStep draft={draft} setText={setText} toggleImpact={(value) => toggleValue("impacts", value)} /> : null}
           {step === 2 ? <BusinessContextStep draft={draft} profile={profile} setText={setText} updateDraft={updateDraft} /> : null}
           {step === 3 ? <ObjectivesStep draft={draft} setText={setText} toggleObjective={(value) => toggleValue("objectives", value)} /> : null}
           {step === 4 ? <BudgetStep draft={draft} profile={profile} updateDraft={updateDraft} /> : null}
           {step === 5 ? <ReviewStep draft={draft} profile={profile} onEdit={(nextStep) => { setStep(nextStep); setDraft((current) => ({ ...current, currentStep: nextStep })); setErrors([]); }} updateDraft={updateDraft} /> : null}
 
+          </fieldset>
+          {verificationRequired ? <div className="mt-5 rounded-xl border border-border bg-surface-raised p-4" role="alert"><p className="text-sm font-semibold">Para publicar necesitas verificar tu empresa</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Tu borrador permanece guardado.</p><ButtonLink className="verification-action mt-3" href="/app/perfil#verificacion">Verificar mi empresa</ButtonLink></div> : null}
           {errors.length > 0 ? (
             <ul className="mt-6 space-y-1 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
               {errors.map((issue) => <li key={issue}>{issue}</li>)}
@@ -288,7 +299,7 @@ export function ProblemPublishingWizard() {
 
           <div className="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-5">
             <div>
-              {step > 1 ? <Button disabled={isSaving || isPublishing} onClick={() => { const previousStep = step - 1; setStep(previousStep); setDraft((current) => ({ ...current, currentStep: previousStep })); setErrors([]); }} type="button" variant="outline">Anterior</Button> : <span />}
+              {step > 1 ? <Button disabled={isSaving || isPublishing} onClick={() => { const previousStep = step - 1; setStep(previousStep); if (canWrite) setDraft((current) => ({ ...current, currentStep: previousStep })); setErrors([]); }} type="button" variant="outline">Anterior</Button> : <span />}
               <p aria-live="polite" className="mt-2 min-h-5 text-xs text-muted-foreground">
                 {saveState === "saving" ? "Guardando cambios…" : saveState === "saved" ? "Borrador guardado" : saveState === "error" ? "No se guardaron los últimos cambios" : ""}
               </p>
@@ -296,7 +307,7 @@ export function ProblemPublishingWizard() {
             {step < 5 ? (
               <Button disabled={isSaving || isPublishing} onClick={() => void moveToStep(step + 1)} type="button">{isSaving ? "Guardando…" : "Continuar"}</Button>
             ) : (
-              <Button disabled={isSaving || isPublishing} type="submit">{isPublishing ? "Publicando…" : "Publicar problema"}</Button>
+              <Button disabled={!canWrite || isSaving || isPublishing} type="submit">{isPublishing ? "Publicando…" : "Publicar problema"}</Button>
             )}
           </div>
         </form>
