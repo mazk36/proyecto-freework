@@ -1,0 +1,282 @@
+# Producción de MatchWork: Supabase autoalojado (Postgres, Auth, REST, Realtime, Storage, Kong) + web estática + Caddy.
+# Versiones fijadas a las que se probaron en local (las mismas que usa la CLI de Supabase en desarrollo).
+# Nada se publica salvo Caddy (80/443). Postgres NO tiene puerto en el equipo: se entra con `docker compose exec db psql`.
+# Studio no está incluido (no se expone nada de administración de la base).
+name: matchwork-prod
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+x-restart: &restart
+  restart: unless-stopped
+
+services:
+  db:
+    image: public.ecr.aws/supabase/postgres:17.11.0.011
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_DB:-1g}
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf -c log_min_messages=fatal
+    environment:
+      POSTGRES_HOST: /var/run/postgresql
+      PGPORT: "5432"
+      POSTGRES_PORT: "5432"
+      PGPASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD (ejecuta scripts/generate-secrets.sh)}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: postgres
+      POSTGRES_DB: postgres
+      JWT_SECRET: ${JWT_SECRET:?falta JWT_SECRET}
+      JWT_EXP: ${JWT_EXPIRY:-3600}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+      - ./sql/99-matchwork-init.sql:/docker-entrypoint-initdb.d/init-scripts/99-matchwork-init.sql:ro
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    networks: [internal]
+
+  auth:
+    image: public.ecr.aws/supabase/gotrue:v2.197.0
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_AUTH:-256m}
+    depends_on:
+      db: { condition: service_healthy }
+      templates: { condition: service_started }
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: "9999"
+      API_EXTERNAL_URL: ${API_URL:?falta API_URL}
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://supabase_auth_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      GOTRUE_SITE_URL: ${SITE_URL:?falta SITE_URL}
+      GOTRUE_URI_ALLOW_LIST: ${URI_ALLOW_LIST:?falta URI_ALLOW_LIST}
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_JWT_ADMIN_ROLES: service_role
+      GOTRUE_JWT_AUD: authenticated
+      GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+      GOTRUE_JWT_EXP: ${JWT_EXPIRY:-3600}
+      GOTRUE_JWT_SECRET: ${JWT_SECRET}
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "false"
+      GOTRUE_PASSWORD_MIN_LENGTH: "10"
+      GOTRUE_SECURITY_UPDATE_PASSWORD_REQUIRE_REAUTHENTICATION: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_ROTATION_ENABLED: "true"
+      GOTRUE_SECURITY_REFRESH_TOKEN_REUSE_INTERVAL: "10"
+      GOTRUE_RATE_LIMIT_EMAIL_SENT: ${RATE_LIMIT_EMAIL_SENT:-60}
+      GOTRUE_SMTP_MAX_FREQUENCY: ${SMTP_MAX_FREQUENCY:-1m0s}
+      GOTRUE_SMTP_HOST: ${SMTP_HOST}
+      GOTRUE_SMTP_PORT: ${SMTP_PORT}
+      GOTRUE_SMTP_USER: ${SMTP_USER:-}
+      GOTRUE_SMTP_PASS: ${SMTP_PASS:-}
+      GOTRUE_SMTP_ADMIN_EMAIL: ${SMTP_ADMIN_EMAIL}
+      GOTRUE_SMTP_SENDER_NAME: ${SMTP_SENDER_NAME:-MatchWork}
+      GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+      GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
+      GOTRUE_MAILER_TEMPLATES_CONFIRMATION: http://templates:8088/confirmation.html
+      GOTRUE_MAILER_TEMPLATES_RECOVERY: http://templates:8088/recovery.html
+      GOTRUE_MAILER_TEMPLATES_REAUTHENTICATION: http://templates:8088/reauthentication.html
+      GOTRUE_MAILER_SUBJECTS_CONFIRMATION: Confirma tu cuenta en MatchWork
+      GOTRUE_MAILER_SUBJECTS_RECOVERY: Crea una contraseña nueva en MatchWork
+      GOTRUE_MAILER_SUBJECTS_REAUTHENTICATION: Tu código de seguridad de MatchWork
+      GOTRUE_SECURITY_CAPTCHA_ENABLED: ${CAPTCHA_ENABLED:-false}
+      GOTRUE_SECURITY_CAPTCHA_PROVIDER: turnstile
+      GOTRUE_SECURITY_CAPTCHA_SECRET: ${TURNSTILE_SECRET:-}
+      GOTRUE_EXTERNAL_GOOGLE_ENABLED: ${GOOGLE_AUTH_ENABLED:-false}
+      GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOTRUE_EXTERNAL_GOOGLE_SECRET: ${GOOGLE_SECRET:-}
+      GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI: ${API_URL}/auth/v1/callback
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:9999/health"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks: [internal]
+
+  rest:
+    image: public.ecr.aws/supabase/postgrest:v16.5
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_REST:-256m}
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      PGRST_DB_URI: postgres://authenticator:${POSTGRES_PASSWORD}@db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_DB_EXTRA_SEARCH_PATH: public,extensions
+      PGRST_DB_MAX_ROWS: "1000"
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+      PGRST_APP_SETTINGS_JWT_SECRET: ${JWT_SECRET}
+      PGRST_APP_SETTINGS_JWT_EXP: ${JWT_EXPIRY:-3600}
+    # La imagen de PostgREST no trae shell ni curl: sin healthcheck propio; Kong lo vigila al reenviar.
+    networks: [internal]
+
+  realtime:
+    image: public.ecr.aws/supabase/realtime:v2.151.3
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_REALTIME:-512m}
+    depends_on:
+      db: { condition: service_healthy }
+    networks:
+      internal:
+        # Realtime identifica el «tenant» por el primer tramo del nombre de host con el que llega Kong.
+        aliases: [realtime-dev.supabase-realtime]
+    environment:
+      PORT: "4000"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_USER: supabase_admin
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_NAME: postgres
+      DB_AFTER_CONNECT_QUERY: SET search_path TO _realtime
+      DB_ENC_KEY: ${REALTIME_DB_ENC_KEY}
+      API_JWT_SECRET: ${JWT_SECRET}
+      METRICS_JWT_SECRET: ${JWT_SECRET}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE}
+      ERL_AFLAGS: -proto_dist inet_tcp
+      DNS_NODES: "''"
+      RLIMIT_NOFILE: "10000"
+      APP_NAME: realtime
+      SEED_SELF_HOST: "true"
+      RUN_JANITOR: "true"
+    command: >
+      sh -c "/app/bin/migrate && /app/bin/realtime eval 'Realtime.Release.seeds(Realtime.Repo)' && /app/bin/server"
+
+  storage:
+    image: public.ecr.aws/supabase/storage-api:v1.88.0
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_STORAGE:-256m}
+    depends_on:
+      db: { condition: service_healthy }
+      rest: { condition: service_started }
+    environment:
+      ANON_KEY: ${ANON_KEY}
+      SERVICE_KEY: ${SERVICE_ROLE_KEY}
+      POSTGREST_URL: http://rest:3000
+      AUTH_JWT_SECRET: ${JWT_SECRET}
+      PGRST_JWT_SECRET: ${JWT_SECRET}
+      DATABASE_URL: postgres://supabase_storage_admin:${POSTGRES_PASSWORD}@db:5432/postgres
+      DB_INSTALL_ROLES: "false"
+      FILE_SIZE_LIMIT: "52428800"
+      STORAGE_BACKEND: file
+      FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+      TENANT_ID: stub
+      REGION: stub
+      GLOBAL_S3_BUCKET: stub
+      ENABLE_IMAGE_TRANSFORMATION: "false"
+    volumes:
+      - storage-data:/var/lib/storage
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:5000/status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks: [internal]
+
+  kong:
+    image: public.ecr.aws/supabase/kong:2.8.1
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_KONG:-512m}
+    depends_on:
+      auth: { condition: service_healthy }
+      storage: { condition: service_healthy }
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /home/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
+      KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+      KONG_NGINX_PROXY_PROXY_BUFFERS: 64 160k
+      KONG_NGINX_WORKER_PROCESSES: "1"
+    volumes:
+      - ./.generated/kong.yml:/home/kong/kong.yml:ro
+    healthcheck:
+      test: ["CMD", "kong", "health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [internal]
+
+  # Sirve las plantillas de correo a Auth dentro de la red interna.
+  templates:
+    image: caddy:2.11.7-alpine
+    <<: *restart
+    logging: *logging
+    mem_limit: 64m
+    command: caddy file-server --root /templates --listen :8088
+    volumes:
+      - ../../../supabase/templates:/templates:ro
+    networks: [internal]
+
+  web:
+    build:
+      context: ../../..
+      dockerfile: infra/vps/Dockerfile
+      args:
+        CADDYFILE: infra/vps/prod/Caddyfile
+        NEXT_PUBLIC_SUPABASE_URL: ${API_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${ANON_KEY}
+        NEXT_PUBLIC_SITE_URL: ${SITE_URL}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+        NEXT_PUBLIC_GOOGLE_AUTH_ENABLED: ${GOOGLE_AUTH_ENABLED:-false}
+    image: matchwork-web:prod
+    <<: *restart
+    logging: *logging
+    mem_limit: ${MEM_CADDY:-256m}
+    depends_on:
+      kong: { condition: service_healthy }
+    environment:
+      WEB_HOST: ${WEB_HOST}
+      API_HOST: ${API_HOST}
+      CADDY_TLS: ${CADDY_TLS:-}
+      CADDY_GLOBAL_OPTIONS: ${CADDY_GLOBAL_OPTIONS:-}
+    ports:
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTP_PORT:-9080}:80"
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-9443}:443"
+      - "${BIND_ADDRESS:-127.0.0.1}:${HTTPS_PORT:-9443}:443/udp"
+    volumes:
+      - caddy-data:/data
+      - caddy-config:/config
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:2019/config/"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks: [internal]
+
+  # Solo para pruebas locales (perfil «mailpit»): buzón que recibe los correos de Auth.
+  mailpit:
+    profiles: [mailpit]
+    image: public.ecr.aws/supabase/mailpit:v1.31.3
+    <<: *restart
+    logging: *logging
+    mem_limit: 128m
+    ports:
+      - "127.0.0.1:${MAILPIT_UI_PORT:-9425}:8025"
+    networks: [internal]
+
+networks:
+  internal: {}
+
+volumes:
+  db-data:
+  storage-data:
+  caddy-data:
+  caddy-config:

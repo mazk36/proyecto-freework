@@ -23,6 +23,10 @@ export function summary() {
 }
 
 export function sql(statement) {
+  // E2E_DB_CONTAINER: la base de la pila de producción no publica puerto; se entra por «docker exec».
+  if (process.env.E2E_DB_CONTAINER) {
+    return execFileSync("docker", ["exec", "-i", process.env.E2E_DB_CONTAINER, "psql", "-U", "postgres", "-d", "postgres", "-X", "-A", "-t", "-q", "-v", "ON_ERROR_STOP=1", "-c", statement], { encoding: "utf8" }).trim();
+  }
   return execFileSync(PSQL, [DB_URL, "-X", "-A", "-t", "-q", "-v", "ON_ERROR_STOP=1", "-c", statement], { encoding: "utf8" }).trim();
 }
 export const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

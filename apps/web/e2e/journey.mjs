@@ -95,9 +95,13 @@ try {
 
   await register(adminP, "Admin Prueba", "freelancer");
   const adminId = await userId(adminP);
-  execFileSync("bash", [new URL("../../../supabase/scripts/grant-admin.sh", import.meta.url).pathname, adminId], {
-    env: { ...process.env, DB_URL: process.env.E2E_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:55422/postgres", PATH: `${process.env.PATH}:/opt/homebrew/opt/libpq/bin` },
-  });
+  if (process.env.E2E_DB_CONTAINER) {
+    sql(`insert into public.admins (user_id) values ('${adminId}') on conflict (user_id) do nothing`);
+  } else {
+    execFileSync("bash", [new URL("../../../supabase/scripts/grant-admin.sh", import.meta.url).pathname, adminId], {
+      env: { ...process.env, DB_URL: process.env.E2E_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:55422/postgres", PATH: `${process.env.PATH}:/opt/homebrew/opt/libpq/bin` },
+    });
+  }
   await adminP.page.goto("/app/admin/");
   await adminP.page.getByRole("row", { name: /Empresa Alfa/ }).getByRole("button", { name: /Verificar/ }).click();
   await adminP.page.getByText("Empresa verificada").first().waitFor({ timeout: 15_000 });

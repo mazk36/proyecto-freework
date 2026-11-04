@@ -10,10 +10,12 @@ ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ARG NEXT_PUBLIC_GOOGLE_AUTH_ENABLED
 ENV NEXT_PUBLIC_SUPABASE_URL=$NEXT_PUBLIC_SUPABASE_URL \
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=$NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY \
     NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL \
     NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY \
+    NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=$NEXT_PUBLIC_GOOGLE_AUTH_ENABLED \
     NEXT_TELEMETRY_DISABLED=1
 RUN pnpm install --frozen-lockfile && pnpm --filter ./apps/web build
 
@@ -27,6 +29,8 @@ RUN find /site -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' -o -na
   | xargs -0 -P4 -I{} sh -c 'brotli -q 11 -k -f "{}" && zstd -19 -q -k -f "{}" && gzip -9 -k -f "{}"'
 
 FROM caddy:2.11.7-alpine
-COPY infra/vps/Caddyfile /etc/caddy/Caddyfile
+# Por defecto el Caddyfile de la prueba de un solo sitio; la pila de producción pasa infra/vps/prod/Caddyfile.
+ARG CADDYFILE=infra/vps/Caddyfile
+COPY ${CADDYFILE} /etc/caddy/Caddyfile
 COPY --from=compress /site /srv
 EXPOSE 80 443 443/udp

@@ -96,7 +96,7 @@ try {
 
   // ---- API de Storage: rutas ajenas, lectura privada, tipos, suspensión ----
   const publicRead = await fetch(`${SUPABASE_URL}/storage/v1/object/public/portfolio-media/${mediaPath}`);
-  const anonSigned = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY } });
+  const anonSigned = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } });
   check("ST7 el medio de un proyecto NO publicado no se lee de forma anónima (URL pública ni autenticada)", publicRead.status >= 400 && anonSigned.status >= 400, `pública=${publicRead.status}, anon=${anonSigned.status}`);
 
   const owner = createClient(SUPABASE_URL, KEY, { auth: { persistSession: false } });
@@ -104,10 +104,10 @@ try {
   const publishedId = sql(`select id from public.portfolio_projects where title = 'Proyecto con imagen' and freelancer_user_id = '${uid}'`);
   sql(`update public.profiles set is_public = true where id = '${uid}'`);
   sql(`update public.portfolio_projects set is_published = true where id = '${publishedId}'`);
-  const publishedRead = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY } });
+  const publishedRead = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } });
   check("ST8 con perfil público y proyecto publicado el medio sí se lee de forma anónima", publishedRead.status === 200, `estado=${publishedRead.status}`);
   sql(`update public.portfolio_projects set is_published = false where id = '${publishedId}'`);
-  const unpublishedRead = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY } });
+  const unpublishedRead = await fetch(`${SUPABASE_URL}/storage/v1/object/portfolio-media/${mediaPath}`, { headers: { apikey: KEY, Authorization: `Bearer ${KEY}` } });
   check("ST9 al despublicar vuelve a quedar bloqueado", unpublishedRead.status >= 400, `estado=${unpublishedRead.status}`);
 
   const other = createClient(SUPABASE_URL, KEY, { auth: { persistSession: false } });

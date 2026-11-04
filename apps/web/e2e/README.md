@@ -64,3 +64,16 @@ Apagado salvo que exista `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build. Para prob
 ## Demo (video y hojas de contactos)
 
 `DEMO_OUT=~/Downloads/Matchwork-demo E2E_PSQL=<psql> node e2e/demo.mjs` genera un video de ~1 min del recorrido a 390x844 y dos hojas de contactos (390 y 1280 px) con datos de ejemplo inventados. Pensado para una base recién reseteada (`MATCHWORK_STACK_FULL=1 local-stack.sh reset` y esperar 30 s); los cuadros se capturan con CDP screencast y se unen con el `ffmpeg` del sistema (no necesita el de Playwright).
+
+## Contra la pila de producción local (`infra/vps/prod`)
+
+Con la pila levantada (`infra/vps/prod/scripts/deploy.sh`), estas variables hacen que todos los guiones (journey, correo, cuenta, seguridad, almacenamiento, tiempo real, motores, paginación y rendimiento) corran contra ella con las claves nuevas y la confirmación de correo activa:
+
+```bash
+cd infra/vps/prod && set -a && . ./.env && set +a
+export E2E_BASE_URL="$SITE_URL" E2E_SUPABASE_URL="$API_URL" E2E_SUPABASE_KEY="$ANON_KEY"
+export E2E_MAIL_URL="http://127.0.0.1:$MAILPIT_UI_PORT" E2E_DB_CONTAINER=matchwork-prod-db-1
+export NODE_TLS_REJECT_UNAUTHORIZED=0 E2E_IGNORE_HTTPS=1   # certificado interno de Caddy
+```
+
+`E2E_DB_CONTAINER` hace que `sql()` entre por `docker exec` (la base de producción no publica puerto). Ver `docs/ops/despliegue-vps.md`.

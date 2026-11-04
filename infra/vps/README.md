@@ -28,3 +28,7 @@ Abrir `https://localhost:8443` (certificado interno de Caddy: el navegador avisa
 - `CSP_CONNECT` debe listar la URL pública de Supabase (https y wss) al desplegar.
 - En producción: `SITE_ADDRESS=<dominio>`, `CADDY_TLS` vacío (ACME automático) y sin `CADDY_GLOBAL_OPTIONS`.
 - HTTP/3 está activo (UDP 443 y `Alt-Svc`), pero no se comprobó con un cliente QUIC real en esta máquina.
+
+## Pila de producción completa
+
+`infra/vps/prod/` contiene la pila de producción (Supabase autoalojado, web y Caddy), los scripts de despliegue, migraciones, copias, restauración y comprobación, y se prueba entera en local. Ver `docs/ops/despliegue-vps.md`.
