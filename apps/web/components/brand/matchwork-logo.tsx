@@ -1,7 +1,9 @@
 import Image from "next/image";
-import officialMark from "@/public/brand/matchwork-mark.png";
-import officialWordmark from "@/public/brand/matchwork-wordmark-horizontal.png";
-import officialReversedWordmark from "@/public/brand/matchwork-wordmark-reversed.png";
+// Web-sized derivatives of the official brand files in public/brand (which stay untouched):
+// the originals are 1254-3919 px PNGs and the logo is shown at ~160 px, so the derivatives cut the transfer by ~95%.
+import officialMark from "@/public/optimized/mark-256.webp";
+import officialWordmark from "@/public/optimized/wordmark-horizontal-480.webp";
+import officialReversedWordmark from "@/public/optimized/wordmark-reversed-480.webp";
 
 type MatchWorkLogoProps = { className?: string; preload?: boolean };
 type MatchWorkLogoLockupProps = MatchWorkLogoProps & {

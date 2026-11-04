@@ -208,7 +208,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 {authIssue ? <p className="rounded-lg border border-rose-300/25 bg-rose-300/10 px-3 py-2 text-sm leading-5 text-rose-100" role="alert">{authIssue}</p> : null}
                 {storageNotice ? <p className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-sm leading-5 text-amber-100" role="status">{storageNotice}</p> : null}
 
-                <Button className="w-full rounded-xl shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px" disabled={!isReady || isSubmitting} size="lg" type="submit">
+                <Button className="w-full rounded-xl !bg-[#7940e8] !text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:-translate-y-px hover:!bg-[#6733ca]" disabled={!isReady || isSubmitting} size="lg" type="submit">
                   {isSubmitting ? "Creando cuenta…" : "Crear cuenta"} <ArrowRight aria-hidden="true" className="size-4" />
                 </Button>
               </form>
