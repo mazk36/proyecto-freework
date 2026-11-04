@@ -236,7 +236,7 @@ export function ProblemPublishingWizard() {
       setPublishedId(confirmedId);
     } catch (publishError) {
       if (publishError instanceof ProblemServiceError && publishError.code === "company_verification_required") setVerificationRequired(true);
-      else setError(publishError instanceof Error ? publishError.message : "No se pudo confirmar la publicación.");
+      else setError(publishError instanceof Error ? publishError.message : "No pudimos confirmar la publicación. Revisa tu conexión e inténtalo de nuevo. Revisa tu conexión e inténtalo de nuevo.");
     } finally {
       setIsPublishing(false);
     }
@@ -266,7 +266,7 @@ export function ProblemPublishingWizard() {
         <div>
           <Link className="inline-flex min-h-11 items-center text-sm font-medium text-muted-foreground underline underline-offset-4 hover:text-foreground" href="/app/problemas">Volver a Mis problemas</Link>
           <h1 className="mt-5 text-3xl font-semibold tracking-tight sm:text-4xl">Publicar un problema</h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground">Describe la necesidad de tu negocio. Los desarrolladores propondrán la tecnología.</p>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">Describe la necesidad de tu negocio. Los freelancers propondrán la solución.</p>
         </div>
         <Button disabled={!canWrite || isSaving || isPublishing} onClick={() => void saveAndExit()} type="button" variant="outline">Guardar y salir</Button>
       </header>
@@ -351,7 +351,7 @@ function ProblemDescriptionStep({
             {impactOptions.map((item) => <CheckboxCard checked={draft.impacts.includes(item.value)} key={item.value} label={item.label} onChange={() => toggleImpact(item.value)} />)}
           </div>
         </fieldset>
-        <p className="rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm leading-6 text-foreground">Explica qué ocurre y cómo afecta a tu negocio. Los desarrolladores propondrán la tecnología.</p>
+        <p className="rounded-xl border border-accent/20 bg-accent/5 px-4 py-3 text-sm leading-6 text-foreground">Explica qué ocurre y cómo afecta a tu negocio. Los freelancers propondrán la solución.</p>
       </div>
     </div>
   );
@@ -370,7 +370,7 @@ function BusinessContextStep({
 }) {
   return (
     <div>
-      <StepHeading title="Cuéntanos un poco sobre tu negocio" description="Usamos la información de tu empresa y añadimos el contexto específico de este problema." />
+      <StepHeading title="Cuéntanos un poco sobre tu negocio" description="Usamos la información de tu empresa y agregamos el contexto específico de este problema." />
       <div className="mt-7 rounded-xl bg-background p-4">
         <p className="text-sm font-semibold">{profile.companyName}</p>
         <p className="mt-1 text-sm text-muted-foreground">Sector: {profile.industry}</p>
@@ -518,7 +518,7 @@ function PublishSuccess({ problemId }: { problemId: string }) {
       <section aria-labelledby="publish-success-title" className="w-full rounded-2xl border border-border bg-surface p-7 sm:p-10">
         <div aria-hidden="true" className="mx-auto grid size-14 place-items-center rounded-full bg-emerald-100 text-emerald-800">✓</div>
         <h1 className="mt-5 text-3xl font-semibold tracking-tight" id="publish-success-title">¡Tu problema ya está publicado!</h1>
-        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Los desarrolladores podrán revisar tu publicación y enviarte propuestas para solucionarlo.</p>
+        <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-muted-foreground">Los freelancers podrán revisar tu publicación y enviarte propuestas para solucionarlo.</p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <ButtonLink href={`/app/problemas/detalle/?id=${encodeURIComponent(problemId)}`}>Ver mi publicación</ButtonLink>
           <ButtonLink href="/app/problemas" variant="outline">Ir a mis problemas</ButtonLink>

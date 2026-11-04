@@ -103,7 +103,7 @@ function ProblemCard({ problem, currency }: { problem: CompanyProblem; currency:
             <span className="text-xs text-muted-foreground">{displayDate}</span>
           </div>
           <h2 className="mt-3 break-words text-lg font-semibold">{problem.title || "Borrador sin título"}</h2>
-          <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{problem.description || "Aún no has añadido una descripción."}</p>
+          <p className="mt-2 line-clamp-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{problem.description || "Aún no has agregado una descripción."}</p>
         </div>
         <p className="shrink-0 rounded-lg bg-background px-3 py-2 text-sm font-medium">{budgetLabel(problem.budgetChoice, currency)}</p>
       </div>

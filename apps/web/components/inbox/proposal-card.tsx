@@ -57,7 +57,7 @@ export function ProposalCard({ proposal, selected, comparisonFull, canInteract, 
           <input aria-describedby={unavailable ? limitId : undefined} aria-disabled={unavailable || undefined} checked={selected} className="size-5 accent-accent" onChange={() => { if (!unavailable) onCompare(); }} type="checkbox" />
           Comparar<span className="sr-only"> propuesta de {name}</span>
         </label>
-        {unavailable ? <p className="max-w-52 text-xs leading-5 text-muted-foreground" id={limitId}>Máximo 3 propuestas. Quita una para añadir otra.</p> : null}
+        {unavailable ? <p className="max-w-52 text-xs leading-5 text-muted-foreground" id={limitId}>Máximo 3 propuestas. Quita una para agregar otra.</p> : null}
       </div>
     </div>
     {pending ? <p aria-live="polite" className="mt-3 text-sm text-muted-foreground" role="status">Actualizando decisión…</p> : null}
