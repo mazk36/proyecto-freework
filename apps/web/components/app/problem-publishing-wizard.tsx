@@ -291,9 +291,9 @@ export function ProblemPublishingWizard() {
           </fieldset>
           {verificationRequired ? <div className="mt-5 rounded-xl border border-border bg-surface-raised p-4" role="alert"><p className="text-sm font-semibold">Para publicar necesitas verificar tu empresa</p><p className="mt-1 text-sm leading-6 text-muted-foreground">Tu borrador permanece guardado.</p><ButtonLink className="verification-action mt-3" href="/app/perfil#verificacion">Verificar mi empresa</ButtonLink></div> : null}
           {errors.length > 0 ? (
-            <ul className="mt-6 space-y-1 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
-              {errors.map((issue) => <li key={issue}>{issue}</li>)}
-            </ul>
+            <div className="mt-6 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">
+              <ul className="space-y-1">{errors.map((issue) => <li key={issue}>{issue}</li>)}</ul>
+            </div>
           ) : null}
           {error ? <p className="mt-5 rounded-xl border border-rose-300/60 bg-rose-50 px-4 py-3 text-sm text-rose-800" role="alert">{error}</p> : null}
 
