@@ -169,6 +169,13 @@ html:has(.public-landing) {
   transform: none !important;
 }
 
+/* On narrow screens a single long word (large text sizes, long emails or names) must wrap instead of widening the page. */
+@media (max-width: 47.9375rem) {
+  body {
+    overflow-wrap: anywhere;
+  }
+}
+
 h1,
 h2,
 h3 {
