@@ -32,7 +32,7 @@ Las escrituras pasan por `save_proposal_draft(uuid, jsonb)`, `submit_proposal(uu
 
 Las pruebas `supabase/tests/database/proposals_rls.test.sql`, `supabase/tests/database/proposal_input_limits.test.sql` y `supabase/tests/database/proposal_withdraw_and_snapshot.test.sql` cubren permisos, aislamiento por propietario, validaciones, límites, snapshot y transiciones. Deben ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
 
-Pendiente para la fase anti-spam: definir cuotas y límites de frecuencia para las propuestas.
+Las cuotas de creación, guardado, envío y retiro se describen en la sección de límites de frecuencia.
 
 ## Interacciones del freelancer con problemas
 
@@ -54,11 +54,44 @@ La transición valida que el problema esté abierto o pausado y la propuesta sig
 
 `messages` permite `SELECT` solo a los dos participantes del Match y `conversation_reads` solo al propietario del marcador. `anon` no tiene acceso; los clientes autenticados no tienen `INSERT`, `UPDATE` ni `DELETE` directos. Los RPC autorizan el rol persistido y la participación, usan `SECURITY DEFINER` con `search_path = ''` y devuelven el mismo error para una conversación ajena o inexistente. El historial sigue disponible si el problema se cierra. La publicación de Realtime incluye `messages` cuando `supabase_realtime` existe; el filtrado de eventos respeta RLS.
 
-`send_message` recorta y valida texto de 1 a 2000 caracteres, deduplica por Match, remitente y `client_id`, y limita a 30 envíos por minuto y conversación para cada remitente. El bloqueo del Match serializa los envíos y los marcadores de lectura, evitando que solicitudes simultáneas eludan la cuota. `mark_conversation_read` registra el último mensaje existente en ese momento; los no leídos solo cuentan mensajes de la otra parte posteriores al marcador. La cuota es una medida mínima y no sustituye una fase posterior de prevención de abuso. El contrato no incorpora adjuntos ni campos de contacto externo y no inspecciona el texto libre en busca de datos de contacto.
+`send_message` recorta y valida texto de 1 a 2000 caracteres, deduplica por Match, remitente y `client_id`, y usa la cuota común de 30 envíos por minuto y conversación para cada remitente. El bloqueo del Match serializa los envíos y los marcadores de lectura. Un reintento que devuelve un mensaje existente no consume cuota. `mark_conversation_read` registra el último mensaje existente en ese momento; los no leídos solo cuentan mensajes de la otra parte posteriores al marcador. La cuota es una medida mínima y no sustituye otras medidas de prevención de abuso. El contrato no incorpora adjuntos ni campos de contacto externo y no inspecciona el texto libre en busca de datos de contacto.
 
 Está permitido compartir contacto externo en el texto del chat. Un aviso suave y descartable sugiere mantener la conversación en MatchWork; el descarte se recuerda en el navegador por Match. No se filtran ni se enmascaran datos de contacto. Esta decisión se revisará cuando exista moderación.
 
 `supabase/tests/database/match_chat.test.sql` cubre permisos, privacidad, validación, paginación, idempotencia, no leídos y cuota. Debe ejecutarse contra Supabase local antes de aplicar la migración en otro entorno.
+
+## Límites de frecuencia
+
+Las escrituras pasan por `enforce_rate_limit`, un helper interno `SECURITY DEFINER` que identifica al usuario con `auth.uid()` y usa bloqueos de transacción para serializar las comprobaciones. Las tablas `rate_limit_policies` y `rate_limit_events` tienen RLS y no conceden acceso directo a `anon` ni a `authenticated`; tampoco pueden ejecutar el helper. Cada evento se confirma o revierte con la operación. Las validaciones y comprobaciones de propiedad preceden a la cuota; las interacciones sin cambio y las publicaciones o mensajes repetidos de forma idempotente no consumen eventos. El envío de una propuesta también actualiza la interacción del problema: si esa transición necesita escribir, debe disponer de cuota de interacción y toda la operación es atómica.
+
+Los valores iniciales por usuario son:
+
+| Acción | Máximo | Ventana |
+| --- | ---: | --- |
+| `proposal_draft_create` | 20 | 1 hora |
+| `proposal_draft_save` | 200 | 1 hora |
+| `proposal_submit` | 20 | 1 hora |
+| `proposal_withdraw` | 20 | 1 hora |
+| `problem_interaction` | 600 | 1 hora |
+| `company_interaction` | 300 | 1 hora |
+| `problem_draft_create` | 20 | 1 día |
+| `problem_draft_save` | 300 | 1 hora |
+| `problem_publish` | 20 | 1 día |
+| `chat_send` | 30 | 1 minuto por Match |
+
+Un administrador puede ajustar ambos valores positivos sin cambiar las funciones, por ejemplo:
+
+```sql
+update public.rate_limit_policies
+set max_events = 40, window_seconds = 3600
+where action = 'proposal_draft_create';
+```
+
+La ventana es móvil. La mayoría de los RPC informa `rate limit exceeded` con código `54000` y un `HINT` con los segundos de espera. Para conservar el contrato del chat, con su política inicial se mantiene el error anterior `message rate limit: maximum 30 messages per minute` y el código `P0001`; si se cambia esa política, utiliza el error común. Cada llamada exitosa elimina hasta 25 eventos antiguos del usuario, siempre que no sigan dentro de una ventana configurada de más de siete días. Al ampliar una ventana solo puede contarse el historial que todavía exista.
+
+La migración incorpora los mensajes del último minuto al registro de eventos para conservar la cuota existente durante el cambio. Debe aplicarse en una transacción y con una breve pausa de escrituras de chat para evitar envíos en curso durante el cambio de función. `supabase/tests/database/rate_limits.test.sql` cubre políticas, permisos, ventanas, aislamiento, transiciones, reintentos y cuota del chat.
+
+Quedan pendientes el CAPTCHA de registro con Turnstile y los límites en el borde o la API. No están implementados por esta migración.
 
 ## Storage
 

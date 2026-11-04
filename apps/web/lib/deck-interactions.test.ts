@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { persistDeckInteraction } from "@/lib/deck-interactions";
+import { ProblemServiceError } from "@/lib/problem-service";
 
 describe("persistDeckInteraction", () => {
   it("confirms successful decisions and undo using the expected RPC arguments", async () => {
@@ -19,5 +20,13 @@ describe("persistDeckInteraction", () => {
   it("keeps the actual server state when a concurrent transition has already occurred", async () => {
     const write = vi.fn().mockResolvedValue("proposal_submitted");
     await expect(persistDeckInteraction(write, "p", null, "saved")).resolves.toEqual({ state: "proposal_submitted", confirmed: false });
+  });
+
+  it("retains a friendly service error while restoring the previous state", async () => {
+    const message = "Hiciste muchas acciones seguidas. Espera un momento y vuelve a intentarlo.";
+    const write = vi.fn().mockRejectedValue(new ProblemServiceError(message));
+    await expect(persistDeckInteraction(write, "p", "saved", "unseen")).resolves.toEqual({
+      state: "unseen", confirmed: false, error: message,
+    });
   });
 });

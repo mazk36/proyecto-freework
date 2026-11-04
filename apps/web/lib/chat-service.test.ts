@@ -76,7 +76,10 @@ describe("chat service", () => {
   });
 
   it.each([
-    ["message rate limit: maximum 30 messages per minute", "demasiados mensajes"],
+    // The database keeps its legacy error contract, while the UI uses the same
+    // non-reproachful explanation for all rate limits.
+    ["message rate limit: maximum 30 messages per minute", "Hiciste muchas acciones seguidas"],
+    ["rate limit exceeded", "Hiciste muchas acciones seguidas"],
     ["message body empty", "Escribe un mensaje"],
     ["message body too long", "2000 caracteres"],
     ["conversation not found", "esta conversación"],

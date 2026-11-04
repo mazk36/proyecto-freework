@@ -256,7 +256,7 @@ export function toFriendlyError(message: string): string {
   if (/freelancer account required/i.test(message)) return "Esta acción está disponible para cuentas de profesionales independientes.";
   if (/company account|required company/i.test(message)) return "Esta acción está disponible para cuentas de empresa.";
   if (/account required/i.test(message)) return "No encontramos una cuenta de MatchWork vinculada a tu sesión.";
-  if (/message rate limit/i.test(message)) return "Has enviado demasiados mensajes. Espera un minuto y vuelve a intentarlo.";
+  if (/message rate limit|rate limit exceeded/i.test(message)) return "Hiciste muchas acciones seguidas. Espera un momento y vuelve a intentarlo.";
   if (/message body empty/i.test(message)) return "Escribe un mensaje antes de enviarlo.";
   if (/message body too long/i.test(message)) return "El mensaje no puede superar los 2000 caracteres.";
   if (/conversation not found/i.test(message)) return "No encontramos esta conversación o ya no tienes acceso.";

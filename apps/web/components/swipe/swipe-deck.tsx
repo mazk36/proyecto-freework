@@ -130,7 +130,7 @@ export function DeckExperience({
     const outcome = await persistDeckInteraction(saveInteraction, entry.problem.id, null, entry.state);
     if (!outcome.confirmed) {
       setInteraction(entry.problem.id, outcome.state);
-      toast({ title: "No pudimos deshacer la acción", description: "Inténtalo de nuevo en unos momentos.", tone: "danger" });
+      toast({ title: "No pudimos deshacer la acción", description: outcome.error ?? "Inténtalo de nuevo en unos momentos.", tone: "danger" });
     }
     clearPending(entry.problem.id);
   }
@@ -169,7 +169,7 @@ export function DeckExperience({
         decisionLock.current = null;
         shouldFocusCard.current = true;
         setAnnouncement("No pudimos guardar tu decisión. Revisa el problema de nuevo.");
-        toast({ title: "No pudimos guardar tu decisión", description: "Revisa tu conexión e inténtalo de nuevo.", tone: "danger" });
+        toast({ title: "No pudimos guardar tu decisión", description: outcome.error ?? "Revisa tu conexión e inténtalo de nuevo.", tone: "danger" });
         return false;
       } finally { if (!entry.undoing) clearPending(current.id); }
     })();
@@ -190,7 +190,8 @@ export function DeckExperience({
     if (failed.length) {
       shouldFocusCard.current = true;
       setInteractions((previous) => ({ ...previous, ...Object.fromEntries(failed.map(({ id, state }) => [id, state])) }));
-      toast({ title: "No pudimos recuperar todos los problemas", description: "Puedes volver a intentarlo.", tone: "danger" });
+      const serviceError = results.find((result) => result.status === "rejected" && result.reason instanceof ProblemServiceError);
+      toast({ title: "No pudimos recuperar todos los problemas", description: serviceError?.status === "rejected" && serviceError.reason instanceof ProblemServiceError ? serviceError.reason.message : "Puedes volver a intentarlo.", tone: "danger" });
     } else {
       setAnnouncement("Tus problemas descartados están disponibles para revisar otra vez.");
       toast({ title: "Problemas listos para revisar", tone: "success" });

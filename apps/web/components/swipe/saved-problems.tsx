@@ -12,7 +12,7 @@ import { useToast } from "@/components/ui/toast";
 import { selectDeckProblems } from "@/lib/deck";
 import { listMyProblemInteractions, setProblemInteraction } from "@/lib/interaction-service";
 import { formatProblemBudget, type PublicProblem } from "@/lib/problem-domain";
-import { listOpenBusinessProblems } from "@/lib/problem-service";
+import { listOpenBusinessProblems, ProblemServiceError } from "@/lib/problem-service";
 import { DeckDetail } from "./deck-detail";
 
 type State = { status: "loading" } | { status: "error" } | { status: "ready"; problems: PublicProblem[] };
@@ -50,30 +50,32 @@ export function SavedProblems() {
     setState((current) => current.status === "ready" ? { ...current, problems: current.problems.filter((item) => item.id !== problem.id) } : current);
     headingRef.current?.focus();
     let undoing = false;
-    const request = setProblemInteraction(problem.id, null).catch(() => null);
+    const request = setProblemInteraction(problem.id, null)
+      .then((result) => ({ result, error: null }))
+      .catch((error: unknown) => ({ result: null, error: error instanceof ProblemServiceError ? error.message : null }));
     const toastId = toast({
       title: "Quitado de tus Likes", actionLabel: "Deshacer", durationMs: 6000, tone: "neutral",
       onAction: () => {
         if (undoing) return;
         undoing = true;
         void (async () => {
-          if (await request !== "unseen") return;
+          if ((await request).result !== "unseen") return;
           try {
             if (await setProblemInteraction(problem.id, "saved") !== "saved") throw new Error("No se confirmó la acción.");
             restore(problem);
             toast({ title: "Problema restaurado en tus Likes", tone: "success" });
-          } catch {
-            toast({ title: "No pudimos deshacer la acción", description: "Vuelve a intentarlo desde Descubrir.", tone: "danger" });
+          } catch (error) {
+            toast({ title: "No pudimos deshacer la acción", description: error instanceof ProblemServiceError ? error.message : "Vuelve a intentarlo desde Descubrir.", tone: "danger" });
           }
         })();
       },
     });
-    void request.then((result) => {
+    void request.then(({ result, error }) => {
       if (result === "unseen") return;
       dismiss(toastId);
       if (result === null || result === "saved") {
         restore(problem);
-        toast({ title: "No pudimos quitar el problema", description: "Revisa tu conexión e inténtalo de nuevo.", tone: "danger" });
+        toast({ title: "No pudimos quitar el problema", description: error ?? "Revisa tu conexión e inténtalo de nuevo.", tone: "danger" });
       } else {
         toast({ title: "El estado del problema cambió", description: "Actualizamos tus Likes con el estado confirmado.", tone: "neutral" });
       }
