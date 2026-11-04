@@ -172,12 +172,12 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
       </a>
 
       <header className="shrink-0 border-b border-border bg-background">
-        <div className="mx-auto flex min-h-16 w-full max-w-[1720px] items-center justify-between gap-4 px-4 sm:min-h-[72px] sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-16 w-full max-w-[1720px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2 sm:min-h-[72px] sm:px-6 lg:px-8">
           <Link aria-label="MatchWork, inicio de la aplicación" className="inline-flex min-h-11 min-w-11 shrink-0 items-center rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" href="/app">
             <MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" preload />
           </Link>
 
-          <div className="flex min-w-0 items-center gap-2 sm:gap-4">
+          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-4">
             <div className="min-w-0 text-right">
               <p className="max-w-32 truncate text-sm font-medium text-foreground sm:max-w-52">{user.name}</p>
               <p className="text-[0.6875rem] text-muted-foreground sm:text-xs">{roleLabel}</p>
