@@ -18,8 +18,8 @@ const heroBenefits = [
     highlight: "tipos de trabajo",
   },
   {
-    text: "Encuentra y analiza las propuestas gratis.",
-    highlight: "propuestas gratis",
+    text: "Encuentra y analiza las propuestas.",
+    highlight: "analiza las propuestas",
   },
   {
     text: "Gratis por ahora.",
@@ -69,19 +69,20 @@ const expertBenefits = [
     ),
   },
   {
-    title: "Supervisa cada avance",
+    title: "Conversa y decide",
     description: (
       <>
-        Una vez aceptada la solución, puedes <span className="font-medium text-brand-lavender">supervisar cada avance</span> de
-        la implementación, estés donde estés.
+        Cuando hay Match, <span className="font-medium text-brand-lavender">conversan en MatchWork</span> y deciden juntos cómo
+        seguir. El Match no es una contratación ni un pago.
       </>
     ),
   },
   {
-    title: "Paga con confianza",
+    title: "Empieza sin costo",
     description: (
       <>
-        ¡Solo pagas si quedas <span className="font-medium text-brand-lavender">contento con el resultado final!</span>
+        Publicar tu problema, recibir propuestas y conversar en MatchWork es{" "}
+        <span className="font-medium text-brand-lavender">gratis por ahora</span>.
       </>
     ),
   },
