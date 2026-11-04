@@ -28,7 +28,7 @@ export function ProblemsTab({ api }: { api: AdminApi }) {
   useEffect(() => { const id = window.setTimeout(() => setSearch(searchInput), 300); return () => window.clearTimeout(id); }, [searchInput]);
   const list = usePagedList((cursor) => api.listProblems({ search, status: filter, cursor }), rowKey, [search, filter]);
 
-  async function confirm(problem: AdminProblemRow, reason: string) {
+  async function applySuspension(problem: AdminProblemRow, reason: string) {
     const suspended = problem.suspended_at === null;
     await api.setProblemSuspended(problem.problem_id, suspended, reason);
     setTarget(null);
@@ -77,7 +77,7 @@ export function ProblemsTab({ api }: { api: AdminApi }) {
         confirmLabel={suspending ? "Suspender problema" : "Reactivar problema"}
         description={target ? (suspending ? "El problema saldrá del feed y de los contadores, y no recibirá propuestas nuevas." : "El problema volverá a mostrarse y a recibir propuestas.") : ""}
         onClose={() => setTarget(null)}
-        onConfirm={(reason) => target ? confirm(target, reason) : Promise.resolve()}
+        onConfirm={(reason) => target ? applySuspension(target, reason) : Promise.resolve()}
         open={target !== null}
         title={suspending ? "Suspender problema" : "Reactivar problema"}
       />

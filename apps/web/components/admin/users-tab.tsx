@@ -29,7 +29,7 @@ export function UsersTab({ api }: { api: AdminApi }) {
   useEffect(() => { const id = window.setTimeout(() => setSearch(searchInput), 300); return () => window.clearTimeout(id); }, [searchInput]);
   const list = usePagedList((cursor) => api.listUsers({ search, role, suspension, cursor }), rowKey, [search, role, suspension]);
 
-  async function confirm(user: AdminUserRow, reason: string) {
+  async function applySuspension(user: AdminUserRow, reason: string) {
     const suspended = user.suspended_at === null;
     await api.setUserSuspended(user.user_id, suspended, reason);
     setTarget(null);
@@ -74,7 +74,7 @@ export function UsersTab({ api }: { api: AdminApi }) {
         confirmLabel={suspending ? "Suspender usuario" : "Reactivar usuario"}
         description={target ? (suspending ? `${target.full_name} no podrá publicar, proponer ni chatear, y verá el motivo en su cuenta.` : `${target.full_name} podrá volver a usar MatchWork.`) : ""}
         onClose={() => setTarget(null)}
-        onConfirm={(reason) => target ? confirm(target, reason) : Promise.resolve()}
+        onConfirm={(reason) => target ? applySuspension(target, reason) : Promise.resolve()}
         open={target !== null}
         title={suspending ? "Suspender usuario" : "Reactivar usuario"}
       />
