@@ -40,7 +40,7 @@ describe("proposal domain", () => {
     ["deliverables", 5000, "Los entregables no pueden superar los 5,000 caracteres."],
     ["timeline", 300, "El plazo no puede superar los 300 caracteres."],
     ["recurringCosts", 2000, "Los costos recurrentes no pueden superar los 2,000 caracteres."],
-    ["maintenanceWarranty", 2000, "El mantenimiento y la garantía no pueden superar los 2,000 caracteres."],
+    ["maintenanceWarranty", 2000, "El soporte posterior no puede superar los 2,000 caracteres."],
     ["relatedExperience", 2000, "La experiencia relacionada no puede superar los 2,000 caracteres."],
   ] as const)("accepts the character limit for %s and rejects one extra character", (field, limit, message) => {
     expect(validateProposalForSubmit(completeDraft({ [field]: "😀".repeat(limit) }))).toEqual([]);

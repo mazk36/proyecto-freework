@@ -20,7 +20,7 @@ const textFields: { field: ProposalTextField; label: string; hint: string; requi
   { field: "deliverables", label: "Entregables", hint: "Describe qué recibirá la empresa.", required: true, rows: 3 },
   { field: "timeline", label: "Plazo", hint: "Indica el tiempo estimado y, si lo deseas, las etapas.", required: true, rows: 2 },
   { field: "recurringCosts", label: "Costos recurrentes", hint: "Por ejemplo, servicios que se paguen periódicamente.", rows: 2 },
-  { field: "maintenanceWarranty", label: "Mantenimiento y garantía", hint: "Cuenta qué soporte o garantía incluyes, si corresponde.", rows: 2 },
+  { field: "maintenanceWarranty", label: "Soporte posterior (opcional)", hint: "Indica si ofreces soporte después de entregar.", rows: 2 },
   { field: "relatedExperience", label: "Experiencia relacionada", hint: "Comparte experiencia útil para este problema.", rows: 3 },
 ];
 

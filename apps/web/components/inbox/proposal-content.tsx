@@ -8,7 +8,7 @@ export const comparisonFields = [
   ["diagnosis", "Diagnóstico"],
   ["solution", "Solución"],
   ["recurringCosts", "Costos recurrentes"],
-  ["maintenanceWarranty", "Mantenimiento y garantía"],
+  ["maintenanceWarranty", "Soporte posterior (opcional)"],
   ["relatedExperience", "Experiencia relacionada"],
 ] as const;
 
@@ -20,8 +20,8 @@ export function proposalFieldValue(proposal: InboxProposal, field: typeof compar
 export function ProposalFullContent({ proposal }: { proposal: InboxProposal }) {
   return <div className="space-y-5 pb-2">
     <div className="rounded-2xl border border-border bg-background p-4">
-      <p className="font-display font-semibold">{proposal.freelancerName || "Profesional de MatchWork"}</p>
-      <p className="mt-1 text-sm leading-6 text-muted-foreground">{proposal.headline || "Profesional independiente"}</p>
+      <p className="font-display font-semibold">{proposal.freelancerName || "Freelancer de MatchWork"}</p>
+      <p className="mt-1 text-sm leading-6 text-muted-foreground">{proposal.headline || "Freelancer independiente"}</p>
     </div>
     {comparisonFields.map(([field, label]) => <section className="min-w-0" key={field}>
       <h3 className="text-sm font-semibold text-muted-foreground">{label}</h3>
