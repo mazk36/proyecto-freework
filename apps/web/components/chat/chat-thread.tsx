@@ -37,6 +37,8 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
   const [loadError, setLoadError] = useState<{ message: string; target: "latest" | "older" } | null>(null);
   const [readError, setReadError] = useState("");
   const [realtime, setRealtime] = useState<ChatRealtimeStatus>("connecting");
+  const [subscribeAttempt, setSubscribeAttempt] = useState(0);
+  const realtimeWasDown = useRef(false);
   const [showNewMessages, setShowNewMessages] = useState(false);
   const [draft, setDraft] = useState("");
   const [composeError, setComposeError] = useState("");
@@ -143,7 +145,17 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
       document.removeEventListener("visibilitychange", onFocus);
       unsubscribe();
     };
-  }, [conversation.matchId, loadLatest, markRead, prepareForIncoming, services, userId]);
+  }, [conversation.matchId, loadLatest, markRead, prepareForIncoming, services, subscribeAttempt, userId]);
+
+  // Sin tiempo real: sondeo de respaldo cada 10 s (loadLatest ya une páginas, elimina duplicados y marca como leído).
+  // Al volver a «connected» se hace una última carga para no perder lo que llegó mientras estaba caído.
+  useEffect(() => {
+    if (realtime === "connected" && realtimeWasDown.current) { realtimeWasDown.current = false; void loadLatest(); }
+    if (realtime !== "unavailable") return;
+    realtimeWasDown.current = true;
+    const timer = window.setInterval(() => { if (document.visibilityState === "visible") void loadLatest(); }, 10_000);
+    return () => window.clearInterval(timer);
+  }, [loadLatest, realtime]);
 
   useEffect(() => {
     if (window.matchMedia("(max-width: 767px)").matches) backRef.current?.focus();
@@ -248,9 +260,14 @@ export function ChatThread({ conversation, userId, services, outbox, sendErrors,
     </header>
     {accountStatus.state === "suspended" ? <div className="shrink-0 p-2 md:hidden"><SuspensionNotice onLogout={() => void logout()} reason={accountStatus.reason} /></div> : null}
     <ConversationNotice matchId={conversation.matchId} onDismiss={() => (scrollRef.current ?? threadRef.current)?.focus({ preventScroll: true })} />
-    {realtime === "unavailable" ? <p className="shrink-0 border-b border-border px-4 py-2 text-xs leading-5 text-warning" role="status">La actualización en tiempo real no está disponible. Puedes actualizar la conversación.</p> : null}
     {readError ? <p className="shrink-0 border-b border-border px-4 py-2 text-xs leading-5 text-warning" role="status">{readError}</p> : null}
     <div className="relative flex min-h-0 flex-1 flex-col">
+      {realtime === "unavailable" ? <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex justify-center px-3" role="status">
+        <p className="pointer-events-auto flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full border border-warning/40 bg-warning-soft px-4 py-1.5 text-xs leading-5 text-warning shadow-sm">
+          <span>Sin conexión en tiempo real. Reintentando…</span>
+          <button className="-my-2 min-h-11 rounded-lg px-1 font-semibold underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" onClick={() => { setRealtime("connecting"); setSubscribeAttempt((value) => value + 1); }} type="button">Reintentar</button>
+        </p>
+      </div> : null}
       {loading ? <ThreadSkeleton /> : <div aria-label="Mensajes de la conversación" className="ui-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6" onScroll={(event) => {
         const element = event.currentTarget;
         stickToBottom.current = isScrollNearBottom(element.scrollTop, element.clientHeight, element.scrollHeight);
