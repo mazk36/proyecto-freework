@@ -1,5 +1,6 @@
 "use client";
 
+import { isGoogleAuthEnabled, startGoogleSignIn } from "@/lib/google-auth";
 import { ResendEmail } from "@/components/auth/resend-email";
 import { savePendingEmail } from "@/lib/email-cycle";
 import { useTurnstile } from "@/components/auth/turnstile-field";
@@ -22,6 +23,7 @@ export function LoginExperience() {
   const { login, isReady, storageNotice, authIssue } = useAuth();
   const captcha = useTurnstile();
   const [error, setError] = useState("");
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -179,21 +181,30 @@ export function LoginExperience() {
               </button>
             </form>
 
-            <div className="flex items-center gap-3 text-xs text-[#9BA7B6]">
-              <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
-              <span>O continúa con</span>
-              <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
-            </div>
+            {isGoogleAuthEnabled() ? (
+              <>
+                <div className="flex items-center gap-3 text-xs text-[#9BA7B6]">
+                  <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
+                  <span>O continúa con</span>
+                  <span aria-hidden="true" className="h-px flex-1 bg-white/10" />
+                </div>
 
-            <button
-              className="flex min-h-11 w-full cursor-not-allowed items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#161B22] px-4 text-sm font-medium text-[#B6C1D0] opacity-75"
-              disabled
-              type="button"
-            >
-              <span aria-hidden="true" className="font-sans text-lg font-bold text-[#8AB4F8]">G</span>
-              <span>Continuar con Google</span>
-              <span className="text-xs text-[#D8C4FF]">No configurado</span>
-            </button>
+                <button
+                  className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-[#161B22] px-4 text-sm font-medium text-[#F8FAFC] transition-colors hover:bg-[#1c232d] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF] disabled:cursor-wait disabled:opacity-75"
+                  disabled={!isReady || googleBusy}
+                  onClick={() => {
+                    setGoogleBusy(true);
+                    void startGoogleSignIn(safeAppDestination(new URLSearchParams(window.location.search).get("next"))).then((message) => {
+                      if (message) { setError(message); setGoogleBusy(false); }
+                    });
+                  }}
+                  type="button"
+                >
+                  <span aria-hidden="true" className="font-sans text-lg font-bold text-[#8AB4F8]">G</span>
+                  <span>{googleBusy ? "Conectando con Google…" : "Continuar con Google"}</span>
+                </button>
+              </>
+            ) : null}
 
             <p className="text-center text-sm text-[#B6C1D0]">
               ¿No tienes una cuenta?{" "}

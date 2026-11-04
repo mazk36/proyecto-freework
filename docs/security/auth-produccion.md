@@ -41,3 +41,12 @@ GoTrue envía solo la parte HTML de la plantilla (no admite una versión de text
 ## Limpieza de cuentas sin confirmar
 
 Ver `docs/ops/limpieza-cuentas-sin-confirmar.md`.
+
+## Acceso con Google (apagado por defecto)
+
+El botón «Continuar con Google» solo aparece con `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED=true` en el build de la web. El flujo está implementado (`signInWithOAuth`, vuelta a `/auth/callback/?flow=oauth` y continuación en `next`), pero **no se ha probado contra Google real**. Para activarlo falta:
+
+1. En Google Cloud Console: crear un cliente OAuth «Aplicación web», con el origen de la web y como URI de redirección autorizada `https://<dominio-de-la-api>/auth/v1/callback`. Pantalla de consentimiento publicada con el dominio y el correo de soporte.
+2. En GoTrue: `GOTRUE_EXTERNAL_GOOGLE_ENABLED=true`, `GOTRUE_EXTERNAL_GOOGLE_CLIENT_ID`, `GOTRUE_EXTERNAL_GOOGLE_SECRET` y `GOTRUE_EXTERNAL_GOOGLE_REDIRECT_URI` (la misma URI del punto 1). La lista de redirecciones debe admitir `https://<dominio>/auth/callback/**`.
+3. Decisión de producto pendiente: una cuenta nueva creada con Google no elige su tipo y el disparador de la base le asigna `freelancer`. Antes de activarlo hay que añadir una pantalla de primer ingreso que pregunte «Empresa o freelancer» (o limitar Google a cuentas existentes).
+4. Probar: primer ingreso, reingreso, cuenta existente con el mismo correo (enlace de identidades) y cuenta suspendida.

@@ -145,6 +145,7 @@ try {
   await wrong.page.getByRole("button", { name: /Iniciar sesión/ }).click();
   await wrong.page.getByText("El correo o la contraseña no son correctos.").waitFor({ timeout: 10_000 });
   check("E5.2 las credenciales incorrectas siguen siendo un mensaje genérico", (await wrong.page.getByText(/Aún no confirmaste/).count()) === 0);
+  check("E5.3 sin NEXT_PUBLIC_GOOGLE_AUTH_ENABLED no hay botón de Google ni «No configurado»", (await wrong.page.getByText(/Google|No configurado/).count()) === 0);
   await auditScreen(carla, "Iniciar sesión sin confirmar (390 px)", { widths: [360, 390], axeWidths: [390] });
 
   // ---------- 6) Correo ya registrado: misma pantalla ----------

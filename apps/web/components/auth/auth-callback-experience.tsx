@@ -46,6 +46,7 @@ export function AuthCallbackExperience() {
 
     if (!tokenHash) {
       started.current = true;
+      if (user && params.get("flow") === "oauth") { router.replace(safeNext(params.get("next"))); return; }
       if (user) setPhase(currentFlow === "recovery" ? "recovery-form" : "success");
       else setPhase("expired");
       return;
@@ -59,7 +60,7 @@ export function AuthCallbackExperience() {
       if (outcome.ok) setPhase(currentFlow === "recovery" ? "recovery-form" : "success");
       else setPhase(outcome.failure === "expired" ? "expired" : "network");
     });
-  }, [attempt, isReady, user]);
+  }, [attempt, isReady, router, user]);
 
   useEffect(() => {
     if (phase !== "verifying") titleRef.current?.focus();
