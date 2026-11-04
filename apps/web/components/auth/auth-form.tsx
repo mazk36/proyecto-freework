@@ -152,7 +152,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                     <button
                       aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                       aria-pressed={showPassword}
-                      className="absolute right-1 top-1/2 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-[#B6C1D0] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
+                      className="absolute right-1 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg text-[#B6C1D0] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
                       onClick={() => setShowPassword((visible) => !visible)}
                       type="button"
                     >
@@ -178,7 +178,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                     <button
                       aria-label={showConfirmation ? "Ocultar confirmación de contraseña" : "Mostrar confirmación de contraseña"}
                       aria-pressed={showConfirmation}
-                      className="absolute right-1 top-1/2 inline-flex size-10 -translate-y-1/2 items-center justify-center rounded-lg text-[#B6C1D0] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
+                      className="absolute right-1 top-1/2 inline-flex size-11 -translate-y-1/2 items-center justify-center rounded-lg text-[#B6C1D0] transition-colors hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8A4DFF]"
                       onClick={() => setShowConfirmation((visible) => !visible)}
                       type="button"
                     >
