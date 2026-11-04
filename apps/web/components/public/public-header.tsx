@@ -13,7 +13,7 @@ export function PublicHeader() {
         >
           <MatchWorkLogoLockup size="large" preload variant="reversed" />
         </Link>
-        <nav aria-label="Acciones principales" className="flex items-center gap-1 sm:gap-3">
+        <nav aria-label="Acciones principales" className="flex flex-wrap items-center justify-end gap-1 sm:gap-3">
           <ButtonLink
             className="!min-h-11 !bg-[#7940e8] !px-1.5 !text-xs !text-white hover:!bg-[#6733ca] sm:!px-3 sm:!text-sm"
             href="/app/problemas/nuevo"
