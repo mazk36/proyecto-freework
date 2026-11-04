@@ -31,7 +31,7 @@ function isProblem(v: unknown): v is AdminProblemRow {
     nullable(v.suspended_at) && nullable(v.suspension_reason);
 }
 function checkedRows<T>(value: unknown, guard: (row: unknown) => row is T): T[] {
-  if (!Array.isArray(value) || !value.every(guard)) throw new ProblemServiceError("No pudimos cargar los datos de administración.");
+  if (!Array.isArray(value) || !value.every(guard)) throw new ProblemServiceError("No pudimos cargar los datos de administración. Inténtalo de nuevo.");
   return value;
 }
 function page<T>(items: T[], limit: number, cursor: (row: T) => Cursor): Page<T> {
@@ -40,7 +40,7 @@ function page<T>(items: T[], limit: number, cursor: (row: T) => Cursor): Page<T>
 
 export async function isAdmin(): Promise<boolean> {
   const data: unknown = await callRpc("is_admin", {});
-  if (typeof data !== "boolean") throw new ProblemServiceError("No pudimos comprobar tu acceso de administración.");
+  if (typeof data !== "boolean") throw new ProblemServiceError("No pudimos comprobar tu acceso de administración. Inténtalo de nuevo.");
   return data;
 }
 export async function listVerificationRequests(options: { status?: VerificationFilter; cursor?: Cursor | null; limit?: number } = {}): Promise<Page<VerificationRequestRow>> {
@@ -88,7 +88,7 @@ export async function getAdminSummary(): Promise<AdminSummaryRow> {
   if (!Array.isArray(data) || data.length !== 1 || !isRecord(data[0]) ||
     !count(data[0].pending_verifications) || !count(data[0].verified_companies) ||
     !count(data[0].open_problems) || !count(data[0].active_freelancers)) {
-    throw new ProblemServiceError("No pudimos cargar el resumen de administración.");
+    throw new ProblemServiceError("No pudimos cargar el resumen de administración. Inténtalo de nuevo.");
   }
   return data[0] as AdminSummaryRow;
 }

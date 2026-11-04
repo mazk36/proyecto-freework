@@ -168,10 +168,10 @@ try {
   await diagnosis.fill("a".repeat(5001));
   const typed = (await diagnosis.inputValue()).length;
   const tooLong = await sheet.getByText(/no pueden superar|no puede superar|5000/).count();
-  check("5.2 el límite de 5000 caracteres se aplica (campo recortado o error visible)", typed <= 5000 || tooLong > 0, `largo=${typed}, avisos=${tooLong}`);
-  await sheet.getByText(/5001 \/ 5000 caracteres/).waitFor({ timeout: 5000 }).catch(() => {});
-  { const dis = await sheet.getByRole("button", { name: /Enviar propuesta/ }).isDisabled(); const cnt = await sheet.getByText(/5001 \/ 5000 caracteres/).count(); check("5.2b con más de 5000 caracteres «Enviar propuesta» queda desactivado y el contador avisa", dis && cnt >= 1, `deshabilitado=${dis}, contador=${cnt}`); }
-  check("5.2c la base impone el límite de 5000 caracteres (restricciones diagnóstico, solución y entregables)", sql(`select count(*) from pg_constraint where conrelid = 'public.proposals'::regclass and conname in ('proposals_diagnosis_length_check','proposals_solution_length_check','proposals_deliverables_length_check')`) === "3");
+  check("5.2 el límite de 5,000 caracteres se aplica (campo recortado o error visible)", typed <= 5000 || tooLong > 0, `largo=${typed}, avisos=${tooLong}`);
+  await sheet.getByText(/5,001 \/ 5,000 caracteres/).waitFor({ timeout: 5000 }).catch(() => {});
+  { const dis = await sheet.getByRole("button", { name: /Enviar propuesta/ }).isDisabled(); const cnt = await sheet.getByText(/5,001 \/ 5,000 caracteres/).count(); check("5.2b con más de 5,000 caracteres «Enviar propuesta» queda desactivado y el contador avisa", dis && cnt >= 1, `deshabilitado=${dis}, contador=${cnt}`); }
+  check("5.2c la base impone el límite de 5,000 caracteres (restricciones diagnóstico, solución y entregables)", sql(`select count(*) from pg_constraint where conrelid = 'public.proposals'::regclass and conname in ('proposals_diagnosis_length_check','proposals_solution_length_check','proposals_deliverables_length_check')`) === "3");
   await diagnosis.fill("Entiendo que el equipo pierde visibilidad del seguimiento entre varios canales de atención.");
   await sheet.getByLabel(/^Solución propuesta/).fill("Centralizar las solicitudes en una bandeja compartida con estados claros.");
   await sheet.getByLabel(/^Entregables/).fill("Mapa del proceso, bandeja compartida y guía de uso.");

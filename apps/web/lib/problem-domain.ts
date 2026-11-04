@@ -123,18 +123,18 @@ export function validateCompanyProfile(profile: CompanyProfile): string | null {
     return "Selecciona un país válido.";
   }
   if (description.length > 3000) {
-    return "La descripción admite hasta 3000 caracteres.";
+    return "La descripción admite hasta 3,000 caracteres.";
   }
   if (websiteUrl) {
     try {
       const url = new URL(websiteUrl);
       if ((url.protocol !== "https:" && url.protocol !== "http:") || !url.hostname || url.username || url.password) {
-        return "Introduce un sitio web con una URL http o https válida.";
+        return "Ingresa un sitio web con una URL http o https válida.";
       }
     } catch {
-      return "Introduce la URL completa de tu sitio, por ejemplo https://empresa.com.";
+      return "Ingresa la URL completa de tu sitio, por ejemplo https://empresa.com.";
     }
-    if (websiteUrl.length > 2048) return "El sitio web admite hasta 2048 caracteres.";
+    if (websiteUrl.length > 2048) return "El sitio web admite hasta 2,048 caracteres.";
   }
 
   return null;

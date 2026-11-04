@@ -72,7 +72,7 @@ export function ProposalSheet({
       <label className="block text-sm font-semibold" htmlFor={controlId}>{field.label} <span className="font-normal text-muted-foreground">{field.required ? "· Obligatorio" : "· Opcional"}</span></label>
       <p className="mt-1 text-sm leading-5 text-muted-foreground" id={`${controlId}-hint`}>{field.hint}</p>
       <textarea aria-describedby={describedBy} aria-invalid={Boolean(error)} aria-required={field.required || undefined} className={inputClass} id={controlId} onChange={(event) => dispatch({ type: "edit-text", field: field.field, value: event.target.value })} rows={field.rows} value={value} />
-      {showCounter ? <p className={`mt-1 text-right text-xs ${overLimit ? "font-semibold text-danger" : "text-muted-foreground"}`} id={`${controlId}-count`}>{length} / {limit} caracteres</p> : null}
+      {showCounter ? <p className={`mt-1 text-right text-xs ${overLimit ? "font-semibold text-danger" : "text-muted-foreground"}`} id={`${controlId}-count`}>{length.toLocaleString("es-PE")} / {limit.toLocaleString("es-PE")} caracteres</p> : null}
       {error ? <p className="mt-2 text-sm leading-5 text-danger" id={`${controlId}-error`}>{error}</p> : null}
     </div>;
   }

@@ -74,7 +74,7 @@ export async function setProposalInteraction(
   });
   if (data === null) return "unseen";
   if (isStoredState(data)) return data;
-  throw new ProblemServiceError("No pudimos confirmar la acción para esta propuesta.");
+  throw new ProblemServiceError("No pudimos confirmar la acción para esta propuesta. Inténtalo de nuevo.");
 }
 
 export async function listMyMatches(): Promise<MyMatch[]> {

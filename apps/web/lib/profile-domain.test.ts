@@ -33,7 +33,7 @@ describe("freelancer profile validation", () => {
   });
 
   it("enforces profile field lengths", () => {
-    expect(validateFreelancerProfile({ ...validProfile, bio: "x".repeat(3001) })).toContain("3000");
+    expect(validateFreelancerProfile({ ...validProfile, bio: "x".repeat(3001) })).toContain("3,000");
     expect(validateFreelancerProfile({ ...validProfile, displayName: " " })).toContain("nombre público");
   });
 });

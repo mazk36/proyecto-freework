@@ -11,7 +11,7 @@ export async function saveProposalDraft(problemId: string, input: ProposalDraftI
 
 export async function submitProposal(id: string): Promise<string> {
   const data = await callRpc("submit_proposal", { p_proposal_id: id });
-  if (typeof data !== "string") throw new ProblemServiceError("No pudimos confirmar el envío de tu propuesta.");
+  if (typeof data !== "string") throw new ProblemServiceError("No pudimos confirmar el envío de tu propuesta. Revisa tu conexión e inténtalo de nuevo.");
   return data;
 }
 

@@ -65,7 +65,7 @@ export function SavedProblems() {
         void (async () => {
           if ((await request).result !== "unseen") return;
           try {
-            if (await setProblemInteraction(problem.id, "saved") !== "saved") throw new Error("No se confirmó la acción.");
+            if (await setProblemInteraction(problem.id, "saved") !== "saved") throw new Error("No se confirmó la acción. Inténtalo de nuevo.");
             restore(problem);
             toast({ title: "Problema restaurado en tus Likes", tone: "success" });
           } catch (error) {

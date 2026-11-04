@@ -42,19 +42,19 @@ export function validateImageFile(
 function validateOptionalUrl(value: string, label: string, allowedHost?: string): string | null {
   const normalized = value.trim();
   if (!normalized) return null;
-  if (normalized.length > 2048) return `${label}: el enlace supera el máximo de 2048 caracteres.`;
+  if (normalized.length > 2048) return `${label}: el enlace supera el máximo de 2,048 caracteres.`;
 
   try {
     const url = new URL(normalized);
     const hostname = url.hostname.toLowerCase();
     if ((url.protocol !== "https:" && url.protocol !== "http:") || !hostname || url.username || url.password) {
-      return `${label}: introduce una URL http o https válida.`;
+      return `${label}: ingresa una URL http o https válida.`;
     }
     if (allowedHost && hostname !== allowedHost && !hostname.endsWith(`.${allowedHost}`)) {
       return `${label}: el enlace debe pertenecer a ${allowedHost}.`;
     }
   } catch {
-    return `${label}: introduce una URL completa, por ejemplo https://…`;
+    return `${label}: ingresa una URL completa, por ejemplo https://…`;
   }
   return null;
 }
@@ -65,7 +65,7 @@ export function validateFreelancerProfile(draft: FreelancerProfileDraft): string
     return "El nombre público debe tener entre 1 y 120 caracteres.";
   }
   if (draft.headline.trim().length > 160) return "La especialidad admite hasta 160 caracteres.";
-  if (draft.bio.trim().length > 3000) return "La presentación admite hasta 3000 caracteres.";
+  if (draft.bio.trim().length > 3000) return "La presentación admite hasta 3,000 caracteres.";
   if (draft.locationText.trim().length > 120) return "La ubicación admite hasta 120 caracteres.";
   if (draft.availabilityStatus.trim().length > 40) return "La disponibilidad admite hasta 40 caracteres.";
 
@@ -82,7 +82,7 @@ export function validateFreelancerProfile(draft: FreelancerProfileDraft): string
 export function validatePortfolioProject(draft: PortfolioProjectDraft): string | null {
   const title = draft.title.trim();
   if (!title || title.length > 150) return "El título del proyecto debe tener entre 1 y 150 caracteres.";
-  if (draft.description.trim().length > 3000) return "La descripción admite hasta 3000 caracteres.";
+  if (draft.description.trim().length > 3000) return "La descripción admite hasta 3,000 caracteres.";
   if (draft.category.trim().length > 100) return "La categoría admite hasta 100 caracteres.";
   if (draft.projectPeriod.trim().length > 80) return "El periodo admite hasta 80 caracteres.";
   const skillsError = parseProjectSkills(draft.skillsUsed).error;

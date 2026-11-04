@@ -88,7 +88,7 @@ export async function saveBusinessProblemDraft(draft: ProblemDraft, profile: Com
 
 export async function publishBusinessProblem(id: string): Promise<string> {
   const data = await callRpc("publish_business_problem", { p_problem_id: id });
-  if (typeof data !== "string") throw new ProblemServiceError("No pudimos confirmar la publicación.");
+  if (typeof data !== "string") throw new ProblemServiceError("No pudimos confirmar la publicación. Revisa tu conexión e inténtalo de nuevo.");
   return data;
 }
 
@@ -305,7 +305,7 @@ export function toFriendlyError(message: string, hint?: string | null): string {
   if (/skill limit reached/i.test(message)) return "Llegaste al máximo de 50 habilidades. Quita alguna para agregar otra.";
   if (/portfolio media limit reached/i.test(message)) return "Este proyecto ya tiene 20 archivos, el máximo permitido. Elimina alguno para subir otro.";
   if (/message body empty/i.test(message)) return "Escribe un mensaje antes de enviarlo.";
-  if (/message body too long/i.test(message)) return "El mensaje no puede superar los 2000 caracteres.";
+  if (/message body too long/i.test(message)) return "El mensaje no puede superar los 2,000 caracteres.";
   if (/conversation not found/i.test(message)) return "No encontramos esta conversación o ya no tienes acceso.";
   if (/invalid message page size/i.test(message)) return "La cantidad de mensajes solicitada no es válida.";
   if (/proposal not found/i.test(message)) return "No encontramos esta propuesta o ya no tienes acceso.";
@@ -318,7 +318,7 @@ export function toFriendlyError(message: string, hint?: string | null): string {
   if (/invalid problem interaction state/i.test(message)) return "La acción seleccionada para este problema no es válida.";
   if (/open problem required/i.test(message)) return "Este problema ya no está disponible para recibir propuestas.";
   if (/invalid proposal currency/i.test(message)) return "Selecciona una moneda válida: PEN o USD.";
-  if (/invalid proposal price/i.test(message)) return "Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales.";
+  if (/invalid proposal price/i.test(message)) return "Ingresa un precio mayor o igual a cero, menor a 10,000 millones y con máximo dos decimales.";
   if (/proposal field too long/i.test(message)) return "Uno de los campos de tu propuesta supera el límite de caracteres permitido.";
   if (/proposal requires/i.test(message)) return "Completa el diagnóstico, la solución, los entregables, el plazo y el precio antes de enviar tu propuesta.";
   if (/proposals_one_active_per_problem_freelancer_idx/i.test(message)) return "Ya tienes una propuesta activa para este problema.";

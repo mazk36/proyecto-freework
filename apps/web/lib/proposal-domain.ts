@@ -32,13 +32,13 @@ export type Proposal = ProposalDraftInput & {
 };
 
 export const proposalTextLimits = [
-  ["diagnosis", 5000, "El diagnóstico no puede superar los 5000 caracteres."],
-  ["solution", 5000, "La solución no puede superar los 5000 caracteres."],
-  ["deliverables", 5000, "Los entregables no pueden superar los 5000 caracteres."],
+  ["diagnosis", 5000, "El diagnóstico no puede superar los 5,000 caracteres."],
+  ["solution", 5000, "La solución no puede superar los 5,000 caracteres."],
+  ["deliverables", 5000, "Los entregables no pueden superar los 5,000 caracteres."],
   ["timeline", 300, "El plazo no puede superar los 300 caracteres."],
-  ["recurringCosts", 2000, "Los costos recurrentes no pueden superar los 2000 caracteres."],
-  ["maintenanceWarranty", 2000, "El mantenimiento y la garantía no pueden superar los 2000 caracteres."],
-  ["relatedExperience", 2000, "La experiencia relacionada no puede superar los 2000 caracteres."],
+  ["recurringCosts", 2000, "Los costos recurrentes no pueden superar los 2,000 caracteres."],
+  ["maintenanceWarranty", 2000, "El mantenimiento y la garantía no pueden superar los 2,000 caracteres."],
+  ["relatedExperience", 2000, "La experiencia relacionada no puede superar los 2,000 caracteres."],
 ] as const;
 
 const requiredMessages = {
@@ -49,7 +49,7 @@ const requiredMessages = {
   price: "Indica el precio de tu propuesta.",
 } as const;
 
-const priceMessage = "Ingresa un precio mayor o igual a cero, menor a 10 000 millones y con máximo dos decimales.";
+const priceMessage = "Ingresa un precio mayor o igual a cero, menor a 10,000 millones y con máximo dos decimales.";
 const currencyMessage = "Selecciona una moneda válida: PEN o USD.";
 
 export type ProposalField = Exclude<keyof ProposalDraftInput, "id">;

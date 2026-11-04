@@ -33,7 +33,7 @@ export function ReasonSheet({ open, title, description, confirmLabel, presets = 
     try {
       await onConfirm(reason.trim());
     } catch (reasonError) {
-      setFailure(reasonError instanceof Error ? reasonError.message : "No pudimos completar la acción.");
+      setFailure(reasonError instanceof Error ? reasonError.message : "No pudimos completar la acción. Inténtalo de nuevo.");
       setBusy(false);
     }
   }

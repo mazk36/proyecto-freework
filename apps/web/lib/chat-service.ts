@@ -28,7 +28,7 @@ export async function sendMessage(matchId: string, body: string, clientId: strin
   // PostgREST can serialize a composite result as a single-row array.
   const row: unknown = Array.isArray(data) && data.length === 1 ? data[0] : data;
   if (!isMessageRow(row) || row.match_id !== matchId) {
-    throw new ProblemServiceError("No pudimos confirmar el envío del mensaje.");
+    throw new ProblemServiceError("No pudimos confirmar el envío del mensaje. Inténtalo de nuevo.");
   }
   return mapMessage(row);
 }

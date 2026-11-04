@@ -77,7 +77,7 @@ describe("proposal form state", () => {
     expect(proposalErrors(draft, true)).toEqual({});
     const errors = proposalErrors({ ...draft, recurringCosts: "😀".repeat(2001), price: -1 }, true);
     expect(Object.keys(errors).sort()).toEqual(["price", "recurringCosts"]);
-    expect(errors.recurringCosts).toContain("2000");
+    expect(errors.recurringCosts).toContain("2,000");
   });
 
   it("accepts decimal points or commas without silently rounding invalid prices", () => {

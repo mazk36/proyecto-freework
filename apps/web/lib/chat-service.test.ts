@@ -82,7 +82,7 @@ describe("chat service", () => {
     ["message rate limit: maximum 30 messages per minute", "Hiciste muchas acciones seguidas"],
     ["rate limit exceeded", "Hiciste muchas acciones seguidas"],
     ["message body empty", "Escribe un mensaje"],
-    ["message body too long", "2000 caracteres"],
+    ["message body too long", "2,000 caracteres"],
     ["conversation not found", "esta conversación"],
   ])("translates %s", async (error, expected) => {
     mocks.rpc.mockResolvedValue({ data: null, error: { message: error } });

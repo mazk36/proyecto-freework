@@ -19,7 +19,7 @@ export async function setProblemInteraction(
   });
   if (data === null && next === null) return "unseen";
   if (isStoredState(data)) return data;
-  throw new ProblemServiceError("No pudimos confirmar la acción para este problema.");
+  throw new ProblemServiceError("No pudimos confirmar la acción para este problema. Inténtalo de nuevo.");
 }
 
 export async function listMyProblemInteractions(): Promise<ProblemInteraction[]> {

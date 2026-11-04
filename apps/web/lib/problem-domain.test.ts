@@ -56,6 +56,6 @@ describe("company problem publication rules", () => {
 
     expect(validateCompanyProfile(profile)).toBeNull();
     expect(validateCompanyProfile({ ...profile, websiteUrl: "javascript:void(0)" })).toContain("http o https");
-    expect(validateCompanyProfile({ ...profile, description: "x".repeat(3001) })).toContain("3000");
+    expect(validateCompanyProfile({ ...profile, description: "x".repeat(3001) })).toContain("3,000");
   });
 });
