@@ -6,11 +6,13 @@ import {
   Heart,
   Layers3,
   MessagesSquare,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AccountStatusContext, SuspensionNotice, type AccountStatus } from "@/components/app/account-status";
+import { isAdmin as checkIsAdmin } from "@/lib/admin-service";
 import { getMyAccountStatus } from "@/lib/company-verification-service";
 import { useAuth } from "@/components/auth/auth-provider";
 import { MatchWorkLogoLockup } from "@/components/brand/matchwork-logo";
@@ -49,6 +51,8 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
   const [unreadCount, setUnreadCount] = useState(0);
   const [accountStatusResult, setAccountStatusResult] = useState<{ userId: string; status: AccountStatus } | null>(null);
   const [statusAttempt, setStatusAttempt] = useState(0);
+  const [adminResult, setAdminResult] = useState<{ userId: string; isAdmin: boolean } | null>(null);
+  const showAdminLink = adminResult !== null && adminResult.userId === user?.id && adminResult.isAdmin;
   const accountStatus: AccountStatus = accountStatusResult && accountStatusResult.userId === user?.id ? accountStatusResult.status : { state: "loading" };
   const isChatPage = pathname === "/app/chats" || pathname === "/app/chats/";
 
@@ -61,6 +65,14 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
     }).catch(() => { if (active) setAccountStatusResult({ userId: user.id, status: { state: "error" } }); });
     return () => { active = false; };
   }, [user?.id, statusAttempt]);
+
+  // The link is only a convenience: every admin RPC re-checks the role on the server.
+  useEffect(() => {
+    if (!user?.id) return;
+    let active = true;
+    void checkIsAdmin().then((value) => { if (active) setAdminResult({ userId: user.id, isAdmin: value }); }).catch(() => { if (active) setAdminResult({ userId: user.id, isAdmin: false }); });
+    return () => { active = false; };
+  }, [user?.id]);
 
   useEffect(() => {
     if (!user?.id) return;
@@ -170,6 +182,11 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
               <p className="max-w-32 truncate text-sm font-medium text-foreground sm:max-w-52">{user.name}</p>
               <p className="text-[0.6875rem] text-muted-foreground sm:text-xs">{roleLabel}</p>
             </div>
+            {showAdminLink ? (
+              <Link aria-label="Admin" className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl border border-border text-foreground transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent md:hidden" href="/app/admin/">
+                <ShieldCheck aria-hidden="true" className="size-5" strokeWidth={1.8} />
+              </Link>
+            ) : null}
             <button
               className="min-h-11 shrink-0 rounded-xl border border-border px-3 text-xs font-semibold text-foreground transition-colors hover:bg-surface-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:px-4 sm:text-sm"
               onClick={handleLogout}
@@ -193,6 +210,17 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
         <aside className="hidden border-r border-border px-3 py-7 md:block lg:px-5">
           <nav aria-label="Navegación principal" className="sticky top-6 flex flex-col gap-2">
             {navigation.map((item) => renderNavigationItem(item))}
+            {showAdminLink ? (
+              <Link
+                aria-current={pathname.startsWith("/app/admin") ? "page" : undefined}
+                className={`group flex min-h-11 min-w-0 items-center justify-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent lg:justify-start ${pathname.startsWith("/app/admin") ? "bg-accent/15 text-foreground ring-1 ring-inset ring-accent/20" : "text-muted-foreground hover:bg-surface-raised hover:text-foreground"}`}
+                href="/app/admin/"
+                title="Admin"
+              >
+                <ShieldCheck aria-hidden="true" className="size-5 shrink-0" strokeWidth={1.8} />
+                <span className="sr-only lg:not-sr-only">Admin</span>
+              </Link>
+            ) : null}
           </nav>
         </aside>
 
