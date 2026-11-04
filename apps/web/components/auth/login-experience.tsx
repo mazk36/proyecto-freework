@@ -151,7 +151,7 @@ export function LoginExperience() {
               ) : null}
 
               <button
-                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#8A4DFF] px-5 py-2.5 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
+                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#7940e8] px-5 py-2.5 text-base font-semibold text-white shadow-[0_10px_26px_rgba(138,77,255,0.24)] transition duration-200 hover:bg-[#9864FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D8C4FF] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0D1117] disabled:cursor-not-allowed disabled:opacity-55"
                 disabled={!isReady || isSubmitting}
                 type="submit"
               >
