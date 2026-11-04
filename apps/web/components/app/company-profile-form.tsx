@@ -201,7 +201,7 @@ export function CompanyProfileForm({ userId, onProfileSaved }: Props) {
                 {logoNotice ? <p className="mt-3 text-sm text-emerald-200" role="status">{logoNotice}</p> : null}
                 {confirmLogoRemoval ? (
                   <div className="mt-4 rounded-xl border border-rose-300/25 bg-rose-400/10 p-4">
-                    <p className="text-sm leading-6 text-rose-100">Se quitará el logotipo del perfil y se eliminará el archivo público si Storage lo permite. ¿Continuar?</p>
+                    <p className="text-sm leading-6 text-rose-100">Se quitará el logotipo del perfil y se eliminará también el archivo público. ¿Continuar?</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button className="bg-rose-700 text-white hover:bg-rose-600" disabled={isLogoBusy} onClick={() => void handleLogoRemoval()} size="sm">{isLogoBusy ? "Eliminando…" : "Sí, quitar logotipo"}</Button>
                       <Button className={secondaryButtonClass} disabled={isLogoBusy} onClick={() => setConfirmLogoRemoval(false)} size="sm" variant="outline">Cancelar</Button>

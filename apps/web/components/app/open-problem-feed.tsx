@@ -31,7 +31,7 @@ export function OpenProblemFeed() {
   if (user.role === "company") {
     return (
       <AppEmptyState
-        description="La búsqueda de perfiles públicos se habilitará cuando conectemos la consulta segura de portafolios. No se muestran perfiles de ejemplo."
+        description="La búsqueda de perfiles de freelancers aún no está disponible. No mostramos perfiles de ejemplo."
         title="Explora talento profesional"
       />
     );

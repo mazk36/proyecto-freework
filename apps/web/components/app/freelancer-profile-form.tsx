@@ -377,13 +377,13 @@ export function FreelancerProfileForm({ userId }: Props) {
                   {avatarFile ? <Button disabled={avatarBusy} onClick={() => void handleAvatarUpload()} size="sm">{avatarBusy ? "Subiendo…" : "Guardar fotografía"}</Button> : null}
                   {data.profile.avatar_path ? <Button className="text-rose-200 hover:bg-rose-400/10" disabled={avatarBusy} onClick={() => setConfirmAvatarRemoval((current) => !current)} size="sm" variant="quiet">Eliminar</Button> : null}
                 </div>
-                <p className="mt-3 text-xs leading-5 text-amber-100/80">La fotografía se guarda en un bucket público; su URL puede consultarse aunque el perfil esté privado. Sube solo una imagen que aceptes hacer accesible públicamente.</p>
+                <p className="mt-3 text-xs leading-5 text-amber-100/80">La fotografía se guarda en un espacio público de imágenes; su dirección puede consultarse aunque el perfil esté privado. Sube solo una imagen que aceptes hacer accesible públicamente.</p>
                 {avatarFile ? <p className="mt-2 text-xs text-accent-soft" role="status">Vista previa: {avatarFile.name}</p> : null}
                 {avatarError ? <p className="mt-3 text-sm text-rose-200" role="alert">{avatarError}</p> : null}
                 {avatarNotice ? <p className="mt-3 text-sm text-emerald-200" role="status">{avatarNotice}</p> : null}
                 {confirmAvatarRemoval ? (
                   <div className="mt-4 rounded-xl border border-rose-300/25 bg-rose-400/10 p-4">
-                    <p className="text-sm leading-6 text-rose-100">Se quitará la fotografía del perfil y se eliminará su archivo público si Storage lo permite. ¿Continuar?</p>
+                    <p className="text-sm leading-6 text-rose-100">Se quitará la fotografía del perfil y se eliminará también su archivo público. ¿Continuar?</p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button className="bg-rose-700 text-white hover:bg-rose-600" disabled={avatarBusy} onClick={() => void handleAvatarRemoval()} size="sm">{avatarBusy ? "Eliminando…" : "Sí, eliminar fotografía"}</Button>
                       <Button className={secondaryButtonClass} disabled={avatarBusy} onClick={() => setConfirmAvatarRemoval(false)} size="sm" variant="outline">Cancelar</Button>
@@ -473,7 +473,7 @@ export function FreelancerProfileForm({ userId }: Props) {
               <span className="grid size-9 place-items-center rounded-xl bg-accent/15 text-accent-soft"><BriefcaseBusiness aria-hidden="true" className="size-4" /></span>
               <div>
                 <h2 className="text-xl font-semibold" id="skills-title">Habilidades</h2>
-                <p className="mt-1 text-sm text-muted-foreground">Elige del catálogo o añade una habilidad específica a tu perfil.</p>
+                <p className="mt-1 text-sm text-muted-foreground">Elige del catálogo o agrega una habilidad específica a tu perfil.</p>
               </div>
             </div>
             {data.skills.length ? (
@@ -538,7 +538,7 @@ export function FreelancerProfileForm({ userId }: Props) {
                           <li>Ubicación, experiencia, disponibilidad y enlaces profesionales que hayas completado.</li>
                           <li>Tus habilidades y los proyectos que publiques de forma individual.</li>
                         </ul>
-                        <p className="mt-3 text-xs leading-5 text-muted-foreground">Tu correo, datos de sesión y detalles privados de cuenta no forman parte del perfil público. La fotografía usa un bucket público incluso mientras tu perfil está privado.</p>
+                        <p className="mt-3 text-xs leading-5 text-muted-foreground">Tu correo, datos de sesión y detalles privados de cuenta no forman parte del perfil público. La fotografía se guarda en un espacio público de imágenes, incluso mientras tu perfil está privado.</p>
                       </>
                     ) : <p className="mt-2 text-sm leading-6 text-muted-foreground">El perfil dejará de aparecer públicamente y sus proyectos quedarán ocultos para visitantes.</p>}
                     <div className="mt-4 flex flex-wrap gap-2">

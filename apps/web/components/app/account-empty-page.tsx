@@ -22,7 +22,7 @@ export function AccountEmptyPage({ kind }: { kind: AccountPageKind }) {
 
   return (
     <AppEmptyState
-      description="El módulo de propuestas aún no está conectado. Esta sección se habilitará cuando exista una fuente segura para enviar, recibir y consultar propuestas reales."
+      description="Tus propuestas enviadas y tus borradores están en Likes, en la pestaña «Propuestas enviadas»."
       title="Mis propuestas"
     />
   );
