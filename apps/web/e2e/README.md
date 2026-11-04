@@ -60,3 +60,7 @@ Apagado salvo que exista `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build. Para prob
 ## Rendimiento (CPU x4, red 4G lenta)
 
 `E2E_PSQL=<psql> node e2e/perf.mjs` crea una empresa, un freelancer, 14 problemas abiertos y un Match con 300 mensajes, limita CPU x4 y Slow 4G (150 ms, 1,6 Mbps) y mide: carga del mazo, fotogramas durante un arrastre táctil real, tareas largas, CLS, carga del chat con 300 mensajes, desplazamiento y tiempo por pulsación. Resultado actual: mazo 60 fps (p95 16,7 ms), carga 1,9–2,8 s, CLS 0,037; chat con 300 mensajes en ~2 s, pulsación p95 17 ms.
+
+## Demo (video y hojas de contactos)
+
+`DEMO_OUT=~/Downloads/Matchwork-demo E2E_PSQL=<psql> node e2e/demo.mjs` genera un video de ~1 min del recorrido a 390x844 y dos hojas de contactos (390 y 1280 px) con datos de ejemplo inventados. Pensado para una base recién reseteada (`MATCHWORK_STACK_FULL=1 local-stack.sh reset` y esperar 30 s); los cuadros se capturan con CDP screencast y se unen con el `ffmpeg` del sistema (no necesita el de Playwright).
