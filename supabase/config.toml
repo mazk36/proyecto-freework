@@ -15,8 +15,8 @@ enabled = true
 site_url = "http://localhost:3000"
 additional_redirect_urls = ["http://localhost:3000/auth/callback/", "http://localhost:4173/auth/callback/", "http://localhost:3100/auth/callback/", "https://localhost:8443/auth/callback/"]
 enable_signup = true
-# Debe coincidir con la validación del frontend (8 caracteres).
-minimum_password_length = 8
+# Debe coincidir con la validación del frontend (lib/password-policy.ts): 10 caracteres, sin reglas de composición.
+minimum_password_length = 10
 jwt_expiry = 3600
 enable_refresh_token_rotation = true
 refresh_token_reuse_interval = 10

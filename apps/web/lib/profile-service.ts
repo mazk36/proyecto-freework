@@ -1,3 +1,4 @@
+import { toFriendlyError } from "@/lib/problem-service";
 import type { Database } from "@/types/database";
 import { AVATAR_MAX_BYTES, getImageExtension, PORTFOLIO_IMAGE_MAX_BYTES, validateImageFile } from "@/lib/profile-domain";
 import { loadSupabaseClient } from "@/lib/supabase/client";
@@ -47,7 +48,7 @@ export type PortfolioProjectInput = {
   skills_used: string[];
 };
 
-type SupabaseError = { code?: string; message?: string };
+type SupabaseError = { code?: string; message?: string; hint?: string | null };
 
 async function getClient() {
   const client = await loadSupabaseClient();
@@ -55,7 +56,8 @@ async function getClient() {
   return client;
 }
 
-function operationError(error: SupabaseError, action: string): Error {
+export function operationError(error: SupabaseError, action: string): Error {
+  if (error.code === "54000" || /account suspended/i.test(error.message ?? "")) return new Error(toFriendlyError(error.message ?? "", error.hint));
   if (error.code === "42501") return new Error("Tu sesión no tiene permiso para realizar este cambio.");
   if (error.code === "23505") return new Error("Ya existe un registro con esos datos. Revisa si está repetido.");
   if (error.code === "23514" || error.code === "22023") return new Error("Algún dato no cumple el formato o la longitud permitidos.");

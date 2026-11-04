@@ -107,7 +107,6 @@ export function LoginExperience() {
                     autoComplete="current-password"
                     className={`${inputClassName} pr-12`}
                     id="login-password"
-                    minLength={8}
                     name="password"
                     required
                     type={showPassword ? "text" : "password"}

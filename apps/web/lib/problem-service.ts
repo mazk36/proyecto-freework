@@ -301,6 +301,9 @@ export function toFriendlyError(message: string, hint?: string | null): string {
     const seconds = retryAfterSeconds(hint);
     return `Hiciste muchas acciones seguidas. Espera ${seconds ? formatWait(seconds) : "un momento"} y vuelve a intentarlo.`;
   }
+  if (/portfolio project limit reached/i.test(message)) return "Llegaste al máximo de 50 proyectos de portafolio. Elimina alguno para agregar otro.";
+  if (/skill limit reached/i.test(message)) return "Llegaste al máximo de 50 habilidades. Quita alguna para agregar otra.";
+  if (/portfolio media limit reached/i.test(message)) return "Este proyecto ya tiene 20 archivos, el máximo permitido. Elimina alguno para subir otro.";
   if (/message body empty/i.test(message)) return "Escribe un mensaje antes de enviarlo.";
   if (/message body too long/i.test(message)) return "El mensaje no puede superar los 2000 caracteres.";
   if (/conversation not found/i.test(message)) return "No encontramos esta conversación o ya no tienes acceso.";

@@ -1,5 +1,6 @@
 "use client";
 
+import { isPasswordLongEnough, MIN_PASSWORD_LENGTH, passwordTooShortMessage } from "@/lib/password-policy";
 import Link from "next/link";
 import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -38,8 +39,8 @@ export function AuthCallbackExperience() {
     const values = new FormData(event.currentTarget);
     const password = String(values.get("password") ?? "");
     const confirmation = String(values.get("confirmation") ?? "");
-    if (password.length < 8) {
-      setPasswordError("La contraseña debe tener al menos 8 caracteres.");
+    if (!isPasswordLongEnough(password)) {
+      setPasswordError(passwordTooShortMessage);
       return;
     }
     if (password !== confirmation) {
@@ -70,7 +71,7 @@ export function AuthCallbackExperience() {
         {recoveryFlow && user ? (
           <>
             <h1 className="text-2xl font-semibold">Crea una contraseña nueva</h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">Elige una contraseña de al menos 8 caracteres para volver a tu cuenta.</p>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">Elige una contraseña de al menos {MIN_PASSWORD_LENGTH} caracteres para volver a tu cuenta.</p>
             <form className="mt-6 space-y-4 text-left" onSubmit={handlePasswordUpdate}>
               <div><label className="text-sm font-medium" htmlFor="new-password">Nueva contraseña</label><input autoComplete="new-password" className="mt-2 min-h-11 w-full rounded-lg border border-border bg-surface px-3.5 text-base outline-none focus:ring-2 focus:ring-accent/30" id="new-password" minLength={8} name="password" required type="password" /></div>
               <div><label className="text-sm font-medium" htmlFor="confirm-new-password">Confirmar contraseña</label><input autoComplete="new-password" className="mt-2 min-h-11 w-full rounded-lg border border-border bg-surface px-3.5 text-base outline-none focus:ring-2 focus:ring-accent/30" id="confirm-new-password" minLength={8} name="confirmation" required type="password" /></div>

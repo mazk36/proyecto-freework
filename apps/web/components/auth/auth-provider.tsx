@@ -1,5 +1,6 @@
 "use client";
 
+import { isPasswordLongEnough, passwordRequirementText, passwordTooShortMessage } from "@/lib/password-policy";
 import { captchaOptions } from "@/lib/captcha";
 import {
   createContext,
@@ -147,7 +148,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!client) return { ok: false, error: SUPABASE_CONFIGURATION_MESSAGE };
     if (!name.trim()) return { ok: false, error: "Escribe tu nombre." };
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
-    if (password.length < 8) return { ok: false, error: "La contraseña debe tener al menos 8 caracteres." };
+    if (!isPasswordLongEnough(password)) return { ok: false, error: passwordTooShortMessage };
     if (role !== "company" && role !== "freelancer") return { ok: false, error: "Selecciona un tipo de cuenta." };
 
     try {
@@ -237,7 +238,7 @@ function authErrorMessage(message: string): string {
   if (/invalid login credentials/i.test(message)) return "El correo o la contraseña no son correctos.";
   if (/email not confirmed/i.test(message)) return "Confirma tu correo desde el enlace que te enviamos antes de iniciar sesión.";
   if (/already registered|user already/i.test(message)) return "Ya existe una cuenta con ese correo. Inicia sesión.";
-  if (/password/i.test(message)) return "La contraseña no cumple los requisitos de seguridad.";
+  if (/password/i.test(message)) return `La contraseña no cumple los requisitos de seguridad. ${passwordRequirementText}`;
   return "No pudimos completar la autenticación. Revisa tus datos e inténtalo de nuevo.";
 }
 

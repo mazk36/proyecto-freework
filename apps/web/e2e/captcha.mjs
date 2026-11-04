@@ -1,7 +1,7 @@
 // Verifica Turnstile de extremo a extremo con las claves de prueba de Cloudflare.
 // Requiere: stack local con [auth.captcha] enabled=true y TURNSTILE_SECRET de prueba, y la web
 // compilada con NEXT_PUBLIC_TURNSTILE_SITE_KEY=1x00000000000000000000AA (ver README).
-import { check, launch, login, logout, newPlayer, register, sql, stamp, summary } from "./lib.mjs";
+import { check, launch, login, logout, newPlayer, register, sql, summary } from "./lib.mjs";
 
 const browser = await launch();
 try {

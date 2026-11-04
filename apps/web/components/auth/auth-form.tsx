@@ -1,5 +1,6 @@
 "use client";
 
+import { MIN_PASSWORD_LENGTH, passwordRequirementText } from "@/lib/password-policy";
 import { useTurnstile } from "@/components/auth/turnstile-field";
 import Image from "next/image";
 import Link from "next/link";
@@ -146,8 +147,9 @@ export function AuthForm({ mode }: AuthFormProps) {
                     <input
                       autoComplete="new-password"
                       className={`${registrationInputClass} pr-12`}
+                      aria-describedby="password-help"
                       id="password"
-                      minLength={8}
+                      minLength={MIN_PASSWORD_LENGTH}
                       name="password"
                       placeholder="Crea una contraseña"
                       required
@@ -163,6 +165,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                       {showPassword ? <EyeOff aria-hidden="true" className="size-[1.125rem]" /> : <Eye aria-hidden="true" className="size-[1.125rem]" />}
                     </button>
                   </div>
+                  <p className="mt-1.5 text-xs leading-5 text-[#B6C1D0]" id="password-help">{passwordRequirementText}</p>
                 </div>
 
                 <div>
@@ -295,7 +298,6 @@ export function AuthForm({ mode }: AuthFormProps) {
                 autoComplete="current-password"
                 className={inputClass}
                 id="password"
-                minLength={8}
                 name="password"
                 required
                 type="password"
