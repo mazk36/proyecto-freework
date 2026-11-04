@@ -1,36 +1,16 @@
-// Correo y almacenamiento en vivo, con la confirmación de correo ACTIVA (como en producción).
+// Almacenamiento en vivo desde la UI real a 390 px y por la API de Storage (Storage real, confirmación de correo ACTIVA).
 // Requiere el stack completo: MATCHWORK_STACK_FULL=1 bash supabase/scripts/local-stack.sh start|reset
 // (Mailpit en http://127.0.0.1:55424 y Storage). Uso: E2E_PSQL=<psql> node e2e/mail-storage.mjs
 import { mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
-import { check, launch, newPlayer, PASSWORD, sleep, sql, summary, SUPABASE_URL } from "./lib.mjs";
+import { check, launch, newPlayer, PASSWORD, sql, summary, SUPABASE_URL } from "./lib.mjs";
 
-const MAIL = process.env.E2E_MAIL_URL ?? "http://127.0.0.1:55424";
 const KEY = process.env.E2E_SUPABASE_KEY ?? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH";
 const NEW_PASSWORD = "Nueva-clave-segura-2026";
 const dir = join(tmpdir(), `matchwork-e2e-images-${Date.now()}`);
 mkdirSync(dir, { recursive: true });
-
-async function mails(to) {
-  const list = await (await fetch(`${MAIL}/api/v1/search?query=${encodeURIComponent(`to:${to}`)}`)).json();
-  return list.messages ?? [];
-}
-async function waitMail(to, count = 1, timeout = 20_000) {
-  const start = Date.now();
-  while (Date.now() - start < timeout) {
-    const found = await mails(to);
-    if (found.length >= count) return found.sort((a, b) => new Date(b.Created) - new Date(a.Created));
-    await sleep(500);
-  }
-  return [];
-}
-async function linkFrom(messageId) {
-  const body = await (await fetch(`${MAIL}/api/v1/message/${messageId}`)).json();
-  const match = /href="([^"]*\/auth\/v1\/verify[^"]*)"/.exec(body.HTML ?? "") ?? /(https?:\/\/\S*\/auth\/v1\/verify\S*)/.exec(body.Text ?? "");
-  return match ? match[1].replace(/&amp;/g, "&") : null;
-}
 
 // ---------- imágenes de prueba (se generan en el navegador) ----------
 const browser = await launch();
@@ -61,81 +41,12 @@ async function makeImages() {
 
 try {
   const img = await makeImages();
-  const freelancer = await newPlayer(browser, "correo-freelancer", { viewport: { width: 1280, height: 800 } });
-  const { page } = freelancer;
-
-  // ================= A) Confirmación de correo =================
-  await page.goto("/registro/");
-  await page.locator("#name").fill("Lucía Correo");
-  await page.locator("#email").fill(freelancer.email);
-  await page.locator("#password").fill(PASSWORD);
-  await page.locator("#confirmation").fill(PASSWORD);
-  await page.getByRole("radio", { name: /Freelancer/ }).check({ force: true }).catch(() => {});
-  await page.getByRole("button", { name: /Crear cuenta/ }).click();
-  await page.getByText(/enlace de confirmación/).first().waitFor({ timeout: 15_000 });
-  check("M1 tras registrarse (confirmación activa) se pide revisar el correo y no se abre la app", !/\/app/.test(page.url()));
-  const confirmation = await waitMail(freelancer.email);
-  check("M2 llega el correo de confirmación al buzón", confirmation.length === 1, `correos=${confirmation.length}`);
-
-  await page.goto("/iniciar-sesion/");
-  await page.locator("#login-email").fill(freelancer.email);
-  await page.locator("#login-password").fill(PASSWORD);
-  await page.getByRole("button", { name: /Iniciar sesión/ }).click();
-  await page.getByText(/Confirma tu correo/).first().waitFor({ timeout: 10_000 }).catch(() => {});
-  check("M3 iniciar sesión sin confirmar muestra «Confirma tu correo»", (await page.getByText(/Confirma tu correo/).count()) > 0);
-
-  const link = await linkFrom(confirmation[0].ID);
-  check("M4 el correo trae un enlace de verificación", Boolean(link), String(link).slice(0, 80));
-  await page.goto(link);
-  await page.waitForURL(/\/app\/?/, { timeout: 20_000 });
-  check("M5 el enlace confirma la cuenta y abre la sesión en la app", /\/app/.test(page.url()) && sql(`select count(*) from auth.users where email = '${freelancer.email}' and email_confirmed_at is not null`) === "1");
-
-  const secondPage = await freelancer.context.newPage();
-  await secondPage.goto(link);
-  await secondPage.waitForTimeout(4000);
-  const reused = await secondPage.getByText(/No pudimos confirmar|vencido|no es válido/).count();
-  check("M6 el mismo enlace ya usado muestra un mensaje de enlace vencido o inválido", reused > 0, secondPage.url().slice(0, 100));
-  await secondPage.close();
-
-  const tampered = link.replace(/token=[^&]+/, "token=" + "0".repeat(20));
-  const tamperedPage = await freelancer.context.newPage();
-  await tamperedPage.goto(tampered);
-  await tamperedPage.waitForTimeout(4000);
-  check("M7 un enlace alterado no confirma ni abre sesión", (await tamperedPage.getByText(/No pudimos confirmar|vencido|no es válido/).count()) > 0 || !/\/app/.test(tamperedPage.url()));
-  await tamperedPage.close();
-
-  // ================= B) Recuperación de contraseña =================
-  await page.getByRole("button", { name: /Cerrar sesión/ }).first().click();
-  await page.waitForFunction(() => !Object.keys(localStorage).some((key) => key.startsWith("sb-") && key.endsWith("-auth-token")), null, { timeout: 15_000 });
-  await page.goto("/recuperar-contrasena/");
-  await page.locator("input[name='email']").fill(freelancer.email);
-  await page.getByRole("button", { name: /Enviar enlace/ }).click();
-  const recovery = await waitMail(freelancer.email, 2);
-  check("R1 la recuperación envía un segundo correo", recovery.length === 2, `correos=${recovery.length}`);
-  const recoveryLink = recovery.length ? await linkFrom(recovery[0].ID) : null;
-  await page.goto(recoveryLink ?? "/");
-  await page.getByRole("heading", { name: /Crea una contraseña nueva/ }).waitFor({ timeout: 20_000 });
-  check("R2 el enlace abre la pantalla «Crea una contraseña nueva» con sesión de recuperación", true);
-  await page.locator("#new-password").fill("corta");
-  await page.locator("#confirm-new-password").fill("corta");
-  await page.getByRole("button", { name: /Guardar|Actualizar|Cambiar/ }).first().click();
-  check("R3 una contraseña de menos de 10 caracteres se rechaza con mensaje", (await page.getByText(/al menos 10 caracteres/).count()) > 0);
-  await page.locator("#new-password").fill(NEW_PASSWORD);
-  await page.locator("#confirm-new-password").fill(NEW_PASSWORD);
-  await page.getByRole("button", { name: /Guardar|Actualizar|Cambiar/ }).first().click();
-  await page.waitForURL(/\/app\/?$/, { timeout: 20_000 });
-  check("R4 la nueva contraseña se guarda y la sesión queda iniciada", /\/app/.test(page.url()));
-  const reusedRecovery = await freelancer.context.newPage();
-  await reusedRecovery.goto(recoveryLink);
-  await reusedRecovery.waitForTimeout(4000);
-  check("R5 el enlace de recuperación ya usado no vuelve a dar acceso", (await reusedRecovery.getByRole("heading", { name: /Crea una contraseña nueva/ }).count()) === 0);
-  await reusedRecovery.close();
-  await page.getByRole("button", { name: /Cerrar sesión/ }).first().click();
-  await page.waitForFunction(() => !Object.keys(localStorage).some((key) => key.startsWith("sb-") && key.endsWith("-auth-token")), null, { timeout: 15_000 });
-  const oldLogin = createClient(SUPABASE_URL, KEY, { auth: { persistSession: false } });
-  const stale = await oldLogin.auth.signInWithPassword({ email: freelancer.email, password: PASSWORD });
-  const fresh = await oldLogin.auth.signInWithPassword({ email: freelancer.email, password: NEW_PASSWORD });
-  check("R6 la contraseña anterior deja de servir y la nueva funciona", Boolean(stale.error) && !fresh.error);
+  const freelancer = await newPlayer(browser, "almacen-freelancer", { viewport: { width: 1280, height: 800 } });
+  
+  // Usuario confirmado (el ciclo de correo se prueba en e2e/email-cycle.mjs).
+  const seed = createClient(SUPABASE_URL, KEY, { auth: { persistSession: false } });
+  await seed.auth.signUp({ email: freelancer.email, password: NEW_PASSWORD, options: { data: { full_name: "Lucía Almacén", role: "freelancer" } } });
+  sql(`update auth.users set email_confirmed_at = now() where email = '${freelancer.email}'`);
 
   // ================= C) Almacenamiento desde la UI a 390 px =================
   const mobile = await newPlayer(browser, "storage-freelancer", { viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });

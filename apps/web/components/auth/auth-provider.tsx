@@ -1,5 +1,6 @@
 "use client";
 
+import { recoveryCallbackUrl, signupCallbackUrl } from "@/lib/auth-email-service";
 import { isPasswordLongEnough, passwordRequirementText, passwordTooShortMessage } from "@/lib/password-policy";
 import { captchaOptions } from "@/lib/captcha";
 import {
@@ -13,12 +14,12 @@ import {
 } from "react";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { isValidEmail, type AuthUser, type UserRole } from "@/lib/auth";
-import { getAbsoluteSiteUrl, isSupabaseConfigured, loadSupabaseClient, SUPABASE_CONFIGURATION_MESSAGE } from "@/lib/supabase/client";
+import { isSupabaseConfigured, loadSupabaseClient, SUPABASE_CONFIGURATION_MESSAGE } from "@/lib/supabase/client";
 import { getRegisteredProfile } from "@/lib/auth-service";
 
 type AuthResult =
   | { ok: true; requiresEmailConfirmation?: boolean }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code?: string };
 
 type RegisterInput = { name: string; email: string; password: string; role: UserRole; next?: string; captchaToken?: string | null };
 
@@ -132,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const { data, error } = await client.auth.signInWithPassword({ email: email.trim(), password, options: captchaOptions(captchaToken) });
-      if (error) return { ok: false, error: authErrorMessage(error.message) };
+      if (error) return { ok: false, error: authErrorMessage(error.message), code: error.code };
       if (!data.user) return { ok: false, error: "No pudimos iniciar sesión con esos datos." };
       setUser(await hydrateCurrentUser(data.user));
       setAuthIssue("");
@@ -158,9 +159,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         options: {
           data: { full_name: name.trim(), role },
           ...captchaOptions(captchaToken),
-          emailRedirectTo: getAbsoluteSiteUrl(`/auth/callback/${next && next !== "/app" ? `?next=${encodeURIComponent(next)}` : ""}`),
+          emailRedirectTo: signupCallbackUrl(next),
         },
       });
+      // Un registro repetido con un enlace recién enviado: se muestra la misma pantalla «Revisa tu correo» (no revela nada).
+      // Lo mismo si el correo ya tiene cuenta: GoTrue responde «User already registered» y no se debe revelar.
+      if (error?.code === "over_email_send_rate_limit" || error?.code === "user_already_exists") return { ok: true, requiresEmailConfirmation: true };
       if (error) return { ok: false, error: authErrorMessage(error.message) };
       if (!data.session || !data.user) return { ok: true, requiresEmailConfirmation: true };
       setUser(await hydrateCurrentUser(data.user));
@@ -193,7 +197,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isValidEmail(email)) return { ok: false, error: "Escribe un correo electrónico válido." };
     try {
       const { error } = await client.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: getAbsoluteSiteUrl("/auth/callback/?flow=recovery"),
+        redirectTo: recoveryCallbackUrl(),
         ...captchaOptions(captchaToken),
       });
       return error ? { ok: false, error: authErrorMessage(error.message) } : { ok: true };

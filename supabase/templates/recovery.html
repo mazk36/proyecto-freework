@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Crea una contraseña nueva en Matchwork</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f3f8;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4f3f8;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:16px;">
+<tr><td style="padding:32px 28px 8px 28px;font-family:Arial,Helvetica,sans-serif;font-size:20px;font-weight:700;color:#7940e8;">Matchwork</td></tr>
+<tr><td style="padding:8px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:24px;line-height:30px;font-weight:700;color:#14121c;">Crea una contraseña nueva en Matchwork</td></tr>
+<tr><td style="padding:12px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:24px;color:#3b3849;">Recibimos una solicitud para cambiar la contraseña de tu cuenta. Usa el botón para elegir una nueva.</td></tr>
+<tr><td align="center" style="padding:28px 28px 8px 28px;">
+<a href="{{ .RedirectTo }}&amp;token_hash={{ .TokenHash }}&amp;type=recovery" style="display:block;background:#7940e8;color:#ffffff;font-family:Arial,Helvetica,sans-serif;font-size:17px;font-weight:700;line-height:24px;text-decoration:none;text-align:center;padding:14px 24px;border-radius:12px;">Crear contraseña nueva</a>
+</td></tr>
+<tr><td style="padding:16px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;color:#5b576b;">Si el botón no funciona, copia y pega este enlace en tu navegador:</td></tr>
+<tr><td style="padding:6px 28px 0 28px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:19px;color:#5b576b;word-break:break-all;">{{ .RedirectTo }}&amp;token_hash={{ .TokenHash }}&amp;type=recovery</td></tr>
+<tr><td style="padding:20px 28px 32px 28px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:20px;color:#5b576b;">Si no fuiste tú, ignora este correo: tu contraseña no cambiará. El enlace caduca y solo se puede usar una vez.</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

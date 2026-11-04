@@ -1,5 +1,6 @@
 "use client";
 
+import { clearPendingEmail, savePendingEmail, startCooldown } from "@/lib/email-cycle";
 import { MIN_PASSWORD_LENGTH, passwordRequirementText } from "@/lib/password-policy";
 import { useTurnstile } from "@/components/auth/turnstile-field";
 import Image from "next/image";
@@ -39,6 +40,10 @@ export function AuthForm({ mode }: AuthFormProps) {
     const destination = new URLSearchParams(window.location.search).get("next");
     const target = safeAppDestination(destination);
     setContinuationQuery(target === "/app" ? "" : `?next=${encodeURIComponent(target)}`);
+    if (window.location.hash === "#correo-nuevo") {
+      clearPendingEmail();
+      document.getElementById("email")?.focus();
+    }
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -72,8 +77,9 @@ export function AuthForm({ mode }: AuthFormProps) {
         return;
       }
       if (result.requiresEmailConfirmation) {
-        setStatus("Te enviamos un enlace de confirmación. Ábrelo desde tu correo para activar la cuenta.");
-        setIsSubmitting(false);
+        savePendingEmail(email);
+        startCooldown("signup");
+        router.replace("/registro/revisa-tu-correo/");
         return;
       }
     } else {

@@ -1,5 +1,7 @@
 "use client";
 
+import { ResendEmail } from "@/components/auth/resend-email";
+import { savePendingEmail } from "@/lib/email-cycle";
 import { useTurnstile } from "@/components/auth/turnstile-field";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,6 +22,7 @@ export function LoginExperience() {
   const { login, isReady, storageNotice, authIssue } = useAuth();
   const captcha = useTurnstile();
   const [error, setError] = useState("");
+  const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [continuationHref, setContinuationHref] = useState("/registro");
@@ -32,6 +35,7 @@ export function LoginExperience() {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
+    setUnconfirmedEmail(null);
     setIsSubmitting(true);
 
     const values = new FormData(event.currentTarget);
@@ -47,6 +51,12 @@ export function LoginExperience() {
     const result = await login({ email, password, captchaToken: captcha.token });
     if (!result.ok) {
       captcha.reset();
+      if (result.code === "email_not_confirmed") {
+        savePendingEmail(email);
+        setUnconfirmedEmail(email);
+        setIsSubmitting(false);
+        return;
+      }
       setError(result.error);
       setIsSubmitting(false);
       return;
@@ -140,6 +150,12 @@ export function LoginExperience() {
                 <p className="rounded-lg border border-rose-400/25 bg-rose-400/10 px-3 py-2 text-sm leading-5 text-rose-200" role="alert">
                   {error}
                 </p>
+              ) : null}
+              {unconfirmedEmail ? (
+                <div className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-3 text-sm leading-5 text-amber-100" role="alert">
+                  <p>Aún no confirmaste tu correo. Abre el enlace que te enviamos o pide uno nuevo.</p>
+                  <ResendEmail className="mt-3" email={unconfirmedEmail} kind="signup" />
+                </div>
               ) : null}
               {storageNotice ? (
                 <p className="rounded-lg border border-amber-300/25 bg-amber-300/10 px-3 py-2 text-sm leading-5 text-amber-100" role="status">

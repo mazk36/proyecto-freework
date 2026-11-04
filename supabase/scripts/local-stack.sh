@@ -17,6 +17,8 @@ sync_workdir() {
   mkdir -p "$work/supabase"
   cp -R "$root/supabase/migrations" "$root/supabase/tests" "$work/supabase/"
   cp "$root/supabase/config.toml" "$work/supabase/config.toml"
+  # Se copia sobre la carpeta existente (no se borra): Kong la monta y un directorio nuevo dejaría el montaje vacío.
+  mkdir -p "$work/supabase/templates"; cp -R "$root/supabase/templates/." "$work/supabase/templates/"
   python3 - "$work/supabase/config.toml" <<'PY'
 import os, sys
 path = sys.argv[1]

@@ -59,7 +59,12 @@ export async function register(player, name, role) {
   await page.locator("#confirmation").fill(PASSWORD);
   await page.getByRole("radio", { name: role === "company" ? "Empresa" : "Freelancer" }).check();
   await page.getByRole("button", { name: /Crear cuenta/ }).click();
-  await page.waitForURL(/\/app\/?/, { timeout: 20_000 });
+  await page.waitForURL(/\/app\/?|revisa-tu-correo/, { timeout: 20_000 });
+  if (/revisa-tu-correo/.test(page.url())) {
+    // Con la confirmación de correo activa (stack completo) se confirma por SQL; el ciclo real se prueba en email-cycle.mjs.
+    sql(`update auth.users set email_confirmed_at = now() where email = '${player.email}'`);
+    await login(player);
+  }
 }
 
 export async function login(player) {

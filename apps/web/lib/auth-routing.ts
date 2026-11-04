@@ -44,11 +44,12 @@ export function isPublicAuthPath(pathname: string): boolean {
     path === "/" ||
     path === "/iniciar-sesion" ||
     path === "/registro" ||
+    path === "/registro/revisa-tu-correo" ||
     path === "/recuperar-contrasena"
   );
 }
 
-function normalizePathname(pathname: string): string {
+export function normalizePathname(pathname: string): string {
   const trimmed = pathname.trim();
   if (!trimmed || trimmed === "/") return "/";
   return `/${trimmed.replace(/^\/+|\/+$/g, "")}`;

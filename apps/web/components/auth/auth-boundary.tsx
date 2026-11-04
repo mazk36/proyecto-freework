@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { isAppPath, legacyAppTarget, safeAppDestination } from "@/lib/auth-routing";
+import { isAppPath, legacyAppTarget, normalizePathname, safeAppDestination } from "@/lib/auth-routing";
 import { useAuth } from "@/components/auth/auth-provider";
 
 export function AuthBoundary({ children }: { children: ReactNode }) {
@@ -12,7 +12,7 @@ export function AuthBoundary({ children }: { children: ReactNode }) {
   const legacyTarget = legacyAppTarget(pathname);
   const appPath = isAppPath(pathname);
   const landingPath = pathname === "/";
-  const authPage = pathname === "/iniciar-sesion" || pathname === "/registro";
+  const authPage = ["/iniciar-sesion", "/registro", "/registro/revisa-tu-correo"].includes(normalizePathname(pathname));
   const requiresSession = appPath || legacyTarget !== null;
 
   useEffect(() => {

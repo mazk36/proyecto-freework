@@ -4,7 +4,7 @@ Los valores locales de `supabase/config.toml` son de desarrollo. En producción 
 
 | Ajuste | Valor | Motivo |
 |---|---|---|
-| `GOTRUE_MAILER_AUTOCONFIRM` | `false` | Con confirmación de correo GoTrue responde igual a un registro nuevo y a uno repetido; con autoconfirm devuelve «User already registered» y permite enumerar correos (probado en local). |
+| `GOTRUE_MAILER_AUTOCONFIRM` | `false` | Sin confirmación de correo el registro entra directo (sin verificar que el correo es del usuario). Ojo: aun con confirmación, esta versión de GoTrue responde «User already registered» a un correo con cuenta; por eso el cliente trata ese error y el de «espera 60 s» como éxito y muestra siempre la misma pantalla «Revisa tu correo» (probado en e2e/email-cycle.mjs). |
 | `GOTRUE_SITE_URL` | URL pública final (https) | Base de los enlaces de los correos. |
 | `GOTRUE_URI_ALLOW_LIST` | Solo `https://<dominio>/auth/callback/**` | Evita redirecciones de correo a dominios ajenos. |
 | `GOTRUE_PASSWORD_MIN_LENGTH` | `10` | El frontend exige 10 (decisión de producto, sin reglas de composición); el servidor debe exigirlo también. |
@@ -20,3 +20,24 @@ Notas:
 - Una cuenta suspendida con sesión abierta sigue pudiendo leer (la app le muestra el aviso) pero no escribir: el trigger `guard_suspended_write` y `require_active_account` rechazan RPC y escrituras directas (probado en `e2e/security.mjs`).
 - No hay comprobación de contraseñas filtradas en el GoTrue autoalojado. Decisión de producto: mínimo 10 caracteres, sin reglas de composición.
 - Avatares públicos (decisión conocida): el bucket `avatars` es público y se accede por una ruta `uuid/uuid` no adivinable y sin listado. Quien conozca la ruta puede ver el avatar aunque el perfil no sea público; se acepta porque la ruta no se expone fuera del perfil público.
+
+## Correos en español y enlaces con `token_hash`
+
+Las plantillas están en `supabase/templates/confirmation.html` y `supabase/templates/recovery.html` (se cargan en local con `[auth.email.template.*]` de `config.toml`). En producción hay que cargar las mismas plantillas y asuntos con las variables de GoTrue:
+
+| Variable | Valor |
+|---|---|
+| `GOTRUE_MAILER_TEMPLATES_CONFIRMATION` | URL o ruta de `confirmation.html` (servida por el propio servidor) |
+| `GOTRUE_MAILER_TEMPLATES_RECOVERY` | URL o ruta de `recovery.html` |
+| `GOTRUE_MAILER_SUBJECTS_CONFIRMATION` | `Confirma tu cuenta en Matchwork` |
+| `GOTRUE_MAILER_SUBJECTS_RECOVERY` | `Crea una contraseña nueva en Matchwork` |
+| `GOTRUE_SMTP_MAX_FREQUENCY` | `1m0s` (la web usa un cooldown de 60 s) |
+| `GOTRUE_RATE_LIMIT_EMAIL_SENT` | por ejemplo `30` por hora |
+
+Los enlaces del correo son `{{ .RedirectTo }}&token_hash={{ .TokenHash }}&type=signup|recovery` y la web los canjea con `verifyOtp`. Así funcionan abriendo el correo en otro navegador o dispositivo (no dependen de un `code_verifier` guardado en el navegador de origen) y los escáneres de enlaces de los proveedores de correo no gastan el token. `redirect_to` siempre incluye una consulta (`?flow=signup` o `?flow=recovery`), por lo que la lista de redirecciones permitidas debe admitir comodín: `https://<dominio>/auth/callback/**`.
+
+GoTrue envía solo la parte HTML de la plantilla (no admite una versión de texto plano aparte). El enlace va también escrito en texto debajo del botón.
+
+## Limpieza de cuentas sin confirmar
+
+Ver `docs/ops/limpieza-cuentas-sin-confirmar.md`.

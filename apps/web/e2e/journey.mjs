@@ -43,6 +43,9 @@ async function secondFreelancerProposal(problemTitle, companyEmail) {
   const client = createClient(SUPABASE_URL, process.env.E2E_SUPABASE_KEY ?? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH", { auth: { persistSession: false, autoRefreshToken: false } });
   const { error: signUpError } = await client.auth.signUp({ email: `freelancer2-${stamp}@example.test`, password: PASSWORD, options: { data: { full_name: "Diego Salazar", role: "freelancer" } } });
   if (signUpError) throw signUpError;
+  sql(`update auth.users set email_confirmed_at = now() where email = 'freelancer2-${stamp}@example.test'`);
+  const signedIn = await client.auth.signInWithPassword({ email: `freelancer2-${stamp}@example.test`, password: PASSWORD });
+  if (signedIn.error) throw signedIn.error;
   const problemId = sql(`select b.id from public.business_problems b join auth.users u on u.id = b.company_user_id where b.title = '${problemTitle}' and u.email = '${companyEmail}' limit 1`);
   const draft = await client.rpc("save_proposal_draft", { p_problem_id: problemId, p_data: {
     diagnosis: "El problema principal es la dispersión de las solicitudes entre canales.",

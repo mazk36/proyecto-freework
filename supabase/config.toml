@@ -13,7 +13,7 @@ enabled = false
 [auth]
 enabled = true
 site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000/auth/callback/", "http://localhost:4173/auth/callback/", "http://localhost:3100/auth/callback/", "https://localhost:8443/auth/callback/"]
+additional_redirect_urls = ["http://localhost:3000/auth/callback/**", "http://localhost:4173/auth/callback/**", "http://localhost:3100/auth/callback/**", "https://localhost:8443/auth/callback/**"]
 enable_signup = true
 # Debe coincidir con la validación del frontend (lib/password-policy.ts): 10 caracteres, sin reglas de composición.
 minimum_password_length = 10
@@ -26,9 +26,21 @@ refresh_token_reuse_interval = 10
 # En producción debe estar ACTIVA (ver docs/security/auth-produccion.md).
 enable_signup = true
 double_confirm_changes = true
+# GoTrue exige este intervalo entre envíos a un mismo usuario; coincide con el cooldown de 60 s de la web.
+max_frequency = "1m0s"
 enable_confirmations = false
 
+[auth.email.template.confirmation]
+subject = "Confirma tu cuenta en Matchwork"
+content_path = "./supabase/templates/confirmation.html"
+
+[auth.email.template.recovery]
+subject = "Crea una contraseña nueva en Matchwork"
+content_path = "./supabase/templates/recovery.html"
+
 [auth.rate_limit]
+# El límite local de correos es bajo por defecto; se sube para las pruebas (en producción: GOTRUE_RATE_LIMIT_EMAIL_SENT).
+email_sent = 200
 sign_in_sign_ups = 30
 token_refresh = 150
 

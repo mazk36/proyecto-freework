@@ -12,6 +12,7 @@ async function user(label, role) {
   const email = `sec-${label}-${stamp}@example.test`;
   const { data, error } = await client.auth.signUp({ email, password: PASSWORD, options: { data: { full_name: `Seg ${label}`, role } } });
   if (error) throw error;
+  sql(`update auth.users set email_confirmed_at = now() where lower(email) = lower('${email}')`);
   return { client, email, id: data.user.id };
 }
 
@@ -27,6 +28,10 @@ const proposalId = sql(`insert into public.proposals (problem_id, freelancer_id,
 const matchId = sql(`insert into public.matches (problem_id, proposal_id, company_user_id, freelancer_id) values ('${problemId}', '${proposalId}', '${companyA.id}', '${freelancerA.id}') returning id`).split("\n")[0];
 sql(`insert into public.messages (match_id, sender_id, body) values ('${matchId}', '${companyA.id}', 'mensaje privado ${stamp}')`);
 
+async function signIn(who) {
+  const { error } = await who.client.auth.signInWithPassword({ email: who.email, password: PASSWORD });
+  if (error) throw new Error(`no se pudo iniciar sesión (${who.email}): ${error.message}`);
+}
 const denied = (res) => Boolean(res.error) || (Array.isArray(res.data) && res.data.length === 0);
 
 // ---------- 1) anon: solo contadores públicos ----------
@@ -45,10 +50,10 @@ for (const table of ["business_problems", "proposals", "matches", "messages", "a
 }
 
 // ---------- 2) escritura directa por PostgREST ----------
-await companyA.client.auth.signInWithPassword({ email: companyA.email, password: PASSWORD });
-await companyB.client.auth.signInWithPassword({ email: companyB.email, password: PASSWORD });
-await freelancerA.client.auth.signInWithPassword({ email: freelancerA.email, password: PASSWORD });
-await outsider.client.auth.signInWithPassword({ email: outsider.email, password: PASSWORD });
+await signIn(companyA);
+await signIn(companyB);
+await signIn(freelancerA);
+await signIn(outsider);
 
 const direct = [
   ["business_problems insert", () => companyA.client.from("business_problems").insert({ company_user_id: companyA.id, status: "open", title: "x" })],
