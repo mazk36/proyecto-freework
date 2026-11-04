@@ -46,3 +46,20 @@ export async function changeInboxDecision(
   if (confirmed !== next) throw new Error("La decisión cambió. Actualiza la bandeja para revisarla.");
   return confirmed;
 }
+
+function newestSubmission(proposals: readonly InboxProposal[]): number {
+  return proposals.reduce((latest, proposal) => Math.max(latest, Date.parse(proposal.submittedAt) || 0), 0);
+}
+
+/** Problema que se abre por defecto: el más reciente con propuestas sin revisar; si no hay, el más reciente con propuestas. */
+export function defaultInboxProblemId(groups: readonly InboxProblemGroup[], filter: InboxFilter = "all"): string {
+  const withProposals = groups.filter((group) => group.proposals.length > 0);
+  const newest = (candidates: readonly InboxProblemGroup[], pick: (group: InboxProblemGroup) => readonly InboxProposal[]) =>
+    candidates.reduce<InboxProblemGroup | undefined>((best, group) => !best || newestSubmission(pick(group)) > newestSubmission(pick(best)) ? group : best, undefined);
+  if (filter === "saved") {
+    const saved = newest(withProposals.filter((group) => group.proposals.some((proposal) => proposal.myState === "saved" && !proposal.matchId)), (group) => group.proposals.filter((proposal) => proposal.myState === "saved" && !proposal.matchId));
+    if (saved) return saved.problem.id;
+  }
+  const unseen = withProposals.filter((group) => group.proposals.some((proposal) => proposal.myState === "unseen" && !proposal.matchId));
+  return (newest(unseen, (group) => group.proposals.filter((proposal) => proposal.myState === "unseen" && !proposal.matchId)) ?? newest(withProposals, (group) => group.proposals))?.problem.id ?? "";
+}

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import type { InboxProposal } from "@/lib/company-inbox-service";
-import { changeInboxDecision, comparisonAvailability, filterInboxProposals, formatInboxDate } from "@/lib/company-inbox";
+import { changeInboxDecision, comparisonAvailability, defaultInboxProblemId, filterInboxProposals, formatInboxDate } from "@/lib/company-inbox";
 
 const proposal = (id: string, myState: InboxProposal["myState"], matchId: string | null = null): InboxProposal => ({
   id, myState, matchId, problemId: "p", freelancerId: id, freelancerName: null, freelancerSlug: null,
@@ -54,5 +54,30 @@ describe("bandeja de empresa", () => {
 
   it("indica fechas inválidas sin lanzar un error", () => {
     expect(formatInboxDate("invalid")).toBe("Fecha no disponible");
+  });
+});
+
+describe("problema por defecto de la bandeja", () => {
+  const at = (id: string, myState: InboxProposal["myState"], submittedAt: string): InboxProposal => ({ ...proposal(id, myState), submittedAt });
+  const group = (id: string, proposals: InboxProposal[]) => ({ problem: { id, title: id, status: "open" as const }, proposals });
+
+  it("elige el más reciente con propuestas sin revisar", () => {
+    const groups = [
+      group("a", [at("1", "unseen", "2026-11-01T10:00:00Z")]),
+      group("b", [at("2", "unseen", "2026-11-03T10:00:00Z")]),
+      group("c", [at("3", "saved", "2026-11-04T10:00:00Z")]),
+    ];
+    expect(defaultInboxProblemId(groups)).toBe("b");
+  });
+
+  it("si ninguno tiene nuevas, elige el más reciente con propuestas", () => {
+    const groups = [group("a", [at("1", "saved", "2026-11-01T10:00:00Z")]), group("b", [at("2", "dismissed", "2026-11-03T10:00:00Z")]), group("c", [])];
+    expect(defaultInboxProblemId(groups)).toBe("b");
+  });
+
+  it("sin propuestas devuelve vacío y con el filtro guardadas prioriza guardadas", () => {
+    expect(defaultInboxProblemId([group("a", [])])).toBe("");
+    const groups = [group("a", [at("1", "unseen", "2026-11-04T10:00:00Z")]), group("b", [at("2", "saved", "2026-11-01T10:00:00Z")])];
+    expect(defaultInboxProblemId(groups, "saved")).toBe("b");
   });
 });

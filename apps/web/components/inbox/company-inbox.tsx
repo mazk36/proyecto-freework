@@ -8,7 +8,7 @@ import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton, SkeletonCard } from "@/components/ui/skeleton";
 import { useToast } from "@/components/ui/toast";
-import { changeInboxDecision, comparisonAvailability, filterInboxProposals, type CompanyInboxServices, type InboxFilter, type InboxProblemGroup } from "@/lib/company-inbox";
+import { changeInboxDecision, comparisonAvailability, defaultInboxProblemId, filterInboxProposals, type CompanyInboxServices, type InboxFilter, type InboxProblemGroup } from "@/lib/company-inbox";
 import { listProblemProposals, setProposalInteraction, type InboxProposal } from "@/lib/company-inbox-service";
 import { getMyCompanyProblems } from "@/lib/problem-service";
 import { toggleCompare } from "@/lib/proposal-comparison";
@@ -62,8 +62,7 @@ export function CompanyInbox({ services = defaultServices, initialFilter = "all"
         const params = new URLSearchParams(window.location.search);
         let id = params.get("problema") || "";
         if (!id) {
-          id = (initialFilter === "saved" ? groups.find((group) => group.proposals.some((proposal) => proposal.myState === "saved" && !proposal.matchId)) : undefined)?.problem.id
-            ?? groups.find((group) => group.proposals.length > 0)?.problem.id ?? "";
+          id = defaultInboxProblemId(groups, initialFilter);
           if (id) {
             params.set("problema", id);
             const url = new URL(window.location.href);
