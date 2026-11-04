@@ -56,12 +56,13 @@ export function SettingsTab({ api }: { api: AdminApi }) {
         <button
           aria-checked={enabled}
           aria-labelledby="setting-strict"
-          className={`relative mt-1 h-8 w-14 shrink-0 rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${enabled ? "border-accent bg-accent" : "border-border bg-surface-raised"}`}
+          className="group relative mt-0 grid h-11 w-14 shrink-0 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => { setFailure(""); setPending(!enabled); }}
           role="switch"
           type="button"
         >
-          <span aria-hidden="true" className={`absolute top-1 size-6 rounded-full bg-white transition-transform ${enabled ? "translate-x-7" : "translate-x-1"}`} />
+          <span aria-hidden="true" className={`absolute inset-x-0 top-1.5 h-8 rounded-full border transition-colors ${enabled ? "border-accent bg-accent" : "border-border bg-surface-raised"}`} />
+          <span aria-hidden="true" className={`absolute top-[0.5625rem] size-6 rounded-full bg-white transition-transform ${enabled ? "translate-x-3" : "-translate-x-3"}`} />
         </button>
       </div>
       <BottomSheet centered description={pending ? "Las empresas sin verificar no podrán publicar problemas nuevos; los ya publicados siguen abiertos." : "Las empresas sin verificar volverán a poder publicar y mostrarán la etiqueta «Empresa sin verificar»."} onClose={() => setPending(null)} open={pending !== null} title={pending ? "¿Exigir verificación para publicar?" : "¿Dejar de exigir verificación?"}>
