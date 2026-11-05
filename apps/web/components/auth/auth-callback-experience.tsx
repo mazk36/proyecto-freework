@@ -8,6 +8,7 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { ResendEmail } from "@/components/auth/resend-email";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { verifyEmailLink } from "@/lib/auth-email-service";
+import { safeAppDestination } from "@/lib/auth-routing";
 import { readPendingEmail, savePendingEmail } from "@/lib/email-cycle";
 import { isPasswordLongEnough, MIN_PASSWORD_LENGTH, passwordTooShortMessage } from "@/lib/password-policy";
 import { loadSupabaseClient } from "@/lib/supabase/client";
@@ -16,9 +17,7 @@ type Phase = "verifying" | "success" | "expired" | "network" | "recovery-form";
 
 const inputClass = "mt-2 min-h-11 w-full rounded-lg border border-border bg-surface px-3.5 text-base outline-none focus:ring-2 focus:ring-accent/30";
 
-function safeNext(requested: string | null): string {
-  return requested?.startsWith("/app/") && !requested.startsWith("//") && !requested.includes("\\") ? requested : "/app";
-}
+const safeNext = safeAppDestination;
 
 export function AuthCallbackExperience() {
   const router = useRouter();

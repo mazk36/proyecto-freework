@@ -17,12 +17,18 @@ export function legacyAppTarget(pathname: string): string | null {
   return match?.[1] ?? null;
 }
 
+/**
+ * Destino local dentro de /app para después de iniciar sesión. Se resuelve con URL (puntos, %2e y barras incluidos) y
+ * solo se acepta si el resultado sigue siendo una ruta /app del mismo sitio: «/app/..//sitio.ajeno» se normaliza a
+ * «//sitio.ajeno», que el navegador interpretaría como otro dominio, y se descarta.
+ */
 export function safeAppDestination(candidate: string | null): string {
-  if (!candidate || candidate.startsWith("//") || candidate.includes("\\")) return "/app";
-  if (candidate !== "/app" && !candidate.startsWith("/app/")) return "/app";
+  if (!candidate || candidate.startsWith("//") || /[\\\u0000-\u001f\u007f]/.test(candidate)) return "/app";
   try {
     const target = new URL(candidate, "https://matchwork.invalid");
-    return target.origin === "https://matchwork.invalid" ? candidate : "/app";
+    if (target.origin !== "https://matchwork.invalid") return "/app";
+    if (target.pathname !== "/app" && !target.pathname.startsWith("/app/")) return "/app";
+    return `${target.pathname}${target.search}${target.hash}`;
   } catch {
     return "/app";
   }

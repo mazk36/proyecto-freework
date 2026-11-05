@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Building2, ImagePlus, Trash2 } from "lucide-react";
 import { useCanWrite } from "@/components/app/account-status";
 import { Button } from "@/components/ui/button";
+import { safeAppDestination } from "@/lib/auth-routing";
 import { getCompanyProfile, saveCompanyProfile } from "@/lib/problem-service";
 import { validateCompanyProfile, type CompanyProfile } from "@/lib/problem-domain";
 import { validateImageFile, AVATAR_MAX_BYTES } from "@/lib/profile-domain";
@@ -94,8 +95,8 @@ export function CompanyProfileForm({ userId, onProfileSaved }: Props) {
       const saved = await saveCompanyProfile(profile);
       setProfile({ ...emptyProfile, ...saved });
       onProfileSaved?.();
-      const next = new URLSearchParams(window.location.search).get("next");
-      if (next?.startsWith("/app/") && !next.startsWith("//") && !next.includes("\\")) {
+      const next = safeAppDestination(new URLSearchParams(window.location.search).get("next"));
+      if (next !== "/app") {
         router.replace(next);
       } else {
         setNotice("El perfil de tu empresa quedó guardado.");

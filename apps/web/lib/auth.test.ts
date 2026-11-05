@@ -33,6 +33,26 @@ describe("public and private route boundaries", () => {
     expect(safeAppDestination("https://outside.example")).toBe("/app");
     expect(safeAppDestination("//outside.example")).toBe("/app");
     expect(safeAppDestination(null)).toBe("/app");
+    expect(safeAppDestination("/app/problemas/detalle?id=abc#parte")).toBe("/app/problemas/detalle?id=abc#parte");
+  });
+
+  it("rejects destinations that normalize to another site (dot segments, encoded dots, backslashes, schemes)", () => {
+    for (const hostile of [
+      "/app/..//outside.example",
+      "/app/%2e%2e//outside.example",
+      "/app/./..//outside.example",
+      "/app/%2E%2E/%2Foutside.example",
+      "///outside.example",
+      "/app\\@outside.example",
+      "/app/\\outside.example",
+      "javascript:alert(1)",
+      "data:text/html,<script>alert(1)</script>",
+      "/app\n//outside.example",
+      "/other/app/",
+    ]) {
+      expect(safeAppDestination(hostile), hostile).toBe("/app");
+    }
+    expect(safeAppDestination("/app/problemas/../perfil")).toBe("/app/perfil");
     expect(authContinuationHref("/registro", "/app/problemas/nuevo")).toBe(
       "/registro?next=%2Fapp%2Fproblemas%2Fnuevo",
     );

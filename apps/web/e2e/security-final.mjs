@@ -57,7 +57,7 @@ const pA = problem(A, "Ordenar los pedidos de importación", "open", false);
 const pAdraft = problem(A, "Borrador interno de A", "draft", false);
 const pV = problem(A2, "Controlar las ventas del mostrador", "open", true);
 const pB = problem(B, "Digitalizar los contratos de clientes", "open", true);
-const pBdraft = problem(B, "Borrador interno de B", "draft", true);
+problem(B, "Borrador interno de B", "draft", true);
 const proposal = (u, problemId, price) => sql(`insert into public.proposals (problem_id, freelancer_id, status, diagnosis, solution, deliverables, timeline, price, currency, submitted_at, problem_title_snapshot) values ('${problemId}', '${u.id}', 'submitted', 'Diagnóstico de prueba', 'Solución de prueba', 'Entregables de prueba', '3 semanas', ${price}, 'PEN', now(), 'Problema') returning id`).split("\n")[0];
 const propX = proposal(X, pA, 1800);
 const propY = proposal(Y, pB, 2500);
@@ -67,7 +67,6 @@ const draftY = sql(`insert into public.proposals (problem_id, freelancer_id, sta
 await sleep(500);
 
 const sessionOf = async (u) => (await u.client.auth.getSession()).data.session;
-const restHeaders = async (u) => ({ apikey: KEY, Authorization: `Bearer ${(await sessionOf(u)).access_token}`, "Content-Type": "application/json" });
 
 // ------------------------------------------------------------------ 1. PRIVACIDAD
 console.log("\n## 1. Privacidad: nombre de empresa oculto");
@@ -141,9 +140,13 @@ await attempt("P1.realtime", "Realtime: X solo recibe eventos de mensajes de su 
   const chans = [];
   for (const [label, u] of [["X", X], ["Y", Y]]) {
     await u.client.realtime.setAuth((await sessionOf(u)).access_token);
-    const ch = u.client.channel(`sf-${label}-${stamp}`);
-    for (const table of ["messages", "matches", "proposals", "business_problems", "company_profiles"]) ch.on("postgres_changes", { event: "*", schema: "public", table }, (payload) => got[label].push({ table, new: payload.new }));
-    await new Promise((resolve) => ch.subscribe((status) => { if (["SUBSCRIBED", "CHANNEL_ERROR", "TIMED_OUT", "CLOSED"].includes(status)) resolve(); }));
+    // «messages» es la única tabla publicada; las demás se piden en canales aparte (una tabla no publicada rompe el canal).
+    const ch = u.client.channel(`sf-${label}-${stamp}`).on("postgres_changes", { event: "*", schema: "public", table: "messages" }, (payload) => got[label].push({ table: "messages", new: payload.new }));
+    await new Promise((resolve) => ch.subscribe((status) => { if (status === "SUBSCRIBED") resolve(); }));
+    const other = u.client.channel(`sf-${label}-otras-${stamp}`);
+    for (const table of ["matches", "proposals", "business_problems", "company_profiles"]) other.on("postgres_changes", { event: "*", schema: "public", table }, (payload) => got[label].push({ table, new: payload.new }));
+    other.subscribe();
+    chans.push(other);
     chans.push(ch);
   }
   await sleep(1500);
@@ -505,7 +508,6 @@ await attempt("P3.quota.matches", "una empresa no puede crear Matches en ráfaga
 
 // ---- enumeración de cuentas
 console.log("\n## 3b. Enumeración de cuentas");
-const shape = (res) => JSON.stringify({ error: res.error ? res.error.message : null, status: res.error?.status ?? null, user: res.data?.user ? { hasSession: Boolean(res.data.session), identities: (res.data.user.identities ?? []).length > 0 } : null });
 await attempt("P3.enum.signup", "registro con un correo ya existente responde igual que con uno nuevo", "media", async () => {
   const existing = await fresh().auth.signUp({ email: X.email, password: PASSWORD, options: { data: { full_name: "Dup", role: "freelancer" } } });
   const brandNew = await fresh().auth.signUp({ email: `sf-nuevo-${stamp}@example.test`, password: PASSWORD, options: { data: { full_name: "Nuevo", role: "freelancer" } } });
