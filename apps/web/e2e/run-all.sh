@@ -6,7 +6,7 @@
 set -uo pipefail
 cd "$(dirname "$0")/.."
 
-suites=(journey security email-cycle account mail-storage realtime-fallback engines paging perf ui-matrix a11y)
+suites=(journey security security-final security-web email-cycle account mail-storage realtime-fallback engines paging perf ui-matrix a11y)
 [ -n "${LIGHTHOUSE_DIR:-}" ] && suites+=(lighthouse)
 
 failed=()

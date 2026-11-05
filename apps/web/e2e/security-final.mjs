@@ -396,6 +396,54 @@ await attempt("P2.suspensionBypass", "una cuenta suspendida no escribe por RPC n
   return [out.every((r) => r.error || rows(r) === 0), out.map((r) => (r.error ? "rechazado" : "PERMITIDO")).join(", ")];
 });
 
+await attempt("P2.draftVisibleToCompany", "la empresa dueña del problema no ve borradores de propuesta (tabla ni list_problem_proposals)", "alta", async () => {
+  const table = await A2.client.from("proposals").select("id,status").eq("id", draftY);
+  const rpc = await A2.client.rpc("list_problem_proposals", { p_problem_id: pV });
+  const inRpc = (rpc.data ?? []).some((row) => row.id === draftY || row.status === "draft");
+  return [denied(table) && !inRpc, `tabla=${rows(table)} rpc=${rows(rpc)} borrador en rpc=${inRpc}`];
+});
+await attempt("P2.interactionsCrossRead", "B no lee las interacciones de A ni de X (company_proposal_interactions, freelancer_problem_interactions, conversation_reads)", "media", async () => {
+  const res = await Promise.all([B.client.from("company_proposal_interactions").select("*"), B.client.from("freelancer_problem_interactions").select("*"), Y.client.from("freelancer_problem_interactions").select("*").eq("freelancer_id", X.id), Y.client.from("conversation_reads").select("*")]);
+  return [res.every((r) => !r.error && rows(r) === 0 || r.error), res.map((r) => (r.error ? "denegado" : `filas=${rows(r)}`)).join(", ")];
+});
+await attempt("P2.clientIdCollision", "reutilizar el client_id de un mensaje ajeno no devuelve ni pisa el mensaje del otro", "media", async () => {
+  const other = sql(`select client_id from public.messages where match_id = '${match}' and sender_id = '${A.id}' and client_id is not null limit 1`);
+  const own = await A.client.rpc("send_message", { p_match_id: match, p_body: "mensaje con client_id propio", p_client_id: uuid() });
+  const id = own.data?.client_id ?? sql(`select client_id from public.messages where match_id = '${match}' and sender_id = '${A.id}' and client_id is not null order by created_at desc limit 1`);
+  const res = await X.client.rpc("send_message", { p_match_id: match, p_body: "colisión", p_client_id: id });
+  const stillA = sql(`select body from public.messages where client_id = '${id}' and sender_id = '${A.id}' limit 1`);
+  const leaked = JSON.stringify(res.data ?? "").includes("mensaje con client_id propio");
+  return [!leaked && stillA === "mensaje con client_id propio", `otro=${other ? "hay" : "no"}; resp=${res.error ? res.error.message : "ok"}; cuerpo original=${stillA.slice(0, 30)} filtrado=${leaked}`];
+});
+await attempt("P2.massAssignment", "save_my_profile / save_company_profile / submit_company_verification ignoran claves privilegiadas (account_type, slug ajeno, status, verified)", "alta", async () => {
+  const slugY = sql(`select slug from public.profiles where id = '${Y.id}'`);
+  await X.client.rpc("save_my_profile", { p_profile: { account_type: "company", slug: slugY, is_admin: true, id: Y.id, display_name: "Ximena Torres" } });
+  const x = sql(`select account_type || '|' || slug from public.profiles where id = '${X.id}'`);
+  const yRow = sql(`select count(*) from public.profiles where slug = '${slugY}'`);
+  await B.client.rpc("save_company_profile", { p_profile: { company_name: "Campos y Asociados", industry: "Servicios", country_code: "PE", description: "x", website_url: "", user_id: A.id, verified: true } });
+  const bName = sql(`select company_name from public.company_profiles where user_id = '${B.id}'`);
+  const aName = sql(`select company_name from public.company_profiles where user_id = '${A.id}'`);
+  await B.client.rpc("submit_company_verification", { p_data: { legal_name: "Campos y Asociados S.A.C.", tax_id: "20512345678", status: "verified", verified_at: new Date().toISOString(), company_user_id: A.id } });
+  const vstatus = sql(`select coalesce(string_agg(company_user_id || ':' || status, ','), '(ninguna)') from public.company_verifications where company_user_id in ('${A.id}', '${B.id}')`);
+  return [x.startsWith("freelancer|") && !x.endsWith(slugY) && yRow === "1" && bName === "Campos y Asociados" && aName === "Zorro Importaciones del Sur" && !/verified/.test(vstatus) && !vstatus.includes(A.id), `perfil de X=${x.slice(0, 30)}; slugs iguales al de Y=${yRow}; empresa A=${aName.slice(0, 12)}; verificaciones=${vstatus.replace(new RegExp(B.id, "g"), "B").replace(new RegExp(A.id, "g"), "A")}`];
+});
+await attempt("P2.adminSearchInjection", "las búsquedas de administración tratan comodines, comillas y barras como texto (sin errores ni todo el listado)", "media", async () => {
+  const out = [];
+  for (const term of ["%", "_", "\\", "' or 1=1 --", "\"; drop table profiles; --", "%%%%%%%%%%%%%%%%%%%%"]) {
+    const users = await admin.client.rpc("admin_list_users", { p_search: term, p_role: "all", p_suspension: "all", p_before_created_at: null, p_before_id: null, p_limit: 5 });
+    const problems = await admin.client.rpc("admin_list_problems", { p_search: term, p_status: "all", p_before_sort_at: null, p_before_id: null, p_limit: 5 });
+    out.push(`${JSON.stringify(term).slice(0, 14)}:${users.error ? "ERR" : rows(users)}/${problems.error ? "ERR" : rows(problems)}`);
+  }
+  const alive = sql("select count(*) from public.profiles");
+  return [Number(alive) > 0 && out.every((o) => o.endsWith(":0/0")), `${out.join(" ")}; perfiles=${alive}`];
+});
+await attempt("P1.s.anonList", "el anónimo no lista ni descarga objetos del bucket de avatares ni del de portafolio (API de Storage)", "media", async () => {
+  const a = await anon.storage.from("avatars").list("");
+  const b = await anon.storage.from("avatars").list(X.id);
+  const c = await anon.storage.from("portfolio-media").list("");
+  return [(a.data ?? []).length === 0 && (b.data ?? []).length === 0 && (c.data ?? []).length === 0, `avatars=${(a.data ?? []).length}/${(b.data ?? []).length} portafolio=${(c.data ?? []).length}`];
+});
+
 // ------------------------------------------------------------------ 3. ABUSO
 console.log("\n## 3. Abuso: límites de longitud en la base y cuotas");
 const big = (n) => "a".repeat(n);
