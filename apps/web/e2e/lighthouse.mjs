@@ -21,20 +21,25 @@ const context = await chromium.launchPersistentContext(profile, {
 });
 
 const personas = await ensurePersonas(await chromium.launch({ channel: "chrome", args: ["--ignore-certificate-errors"] }));
-const page = await context.newPage();
-await page.goto(`${BASE_URL}/iniciar-sesion/`);
-await page.locator("#login-email").fill(personas.freelancerRich.email);
-await page.locator("#login-password").fill(PASSWORD);
-await page.getByRole("button", { name: /Iniciar sesión/ }).click();
-await page.waitForURL(/\/app\/?/, { timeout: 30_000 });
-await sleep(1500);
-await page.close();
+async function signIn() {
+  // Solo después de medir las pantallas públicas: con sesión abierta redirigen a /app.
+  const page = await context.newPage();
+  await page.goto(`${BASE_URL}/iniciar-sesion/`);
+  await page.locator("#login-email").fill(personas.freelancerRich.email);
+  await page.locator("#login-password").fill(PASSWORD);
+  await page.getByRole("button", { name: /Iniciar sesión/ }).click();
+  await page.waitForURL(/\/app\/?/, { timeout: 30_000 });
+  await sleep(1500);
+  await page.close();
+}
 
 const targets = [
   ["landing", "/", true], ["registro", "/registro/", true], ["iniciar-sesion", "/iniciar-sesion/", true], ["app-descubrir (autenticada)", "/app/descubrir/", false],
 ];
 const results = [];
+let signedIn = false;
 for (const [name, path, clearStorage] of targets) {
+  if (!clearStorage && !signedIn) { await signIn(); signedIn = true; }
   // Las pantallas públicas se miden sin sesión; la de la app conserva el almacenamiento (disableStorageReset).
   const url = `${BASE_URL}${path}`;
   const run = await lighthouse(url, { port: PORT, output: "json", logLevel: "error", disableStorageReset: !clearStorage }, {
@@ -51,4 +56,4 @@ await context.close();
 console.log("\n| Pantalla | Rendimiento | Accesibilidad | Buenas prácticas | SEO | LCP | CLS | TBT |\n|---|---|---|---|---|---|---|---|");
 for (const r of results) console.log(`| ${r.name} | ${r.performance} | ${r.accessibility} | ${r.bestPractices} | ${r.seo} | ${r.lcp} | ${r.cls} | ${r.tbt} |`);
 for (const r of results) if (r.failed.length) console.log(`Auditorías por debajo de 0,9 en ${r.name}: ${r.failed.join(", ")}`);
-for (const r of results) if (!r.final?.startsWith(r.url.replace(/\/$/, ""))) console.log(`AVISO ${r.name}: Lighthouse terminó en ${r.final}`);
+for (const r of results) if (new URL(r.final ?? "http://x").pathname !== new URL(r.url).pathname) console.log(`AVISO ${r.name}: Lighthouse terminó en ${r.final}`);

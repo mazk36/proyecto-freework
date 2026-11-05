@@ -40,7 +40,21 @@ pnpm test                                                          # incluye el 
 
 ## 3. Lighthouse móvil
 
-Pendiente de la corrida contra la pila de producción local; se completa en `docs/frontend/criterios-ui.md` cuando exista el resultado (§3 se actualiza en este mismo archivo).
+Corrida del 2026-11-04 contra la pila de producción local (`infra/vps/prod`, Caddy con brotli), Lighthouse 12 con la simulación móvil por defecto (CPU ×4, 4G lenta). Las pantallas públicas se miden sin sesión.
+
+| Pantalla | Rendimiento | Accesibilidad | Buenas prácticas | SEO | LCP | CLS |
+|---|---|---|---|---|---|---|
+| Landing `/` | 98 | 100 | 100 | 100 | 2,2 s | 0 |
+| `/registro/` | 99 | 100 | 100 | 100 | 2,1 s | 0 |
+| `/iniciar-sesion/` | 99 | 100 | 100 | 100 | 1,8 s | 0 |
+| `/app/descubrir/` (autenticada) | 86 | 100 | 100 | 58 | 4,2 s | 0 |
+
+Metas: Rendimiento 90, Accesibilidad 100, Buenas prácticas 95, SEO 100. Se cumplen en las tres pantallas públicas. Excepciones de la pantalla autenticada:
+
+- **SEO 58**: la app lleva `noindex` a propósito (`app/app/layout.tsx`) y `robots.txt` la bloquea; las auditorías `is-crawlable` y `canonical` fallan por diseño. No se arregla.
+- **Rendimiento 86**: el elemento LCP es el resumen de la primera tarjeta, que espera a la sesión, el estado de la cuenta y la lectura de problemas (retraso de render ~3,6 s bajo CPU ×4; TTFB 0,6 s). Es una cascada de datos, no un recurso pesado; arreglarla exige precargar o rediseñar la carga, que no es un arreglo barato. Pendiente para una próxima vuelta.
+
+Lo que sí se corrigió con esta corrida: el guion medía las pantallas públicas ya con sesión abierta (redirigían a `/app/` y daban SEO falso de 58); ahora las mide antes de iniciar sesión y avisa si Lighthouse termina en otra ruta.
 
 ## 4. Completitud frente al brief (§3–8) y al plan (fases 0–7)
 

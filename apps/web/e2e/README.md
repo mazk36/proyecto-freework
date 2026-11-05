@@ -65,6 +65,17 @@ Apagado salvo que exista `NEXT_PUBLIC_TURNSTILE_SITE_KEY` en el build. Para prob
 
 `DEMO_OUT=~/Downloads/Matchwork-demo E2E_PSQL=<psql> node e2e/demo.mjs` genera un video de ~1 min del recorrido a 390x844 y dos hojas de contactos (390 y 1280 px) con datos de ejemplo inventados. Pensado para una base recién reseteada (`MATCHWORK_STACK_FULL=1 local-stack.sh reset` y esperar 30 s); los cuadros se capturan con CDP screencast y se unen con el `ffmpeg` del sistema (no necesita el de Playwright).
 
+## Interfaz y accesibilidad en toda la app (`ui-matrix.mjs`, `a11y.mjs`, `lighthouse.mjs`)
+
+Criterios, umbrales y completitud: `docs/frontend/criterios-ui.md`. El inventario de rutas vive en `e2e/routes.json` y `lib/routes-inventory.test.ts` falla si aparece una página fuera de él.
+
+- `node e2e/ui-matrix.mjs`: cada ruta × persona en 360×740, 390×844, 768×1024, 1280×800 y 1536×864 (scroll horizontal, objetivos ≥ 44 px, campos ≥ 16 px, CLS < 0,1, consola y red limpias) y los estados cargando, vacío y error a 390 y 1280. Capturas en `~/Downloads/Matchwork-demo/calidad/` (`CAPTURAS_DIR` para otra carpeta).
+- `node e2e/a11y.mjs`: axe-core, semántica (lang es-PE, un h1, landmarks, títulos), solo teclado, errores de formulario, movimiento reducido, reflow a 320 px y texto al 200 %.
+- `LIGHTHOUSE_DIR=<carpeta con lighthouse@12> node e2e/lighthouse.mjs`: Lighthouse móvil sobre landing, registro, inicio de sesión y una pantalla autenticada, contra la pila de producción local.
+- `e2e/run-all.sh`: corre toda la batería en orden y resume (salta `captcha.mjs`, que necesita configuración especial).
+
+`UI_ONLY="<regex de ruta>"` limita la corrida a unas rutas; `UI_DATA_FRESH=1` recrea las personas de prueba (se guardan en `$TMPDIR/matchwork-ui-data`; `UI_DATA_DIR` para otra carpeta, p. ej. al cambiar de pila).
+
 ## Contra la pila de producción local (`infra/vps/prod`)
 
 Con la pila levantada (`infra/vps/prod/scripts/deploy.sh`), estas variables hacen que todos los guiones (journey, correo, cuenta, seguridad, almacenamiento, tiempo real, motores, paginación y rendimiento) corran contra ella con las claves nuevas y la confirmación de correo activa:
