@@ -4,7 +4,18 @@
 //   MATCHWORK_STACK_FULL=1 bash supabase/scripts/local-stack.sh reset   (y esperar ~30 s)
 //   E2E_PSQL=<psql> node e2e/seed-preview.mjs
 import { createClient } from "@supabase/supabase-js";
-import { sleep, sql, SUPABASE_URL } from "./lib.mjs";
+import { DB_URL, sleep, sql, SUPABASE_URL } from "./lib.mjs";
+
+// Freno: crea cuentas con una contraseña pública (incluido un administrador). Solo corre contra una base local.
+const LOCAL_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]", "::1"]);
+for (const [name, value] of [["E2E_SUPABASE_URL", SUPABASE_URL], ["E2E_DB_URL", DB_URL]]) {
+  let host = "";
+  try { host = new URL(value).hostname.toLowerCase(); } catch { /* host vacío: se rechaza abajo */ }
+  if (!LOCAL_HOSTS.has(host)) {
+    console.error(`Abortado: ${name} apunta a «${host || value}», que no es una base local (127.0.0.1, localhost o ::1). Este script crea cuentas de demostración con contraseña pública y no se puede usar contra otro destino.`);
+    process.exit(1);
+  }
+}
 
 export const DEMO_PASSWORD = "Matchwork-demo-2026";
 const KEY = process.env.E2E_SUPABASE_KEY ?? "sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH";
