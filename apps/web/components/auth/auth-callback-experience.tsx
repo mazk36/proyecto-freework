@@ -107,7 +107,7 @@ export function AuthCallbackExperience() {
 
   const heading = "text-2xl font-semibold outline-none";
   return (
-    <main className="mx-auto grid min-h-[70vh] max-w-2xl place-items-center px-5 py-12 text-center">
+    <main className="mx-auto grid min-h-[70vh] max-w-2xl content-start justify-items-center px-5 py-16 text-center">
       <section aria-live="polite" className="auth-enter w-full max-w-md">
         {phase === "verifying" ? (
           <>

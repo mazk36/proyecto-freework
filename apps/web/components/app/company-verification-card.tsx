@@ -37,7 +37,7 @@ export function CompanyVerificationCard({ refreshKey = 0 }: { refreshKey?: numbe
     return () => window.cancelAnimationFrame(frame);
   }, [state.status]);
 
-  if (state.status === "loading") return <section aria-label="Cargando verificación de empresa" className="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-7" id="verificacion" role="status"><span className="sr-only">Cargando verificación de empresa</span><Skeleton className="h-6 w-2/3" /><Skeleton className="mt-4 h-4 w-full" /><Skeleton className="mt-3 h-11 w-48" /></section>;
+  if (state.status === "loading") return <section aria-label="Cargando verificación de empresa" className="mt-8 min-h-[15rem] rounded-2xl border border-border bg-surface p-5 sm:p-7" id="verificacion" role="status"><span className="sr-only">Cargando verificación de empresa</span><Skeleton className="h-6 w-2/3" /><Skeleton className="mt-3 h-4 w-full" /></section>;
   if (state.status === "error") return <section className="mt-8 rounded-2xl border border-border bg-surface p-5 sm:p-7" id="verificacion" tabIndex={-1}><h2 className="text-xl font-semibold">Verificación de empresa</h2><p className="mt-3 text-sm text-muted-foreground" role="alert">{state.message}</p><Button className="mt-4" onClick={() => setAttempt((value) => value + 1)} variant="outline">Reintentar</Button></section>;
 
   return <CompanyVerificationCardView anchorId="verificacion" countryCode={state.countryCode} onSubmit={async (input) => {

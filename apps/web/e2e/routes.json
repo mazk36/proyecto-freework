@@ -147,7 +147,9 @@
         "freelancer",
         "company"
       ],
-      "reads": true
+      "reads": [
+        "freelancer"
+      ]
     },
     {
       "path": "/app/guardados/",

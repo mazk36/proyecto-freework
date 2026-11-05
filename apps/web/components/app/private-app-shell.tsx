@@ -181,7 +181,7 @@ export function PrivateAppShell({ children }: { children: ReactNode }) {
             <MatchWorkLogoLockup className="w-[6.5rem] sm:w-32" size="compact" variant="reversed" preload />
           </Link>
 
-          <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:gap-4">
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-4">
             <div className="min-w-0 text-right">
               <p className="max-w-32 truncate text-sm font-medium text-foreground sm:max-w-52">{user.name}</p>
               <p className="text-[0.6875rem] text-muted-foreground sm:text-xs">{roleLabel}</p>

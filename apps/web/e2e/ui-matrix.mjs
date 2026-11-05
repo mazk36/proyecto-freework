@@ -115,7 +115,8 @@ try {
       }
       check(`MATRIZ ${name} · cinco tamaños`, problems.length === 0, problems.join(" || "));
 
-      if (!route.reads || !key) continue;
+      const readsHere = route.reads === true || (Array.isArray(route.reads) && route.reads.some((role) => key?.startsWith(role)));
+      if (!readsHere || !key) continue;
       // ---- Estados cargando, vacío y error (390 y 1280) ----
       for (const viewport of [[390, 844], [1280, 800]]) {
         const stateProblems = [];
@@ -149,6 +150,8 @@ try {
           await page.goto(path);
           await settled(page);
           const report = await layout(page, viewport[0]);
+          // supabase-js reintenta las lecturas caídas (~8 s con espera creciente) antes de rendirse: se espera al mensaje.
+          await page.waitForFunction(() => document.querySelectorAll("[role=alert]").length > 0 || /No pudimos|no se pudo|No encontramos|Reintentar|sin acceso|No tienes/i.test(document.body.innerText), null, { timeout: 15_000 }).catch(() => {});
           const info = await page.evaluate(() => ({ alert: document.querySelectorAll("[role=alert]").length, text: /No pudimos|no se pudo|No encontramos|Revisa tu conexión|Reintentar|Inténtalo|no está disponible|sin acceso|No tienes/i.test(document.body.innerText), action: [...document.querySelectorAll("main button, main a[href]")].some((el) => /Reintentar|Volver|Ir a|Ver |Publicar|Descubrir|Actualizar|Recargar/i.test(el.textContent ?? "")) }));
           if (!info.text && !info.alert) stateProblems.push("error: no muestra un mensaje de error");
           if (!info.action) stateProblems.push("error: sin botón o enlace de salida");
