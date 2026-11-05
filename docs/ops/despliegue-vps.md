@@ -82,7 +82,7 @@ Si algo sale mal: `scripts/restore.sh <copia> --si` devuelve la base y los archi
 
 ## Pendiente de decisión
 
-- **Cómo llega el código al VPS.** El repositorio `mazk36/proyecto-freework` es público y las ramas de trabajo no están allí. Opciones: un repositorio privado nuevo en la cuenta de Frank (recomendado: permite `git pull` y es copia de seguridad), enviar un `git bundle` por SCP (sin servicio externo), o construir la imagen en el Mac y subirla. Hasta que decida no se sube nada.
+- **Cómo llega el código al VPS.** El repositorio `mazk36/proyecto-freework` es público y el trabajo está en su rama `main` (sin ramas de trabajo). Opciones: un repositorio privado nuevo en la cuenta de Frank (recomendado: permite `git pull` y es copia de seguridad), enviar un `git bundle` por SCP (sin servicio externo), o construir la imagen en el Mac y subirla. Hasta que decida no se sube nada.
 - **Dónde se guardan las copias** (recomiendo S3-compatible externo, ver arriba).
 - **Cloudflare por delante o DNS directo** (con proxy, brotli y caché los da el borde y se puede cerrar el acceso directo al VPS).
 - **Google**: pantalla de tipo de cuenta antes de encenderlo.

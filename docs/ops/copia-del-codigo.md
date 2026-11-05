@@ -2,8 +2,8 @@
 
 El código tiene dos copias:
 
-1. **GitHub (`mazk36/proyecto-freework`, repositorio público).** Desde el 2026-11-04 se suben allí las ramas de trabajo al cerrar cada bloque. Como el repositorio es público, antes de subir se escanea el contenido (claves privadas, tokens, JWT, archivos `.env`, bundles y archivos grandes). Nunca se hace `push` a `chore/project-scaffold` (dispara el despliegue del sitio actual en GitHub Pages), ni `force-push`, ni se tocan los workflows; `main` queda como está.
-2. **Bundle local.** Una copia completa del repositorio (todas las ramas y etiquetas) con `git bundle`, un único archivo con todo el historial. Es la copia que no depende de GitHub.
+1. **GitHub (`mazk36/proyecto-freework`, repositorio público).** Desde el 2026-11-05 todo el trabajo vive en `main` y se sube allí directamente: no se crean ramas nuevas (decisión de Frank). Antes de subir se escanea el contenido (claves privadas, tokens, JWT, archivos `.env`, bundles y archivos grandes). Flujo: commit en `main`, escaneo y `git push origin main` (si hace falta, `git pull --rebase` antes; nunca `--force`). Nunca se hace `push` a `chore/project-scaffold` (rama por defecto del repositorio; su push dispara el despliegue del sitio actual en GitHub Pages, que es de otros colaboradores), ni se tocan los workflows.
+2. **Bundle local.** Una copia completa del repositorio (todas las ramas y etiquetas) con `git bundle`, un único archivo con todo el historial. Es la copia que no depende de GitHub. Ya no hay ramas de trabajo: el bundle contiene `main` y la rama por defecto del repositorio.
 
 ## Crear la copia
 
@@ -22,13 +22,10 @@ git bundle verify ~/code-projects/_backups/matchwork-$(date +%F).bundle
 En otra carpeta o equipo:
 
 ```bash
-git clone ~/code-projects/_backups/matchwork-2026-11-04.bundle matchwork-restaurado
+git clone ~/code-projects/_backups/matchwork-AAAA-MM-DD.bundle matchwork-restaurado
 cd matchwork-restaurado
-git branch -a                      # solo la rama principal aparece como local; las demás son remotas del bundle
-git checkout -b feat/journey-qa origin/feat/journey-qa
+git branch -a                      # main como rama local; el resto, si hay, son remotas del bundle
 ```
-
-Para recuperar todas las ramas como locales: `for b in $(git branch -r | grep -v HEAD | sed 's#origin/##'); do git branch --track "$b" "origin/$b" 2>/dev/null; done`.
 
 Para volver a conectarlo con GitHub: `git remote set-url origin <url del repositorio>` y sigue las reglas de arriba para subir.
 
