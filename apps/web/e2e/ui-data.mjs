@@ -21,7 +21,11 @@ async function signUp(email, name, role) {
 
 export async function ensurePersonas(browser) {
   mkdirSync(DIR, { recursive: true });
-  if (existsSync(FILE) && !process.env.UI_DATA_FRESH) return JSON.parse(readFileSync(FILE, "utf8"));
+  if (existsSync(FILE) && !process.env.UI_DATA_FRESH) {
+    // Las personas guardadas solo sirven si siguen en la base (un reset las borra y sus sesiones dejan de valer).
+    const saved = JSON.parse(readFileSync(FILE, "utf8"));
+    if (sql(`select count(*) from auth.users where id = '${saved.companyRich.id}'`) === "1") return saved;
+  }
 
   const tag = `ui${stamp}`;
   const p = {

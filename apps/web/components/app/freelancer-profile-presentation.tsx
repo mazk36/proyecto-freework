@@ -104,7 +104,7 @@ export function FreelancerProfilePresentation({ profile }: { profile: Freelancer
                     {project.description ? <p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">{project.description}</p> : null}
                     {project.skills_used.length ? <ul aria-label={`Habilidades utilizadas en ${project.title}`} className="mt-3 flex flex-wrap gap-1.5">{project.skills_used.map((skill) => <li className="rounded-full bg-surface-raised px-2.5 py-1 text-xs text-muted-foreground" key={skill}>{skill}</li>)}</ul> : null}
                     {project.project_period ? <p className="mt-3 text-xs text-muted-foreground">{project.project_period}</p> : null}
-                    {project.external_url ? <a className="mt-3 inline-flex items-center gap-2 text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href={safeExternalUrl(project.external_url) ?? undefined} rel={userLinkRel} target="_blank">Ver proyecto <ExternalLink aria-hidden="true" className="size-3.5" /></a> : null}
+                    {project.external_url ? <a className="mt-1 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-accent-soft underline decoration-accent/50 underline-offset-4" href={safeExternalUrl(project.external_url) ?? undefined} rel={userLinkRel} target="_blank">Ver proyecto <ExternalLink aria-hidden="true" className="size-3.5" /></a> : null}
                   </div>
                 </li>
               ))}
