@@ -52,7 +52,7 @@ Corrida del 2026-11-04 contra la pila de producción local (`infra/vps/prod`, Ca
 Metas: Rendimiento 90, Accesibilidad 100, Buenas prácticas 95, SEO 100. Se cumplen en las tres pantallas públicas. Excepciones de la pantalla autenticada:
 
 - **SEO 58**: la app lleva `noindex` a propósito (`app/app/layout.tsx`) y `robots.txt` la bloquea; las auditorías `is-crawlable` y `canonical` fallan por diseño. No se arregla.
-- **Rendimiento 86**: el elemento LCP es el resumen de la primera tarjeta, que espera a la sesión, el estado de la cuenta y la lectura de problemas (retraso de render ~3,6 s bajo CPU ×4; TTFB 0,6 s). Es una cascada de datos, no un recurso pesado; arreglarla exige precargar o rediseñar la carga, que no es un arreglo barato. Pendiente para una próxima vuelta.
+- **Rendimiento 86**: el elemento LCP es el resumen de la primera tarjeta, que espera a la sesión, el estado de la cuenta y la lectura de problemas (retraso de render ~3,6 s bajo CPU ×4; TTFB 0,6 s). Es una cascada de datos, no un recurso pesado; arreglarla exige precargar o rediseñar la carga, que no es un arreglo barato. Queda como pendiente posterior al lanzamiento.
 
 Lo que sí se corrigió con esta corrida: el guion medía las pantallas públicas ya con sesión abierta (redirigían a `/app/` y daban SEO falso de 58); ahora las mide antes de iniciar sesión y avisa si Lighthouse termina en otra ruta.
 
@@ -74,9 +74,10 @@ Hecho = implementado y cubierto por alguna prueba. Parcial = existe pero con una
 | §6 Likes del freelancer (pestañas Me interesan · Propuestas enviadas · Matches), estados vacíos con ícono, frase útil y botón | Hecho | `likes-overview.tsx` |
 | §6 Quitar con deshacer | Hecho | en «Me interesan» (toast «Quitado de tus Likes» con Deshacer); «Propuestas enviadas» y «Matches» no tienen acción de quitar |
 | §7 Chat: lista/hilo, burbujas y separadores por día, Enter/Shift+Enter, `visualViewport`, envío optimista con reintento, no leídos | Hecho | `components/chat/` |
-| §7 Adjuntos y contacto externo | Falta | el brief los deja pendientes de decisión de Frank |
+| §7 Contacto externo | Hecho | decisión de Frank (3-nov): permitir con aviso suave. Aviso «Mantén la conversación en MatchWork» en `lib/chat-notice.ts`, cubierto por el journey |
+| §7 Adjuntos | Decidido | el chat es solo de texto en el lanzamiento; fuera del alcance de lanzamiento |
 | §8 Landing: franja «En vivo» con cifras reales y «Sé de los primeros» en 0, CTA doble, sitemap, robots, Open Graph, JSON-LD, chip «Empresa verificada» | Hecho | `components/landing/live-counters.tsx`, `app/sitemap.ts`, `app/robots.ts` |
-| §8 Umbral mínimo para mostrar cifras | Falta | el brief lo deja pendiente de decisión de Frank (hoy se muestra «Sé de los primeros» solo con 0) |
+| §8 Umbral mínimo para mostrar cifras | Decidido | sin umbral: cifras reales siempre y «Sé de los primeros» con 0 |
 
 ### Plan por fases
 
@@ -93,11 +94,13 @@ Hecho = implementado y cubierto por alguna prueba. Parcial = existe pero con una
 
 ### Funciones que no existen y se reportan sin construir
 
-- Explorar talento para empresas (hoy `/app/explorar` es solo del freelancer).
-- Eliminar cuenta.
-- Pantalla de rol para quien entre con Google (Google está apagado).
-- Pedir el nombre de empresa después del Match.
-- Analítica de producto.
+| Función | Estado |
+|---|---|
+| Explorar talento para empresas (hoy `/app/explorar` es solo del freelancer) | Fuera del alcance de lanzamiento |
+| Eliminar cuenta | Espera decisión de Frank, junto con privacidad y términos |
+| Pantalla de rol para quien entre con Google | Google está apagado |
+| Pedir el nombre de empresa después del Match | Tarjeta pendiente con Frank |
+| Analítica de producto | No decidida |
 
 ### Barrido de pantallas vacías y huérfanas
 
